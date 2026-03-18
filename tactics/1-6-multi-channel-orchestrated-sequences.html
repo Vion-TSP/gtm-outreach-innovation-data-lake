@@ -1,1 +1,1202 @@
-FILE_CONTENT_PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 1.6 — Multi-Channel Orchestrated Sequences | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 1.6 &mdash; Cold Outbound</div>
+  <h1>Multi-Channel Orchestrated Sequences</h1>
+  <p class="desc">Pair cold email with LinkedIn nurturing, phone, video, and direct mail to create persistent, non-spammy outreach that converts.</p>
+  
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low&ndash;Medium</span>
+    <span class="tag tag-icp">ICP: All ICPs</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="metrics-row">
+        
+        
+        
+        <div class="metric-card"><div class="num">6&ndash;8</div><div class="lbl">Touchpoints needed to convert</div></div>
+      </div>
+      <div class="highlight">
+        <strong>The core insight:</strong> Spreading 6&ndash;8 touchpoints across multiple channels feels helpful rather than spammy. A prospect who gets one email, one LinkedIn message, and one call feels engaged &mdash; not harassed. The same 3 touchpoints via a single channel feels like badgering.
+      </div>
+      <h3>The psychology behind multi-channel</h3>
+      <ul>
+        <li><strong>Mere exposure effect</strong> &mdash; Seeing your name across channels builds familiarity and trust before a conversation happens</li>
+        <li><strong>Channel preference</strong> &mdash; Different buyers prefer different channels. Multi-channel ensures you reach them where they actually pay attention</li>
+        <li><strong>Context switching</strong> &mdash; A LinkedIn message after an email creates a "surround sound" effect that increases perceived importance</li>
+        <li><strong>Reduced spam fatigue</strong> &mdash; 3 emails in a week = annoying. 1 email + 1 LinkedIn + 1 call in a week = thorough</li>
+      </ul>
+      <h3>The data</h3>
+      
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: The Channels -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">The Channels</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <!-- Email -->
+        <div class="card">
+          <h4>Email</h4>
+          <div class="stat">Primary channel - scalable and trackable</div>
+          <p><strong>When to use:</strong> Primary channel for first touch, follow-ups, and value delivery. The backbone of every sequence.</p>
+          <ul>
+            <li class="pro">Scales easily (hundreds/day with automation)</li>
+            <li class="pro">Highly trackable (opens, clicks, replies)</li>
+            <li class="pro">Low cost per touch</li>
+          </ul>
+          <ul>
+            <li class="con">Crowded &mdash; avg exec gets 120+ emails/day</li>
+            <li class="con">Deliverability challenges (spam filters, warmup)</li>
+            <li class="con">Easy to ignore or auto-archive</li>
+          </ul>
+        </div>
+        <!-- LinkedIn -->
+        <div class="card">
+          <h4>LinkedIn</h4>
+          <div class="stat">High credibility - professional context builds trust</div>
+          <p><strong>When to use:</strong> Pre-warming before email, parallel nurturing, sharing content, voice notes for high-value targets.</p>
+          <ul>
+            <li class="pro">Professional context (buyers expect outreach)</li>
+            <li class="pro">Profile acts as a landing page (social proof)</li>
+            <li class="pro">Voice notes drive 30% higher engagement</li>
+          </ul>
+          <ul>
+            <li class="con">Daily limits (100 connections/week safely)</li>
+            <li class="con">InMail credits are finite</li>
+            <li class="con">Automation risks account restrictions</li>
+          </ul>
+        </div>
+        <!-- Phone -->
+        <div class="card">
+          <h4>Phone</h4>
+          <div class="stat">Highest conversion per live conversation</div>
+          <p><strong>When to use:</strong> Mid-sequence to break through digital noise, after engagement signals, for high-value accounts.</p>
+          <ul>
+            <li class="pro">Highest conversion per interaction</li>
+            <li class="pro">Real-time objection handling</li>
+            <li class="pro">Demonstrates commitment and seriousness</li>
+          </ul>
+          <ul>
+            <li class="con">Low connect rates (most go to voicemail)</li>
+            <li class="con">Time-intensive (can't scale easily)</li>
+            <li class="con">Requires skilled reps (talk tracks matter)</li>
+          </ul>
+        </div>
+        <!-- Video -->
+        <div class="card">
+          <h4>Video (Personalised)</h4>
+          <div class="stat">Extreme differentiation - few competitors do this</div>
+          <p><strong>When to use:</strong> High-value accounts, executive outreach, to stand out after email/LinkedIn touches have been ignored.</p>
+          <ul>
+            <li class="pro">Extreme differentiation (few competitors do it)</li>
+            <li class="pro">Builds personal connection fast</li>
+            <li class="pro">AI tools now enable scaling</li>
+          </ul>
+          <ul>
+            <li class="con">Time-intensive if truly personalised</li>
+            <li class="con">Requires decent production quality</li>
+            <li class="con">Low view rate if thumbnail/subject line weak</li>
+          </ul>
+        </div>
+        <!-- Direct Mail -->
+        <div class="card">
+          <h4>Direct Mail</h4>
+          <div class="stat">Cuts through digital noise - physical is memorable</div>
+          <p><strong>When to use:</strong> Executive ABM, stalled deals, high-value re-engagement. Physical items bypass all digital filters.</p>
+          <ul>
+            <li class="pro">Near-zero competition in mailbox</li>
+            <li class="pro">Tangible = memorable (sits on desk)</li>
+            <li class="pro">Works on unreachable execs</li>
+          </ul>
+          <ul>
+            <li class="con">Highest cost per touch</li>
+            <li class="con">Slower (shipping time)</li>
+            <li class="con">Requires accurate mailing addresses</li>
+          </ul>
+        </div>
+        <!-- SMS -->
+        <div class="card">
+          <h4>SMS / WhatsApp</h4>
+          <div class="stat">Highest immediacy - read almost instantly</div>
+          <p><strong>When to use:</strong> Post-meeting reminders, time-sensitive offers, warm leads only. Never for cold first-touch (compliance risk).</p>
+          <ul>
+            <li class="pro">Highest open/read rates of any channel</li>
+            <li class="pro">Feels personal and immediate</li>
+            <li class="pro">Great for confirmations and follow-ups</li>
+          </ul>
+          <ul>
+            <li class="con">Compliance-heavy (GDPR, TCPA, opt-in required)</li>
+            <li class="con">Feels invasive if unsolicited</li>
+            <li class="con">Limited message length and formatting</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Sequence Templates -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Sequence Templates</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <p>Four battle-tested templates covering different intensity levels and ICPs. Adapt the timing and channels to your specific context.</p>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab(event,'t-standard')">Standard 14-Day</div>
+        <div class="tab" onclick="switchTab(event,'t-aggressive')">Aggressive 21-Day</div>
+        <div class="tab" onclick="switchTab(event,'t-abm')">Executive ABM</div>
+        <div class="tab" onclick="switchTab(event,'t-reengagement')">Re-Engagement</div>
+      </div>
+
+      <!-- Standard 14-Day -->
+      <div class="tab-panel active" id="t-standard">
+        <h3>Standard 14-Day Sequence (Email + LinkedIn)</h3>
+        <p><strong>Target ICP:</strong> Directors, Managers, individual contributors</p>
+        <div class="wf"><div class="wf-step"><div class="wf-day">Day 1</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #1</div><div class="wf-action">Cold open</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 2</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">View + connect</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 4</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #2</div><div class="wf-action">Value-add</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 5</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Engage content</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 7</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #3</div><div class="wf-action">Social proof</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 9</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Direct message</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 11</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #4</div><div class="wf-action">New angle</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 14</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #5</div><div class="wf-action">Breakup</div></div></div>
+        <table>
+          <tr><th>Day</th><th>Channel</th><th>Action</th><th>Notes</th></tr>
+          <tr><td>1</td><td>Email</td><td>Personalised cold email #1</td><td>Pain-focused, under 125 words, clear CTA</td></tr>
+          <tr><td>2</td><td>LinkedIn</td><td>View profile + connect</td><td>No message or short note (&lt;40 words). Builds familiarity</td></tr>
+          <tr><td>4</td><td>Email</td><td>Follow-up #1 (value-add)</td><td>Share relevant insight, case study, or stat. Different angle from email #1</td></tr>
+          <tr><td>5</td><td>LinkedIn</td><td>Engage with their content</td><td>Like/comment on a recent post. Genuine, not generic</td></tr>
+          <tr><td>7</td><td>Email</td><td>Follow-up #2 (social proof)</td><td>Customer result or testimonial relevant to their role/industry</td></tr>
+          <tr><td>9</td><td>LinkedIn</td><td>Send direct message</td><td>Reference email thread. Keep under 80 words. Ask a question</td></tr>
+          <tr><td>11</td><td>Email</td><td>Follow-up #3 (new angle)</td><td>Different pain point or persona-specific insight</td></tr>
+          <tr><td>14</td><td>Email</td><td>Breakup email</td><td>Respectful close. Remove pressure. Often gets highest reply rate</td></tr>
+        </table>
+      </div>
+
+      <!-- Aggressive 21-Day -->
+      <div class="tab-panel" id="t-aggressive">
+        <h3>Aggressive 21-Day Sequence (Email + LinkedIn + Phone)</h3>
+        <p><strong>Target ICP:</strong> VP-level, senior decision-makers at mid-market companies</p>
+        <div class="wf"><div class="wf-step"><div class="wf-day">Day 1</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #1</div><div class="wf-action">Cold open</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 1</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">View profile</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 2</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Connect</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 3</div><div class="wf-node ch-phone">P</div><div class="wf-label">Phone</div><div class="wf-action">Call #1</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 5</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #2</div><div class="wf-action">Insight</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 7</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Engage + DM</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 8</div><div class="wf-node ch-phone">P</div><div class="wf-label">Phone</div><div class="wf-action">Call #2</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 10</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #3</div><div class="wf-action">Case study</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 12</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Voice note</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 14</div><div class="wf-node ch-phone">P</div><div class="wf-label">Phone</div><div class="wf-action">Call #3</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 16</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #4</div><div class="wf-action">New angle</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 19</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Share content</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 21</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #5</div><div class="wf-action">Breakup</div></div></div>
+        <table>
+          <tr><th>Day</th><th>Channel</th><th>Action</th><th>Notes</th></tr>
+          <tr><td>1</td><td>Email</td><td>Personalised cold email #1</td><td>Executive-tone. Reference specific company initiative or trigger</td></tr>
+          <tr><td>1</td><td>LinkedIn</td><td>View profile</td><td>Creates notification. Primes recognition</td></tr>
+          <tr><td>2</td><td>LinkedIn</td><td>Send connection request</td><td>Brief note referencing mutual context or insight</td></tr>
+          <tr><td>3</td><td>Phone</td><td>Call attempt #1</td><td>10-sec opener, 20-sec value, 10-sec CTA. Leave voicemail if no answer</td></tr>
+          <tr><td>5</td><td>Email</td><td>Follow-up #1 (insight)</td><td>Industry data or benchmark they likely don't have</td></tr>
+          <tr><td>7</td><td>LinkedIn</td><td>Engage with content + DM</td><td>Comment on post, then send message referencing it</td></tr>
+          <tr><td>8</td><td>Phone</td><td>Call attempt #2</td><td>Reference email. Different time of day than call #1</td></tr>
+          <tr><td>10</td><td>Email</td><td>Follow-up #2 (case study)</td><td>Specific result from similar company. Quantified outcome</td></tr>
+          <tr><td>12</td><td>LinkedIn</td><td>Voice note</td><td>60-sec personal message. Mention something specific about their company</td></tr>
+          <tr><td>14</td><td>Phone</td><td>Call attempt #3</td><td>Final call. Reference all previous touches</td></tr>
+          <tr><td>16</td><td>Email</td><td>Follow-up #3 (new angle)</td><td>Completely different value proposition or pain point</td></tr>
+          <tr><td>19</td><td>LinkedIn</td><td>Share relevant content</td><td>Tag them or send directly. Must be genuinely valuable</td></tr>
+          <tr><td>21</td><td>Email</td><td>Breakup email</td><td>Permission-based close. Often triggers response</td></tr>
+        </table>
+      </div>
+
+      <!-- Executive ABM -->
+      <div class="tab-panel" id="t-abm">
+        <h3>Executive ABM Sequence (High-Touch, Multi-Stakeholder)</h3>
+        <p><strong>Target ICP:</strong> C-suite at enterprise accounts ($10M+ ARR targets)</p>
+        <div class="wf"><div class="wf-step"><div class="wf-day">Wk 1</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Multi-connect</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 1</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #1</div><div class="wf-action">Personalised</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 1</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Engage content</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 2</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #2</div><div class="wf-action">Research/audit</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 2</div><div class="wf-node ch-video">V</div><div class="wf-label">Video</div><div class="wf-action">60s Loom</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 2</div><div class="wf-node ch-phone">P</div><div class="wf-label">Phone</div><div class="wf-action">Call primary</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 3</div><div class="wf-node ch-dm">DM</div><div class="wf-label">Direct Mail</div><div class="wf-action">Physical gift</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 3</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #3</div><div class="wf-action">Gift follow-up</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 3</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Multi-thread</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 4</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #4</div><div class="wf-action">Exec brief</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 4</div><div class="wf-node ch-phone">P</div><div class="wf-label">Phone</div><div class="wf-action">Final call</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 4</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #5</div><div class="wf-action">Graceful close</div></div></div>
+        <table>
+          <tr><th>Week</th><th>Channel</th><th>Action</th><th>Notes</th></tr>
+          <tr><td>1</td><td>LinkedIn</td><td>Connect with 3&ndash;5 stakeholders at account</td><td>Map buying committee first. CRO, VP Sales, RevOps lead, etc.</td></tr>
+          <tr><td>1</td><td>Email</td><td>Personalised email to primary contact</td><td>Reference company annual report, earnings call, or recent announcement</td></tr>
+          <tr><td>1</td><td>LinkedIn</td><td>Engage with exec content (all contacts)</td><td>Thoughtful comments. 2+ interactions per stakeholder across the week</td></tr>
+          <tr><td>2</td><td>Email</td><td>Custom research/audit email</td><td>Attach 1-page custom analysis of their GTM or sales performance</td></tr>
+          <tr><td>2</td><td>Video</td><td>60-sec personalised Loom</td><td>Walk through their website/product. Show you've done homework</td></tr>
+          <tr><td>2</td><td>Phone</td><td>Call primary contact</td><td>Reference the video/email. Ask for 15 min, not 30</td></tr>
+          <tr><td>3</td><td>Direct Mail</td><td>Send physical package</td><td>Premium item + handwritten note. Reference a specific pain point</td></tr>
+          <tr><td>3</td><td>Email</td><td>Follow-up to direct mail</td><td>"Hope the notebook arrived. Here's why I sent it..."</td></tr>
+          <tr><td>3</td><td>LinkedIn</td><td>Multi-thread DMs to other stakeholders</td><td>Different messaging per role. VP Sales = revenue. RevOps = efficiency</td></tr>
+          <tr><td>4</td><td>Email</td><td>Executive brief</td><td>1-page "What we'd do for you" tailored strategy doc</td></tr>
+          <tr><td>4</td><td>Phone</td><td>Final call attempt</td><td>Reference all previous touches. Offer concrete next step</td></tr>
+          <tr><td>4</td><td>Email</td><td>Graceful close</td><td>Leave door open. Offer to reconnect next quarter with fresh data</td></tr>
+        </table>
+      </div>
+
+      <!-- Re-Engagement -->
+      <div class="tab-panel" id="t-reengagement">
+        <h3>Re-Engagement / Breakup Sequence</h3>
+        <p><strong>Target ICP:</strong> Cold leads who went silent, churned prospects, expired opportunities</p>
+        <div class="wf"><div class="wf-step"><div class="wf-day">Day 1</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #1</div><div class="wf-action">Trigger re-open</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 3</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Re-engage</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 5</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #2</div><div class="wf-action">New value</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 7</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">DM value share</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 10</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #3</div><div class="wf-action">Honest check-in</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 14</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #4</div><div class="wf-action">Breakup</div></div></div>
+        <table>
+          <tr><th>Day</th><th>Channel</th><th>Action</th><th>Notes</th></tr>
+          <tr><td>1</td><td>Email</td><td>"Noticed something changed" email</td><td>Reference a new trigger (job change, funding, news). Fresh reason to reconnect</td></tr>
+          <tr><td>3</td><td>LinkedIn</td><td>View profile + re-engage</td><td>Like/comment on recent posts. Don't pitch</td></tr>
+          <tr><td>5</td><td>Email</td><td>"Quick update since we last spoke"</td><td>New product feature, case study, or market insight relevant to their original interest</td></tr>
+          <tr><td>7</td><td>LinkedIn</td><td>DM with value content</td><td>Share an article, report, or tool. "Thought of you when I saw this"</td></tr>
+          <tr><td>10</td><td>Email</td><td>"Am I reading this wrong?"</td><td>Honest, vulnerable. "If timing is off, totally understand. But if this is still relevant..."</td></tr>
+          <tr><td>14</td><td>Email</td><td>The breakup</td><td>"Closing your file" or "Last one from me." Removes all pressure. Highest reply rate email</td></tr>
+        </table>
+        <div class="highlight">
+          <strong>Pro tip:</strong> The breakup email consistently outperforms all other emails in the sequence. By removing pressure, you trigger loss aversion. 60% of cold replies come after the 2nd+ follow-up.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Channel Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Channel Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Email sub-section -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Email Best Practices</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Subject Lines</h3>
+            <ul>
+              <li><strong>Under 7 words</strong> &mdash; short subjects perform significantly better</li>
+              <li>Lowercase, no punctuation (feels like a colleague, not marketing)</li>
+              <li>Include their company name or a specific reference</li>
+              <li>Avoid spam triggers: "free", "guarantee", "act now", ALL CAPS</li>
+            </ul>
+            <p><strong>Examples:</strong> <code>Acme + your company</code> | <code>quick question about their initiative</code> | <code>saw your post on the topic</code></p>
+
+            <h3>Body Copy</h3>
+            <ul>
+              <li><strong>Under 125 words</strong> &mdash; shorter emails perform significantly better</li>
+              <li>Plain text (no HTML, images, or logos)</li>
+              <li>One CTA only &mdash; "Would a 15-min call this week make sense?"</li>
+              <li>First line must earn the second line &mdash; never start with "My name is..."</li>
+            </ul>
+
+            <h3>Personalisation Hierarchy</h3>
+            <table>
+              <tr><th>Level</th><th>Element</th><th>Impact</th><th>Effort</th></tr>
+              <tr><td>1 (Basic)</td><td>First name + company name</td><td>Low impact</td><td>Automated</td></tr>
+              <tr><td>2 (Good)</td><td>Role-specific pain point</td><td>Moderate impact</td><td>Segmented</td></tr>
+              <tr><td>3 (Great)</td><td>Company-specific insight (news, tech, hiring)</td><td>High impact</td><td>Clay/research</td></tr>
+              <tr><td>4 (Elite)</td><td>Personal reference (post, podcast, talk)</td><td>Highest impact</td><td>Manual/AI</td></tr>
+            </table>
+
+            <h3>Send Times</h3>
+            <ul>
+              <li><strong>Best days:</strong> Tuesday, Wednesday, Thursday</li>
+              <li><strong>Best windows:</strong> 8:00&ndash;10:00 AM or 1:00&ndash;3:00 PM (recipient's timezone)</li>
+              <li>Monday AM = inbox overload. Friday PM = weekend mode</li>
+              <li>Test early morning (6&ndash;7 AM) for executives who check before meetings</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- LinkedIn sub-section -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>LinkedIn Best Practices</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Connection Requests</h3>
+            <ul>
+              <li><strong>Personalised notes significantly increase acceptance</strong> than blank requests</li>
+              <li>Keep notes under 40 words (the visible preview is short)</li>
+              <li>Reference mutual connections, shared groups, or their content</li>
+              <li>Never pitch in the connection request</li>
+            </ul>
+            <p><strong>Example:</strong> "Hi Sarah &mdash; enjoyed your post on the topic. We're both in the the same industry space and I'd love to connect."</p>
+
+            <h3>InMail</h3>
+            <ul>
+              <li><strong>Under 100 words</strong> &mdash; shorter InMails get 22% higher response</li>
+              <li>Open with something about them, not about you</li>
+              <li>Ask a question (questions get 50% more replies than statements)</li>
+              <li>Don't duplicate your email &mdash; use a different angle</li>
+            </ul>
+
+            <h3>Voice Notes</h3>
+            <ul>
+              <li><strong>30% higher engagement</strong> than text messages</li>
+              <li>30&ndash;60 seconds maximum</li>
+              <li>Mention their name and something specific (proves it's not mass-produced)</li>
+              <li>Casual, conversational tone &mdash; not a script read</li>
+            </ul>
+
+            <h3>Safe Activity Limits</h3>
+            <table>
+              <tr><th>Activity</th><th>Safe Daily</th><th>Safe Weekly</th><th>Risk Threshold</th></tr>
+              <tr><td>Connection requests</td><td>15&ndash;20</td><td>100</td><td>150+/week = warnings</td></tr>
+              <tr><td>Messages (to connections)</td><td>50&ndash;70</td><td>300</td><td>500+/week = restrictions</td></tr>
+              <tr><td>Profile views</td><td>80&ndash;100</td><td>500</td><td>800+/week = flags</td></tr>
+              <tr><td>InMails</td><td>25 (with credits)</td><td>Varies by plan</td><td>Low risk (paid feature)</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone sub-section -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Phone Best Practices</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Talk Track Structure (40 seconds total)</h3>
+            <table>
+              <tr><th>Phase</th><th>Duration</th><th>What to Say</th></tr>
+              <tr><td>Opener</td><td>10 sec</td><td>"Hi their name, this is your name from Acme. Did I catch you at a bad time?" (Pattern interrupt)</td></tr>
+              <tr><td>Value</td><td>20 sec</td><td>"Reason I'm calling &mdash; we help [similar companies] [achieve outcome]. I noticed [trigger/signal] and thought it'd be worth a quick chat."</td></tr>
+              <tr><td>CTA</td><td>10 sec</td><td>"Would you be open to a 15-minute call this week to see if it's relevant?" (Low commitment ask)</td></tr>
+            </table>
+
+            <h3>Voicemail Formula (20 sec max)</h3>
+            <ul>
+              <li><strong>Structure:</strong> Name + company + one specific reason + callback number</li>
+              <li>"Hi their name, your name from Acme. Calling because [one specific reason tied to them]. My number is 07700 900123. I'll also send a quick email."</li>
+              <li>Always follow up with email &mdash; voicemail alone rarely converts</li>
+              <li>Vary voicemail messages across attempts (don't repeat the same script)</li>
+            </ul>
+
+            <h3>Best Times to Call</h3>
+            <ul>
+              <li><strong>Highest connect rate:</strong> 8:00&ndash;9:00 AM and 4:00&ndash;5:00 PM</li>
+              <li><strong>Best days:</strong> Wednesday and Thursday</li>
+              <li>Avoid lunch (12&ndash;1 PM) and Monday/Friday extremes</li>
+              <li>Call within 5 minutes of any engagement signal (email open, website visit) for 8x higher connect rate</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Video sub-section -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Video Best Practices</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Keep Under 60 Seconds</h3>
+            <table>
+              <tr><th>Section</th><th>Duration</th><th>Content</th></tr>
+              <tr><td>Intro</td><td>5 sec</td><td>Your face + their name. "Hey their name, quick video for you."</td></tr>
+              <tr><td>Hook</td><td>15 sec</td><td>Something specific about their company. Screen-share their website/LinkedIn</td></tr>
+              <tr><td>Value</td><td>25 sec</td><td>One key insight or what you'd do for them. Be specific, not generic</td></tr>
+              <tr><td>CTA</td><td>10 sec</td><td>"Would love to walk you through how we did this for [similar company]. Link below to grab time."</td></tr>
+            </table>
+
+            <h3>Thumbnail Tips</h3>
+            <ul>
+              <li>Use a whiteboard with their name or company logo &mdash; 3x higher play rate</li>
+              <li>Show your face (builds trust), not just a screen recording</li>
+              <li>Add a custom thumbnail with their company name visible</li>
+              <li>Animated GIF preview if the platform supports it</li>
+            </ul>
+
+            <h3>Tools</h3>
+            <ul>
+              <li><strong>Manual:</strong> Loom (free), Vidyard (free tier), Sendspark</li>
+              <li><strong>AI-generated:</strong> HeyGen (lip-sync personalisation), Synthesia, Tavus</li>
+              <li>AI video works at scale but manual video converts better for top-50 accounts</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Tools Comparison -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Tools Comparison</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Differentiator</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Instantly</strong></td>
+          <td>$37/mo</td>
+          <td>Email-first cold outreach at scale</td>
+          <td>Unlimited email accounts, built-in warmup, lead database</td>
+          <td>Email-only. No LinkedIn, phone, or multi-channel native</td>
+        </tr>
+        <tr>
+          <td><strong>Apollo.io</strong></td>
+          <td>$59/user/mo</td>
+          <td>All-in-one prospecting + sequencing</td>
+          <td>275M+ contact database + sequencing + dialler in one tool</td>
+          <td>LinkedIn automation limited. Data quality can vary by region</td>
+        </tr>
+        <tr>
+          <td><strong>Salesloft</strong></td>
+          <td>~$100+/user/mo</td>
+          <td>Enterprise sales teams with complex cadences</td>
+          <td>Full revenue orchestration: email, calls, meetings, analytics</td>
+          <td>Expensive. Long contracts. Overkill for small teams</td>
+        </tr>
+        <tr>
+          <td><strong>Outreach</strong></td>
+          <td>~$100+/user/mo</td>
+          <td>Enterprise multi-channel sequences</td>
+          <td>AI-powered recommendations, conversation intelligence</td>
+          <td>Expensive. Complex setup. Minimum seat requirements</td>
+        </tr>
+        <tr>
+          <td><strong>La Growth Machine</strong></td>
+          <td>&euro;60&ndash;180/user/mo</td>
+          <td>True multi-channel (email + LinkedIn + Twitter)</td>
+          <td>Native LinkedIn automation with safety limits built in</td>
+          <td>Smaller ecosystem. Less CRM integration depth</td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot Sequences</strong></td>
+          <td>Included in Sales Hub $90+/mo</td>
+          <td>Teams already on HubSpot CRM</td>
+          <td>Deep CRM integration. Enrollment via workflow automation</td>
+          <td>Email + task only. No native LinkedIn/phone sequencing</td>
+        </tr>
+      </table>
+      <div class="highlight">
+        <strong>TSP Stack:</strong> For most clients, we recommend <strong>Instantly</strong> (email) + <strong>LinkedIn</strong> (manual/La Growth Machine) + <strong>HubSpot</strong> (CRM + nurture) + <strong>Clay</strong> (enrichment + signals). Total: ~$100&ndash;200/mo for a solo operator. Scale up with Salesloft/Outreach when headcount exceeds 5 SDRs.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: Metrics & Benchmarks -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">06</span><h2 style="display:inline">Metrics &amp; Benchmarks</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <h3>Email Metrics</h3>
+      <table>
+        <tr><th>Metric</th><th>Poor</th><th>Average</th><th>Good</th><th>Excellent</th></tr>
+        <tr><td>Open rate</td><td>Below average</td><td>Baseline</td><td>Above average</td><td>Highly personalised</td></tr>
+        <tr><td>Reply rate</td><td>&lt;1%</td><td>3.4%</td><td>10&ndash;18% (top performers)</td></tr>
+        <tr><td>Bounce rate</td><td>&gt;5%</td><td>2&ndash;5%</td><td>1&ndash;2%</td><td>&lt;1%</td></tr>
+        <tr><td>Unsubscribe rate</td><td>&gt;1%</td><td>0.5&ndash;1%</td><td>0.2&ndash;0.5%</td><td>&lt;0.2%</td></tr>
+        <tr><td>Positive reply rate</td><td>Needs refinement</td><td>Baseline</td><td>Good conversion</td><td>Strong conversion</td></tr>
+      </table>
+
+      <h3>LinkedIn Metrics</h3>
+      <table>
+        <tr><th>Metric</th><th>Poor</th><th>Average</th><th>Good</th><th>Excellent</th></tr>
+        <tr><td>Connection acceptance</td><td>Low relevance</td><td>Baseline</td><td>Good targeting</td><td>Strong relevance</td></tr>
+        <tr><td>DM reply rate</td><td>Weak messaging</td><td>Baseline</td><td>Good messaging</td><td>Strong engagement</td></tr>
+        <tr><td>InMail reply rate</td><td>&lt;8%</td><td>18&ndash;25%</td><td>25%+</td></tr>
+        <tr><td>Voice note reply rate</td><td>Weak personalisation</td><td>Baseline</td><td>Good personalisation</td><td>Strong connection</td></tr>
+      </table>
+
+      <h3>Phone Metrics</h3>
+      <table>
+        <tr><th>Metric</th><th>Poor</th><th>Average</th><th>Good</th><th>Excellent</th></tr>
+        <tr><td>Connect rate</td><td>&lt;3%</td><td>10&ndash;15%</td><td>15&ndash;25%</td></tr>
+        <tr><td>Meeting conversion</td><td>Weak pitch</td><td>Baseline</td><td>Good pitch</td><td>Strong pitch</td></tr>
+        <tr><td>Voicemail callback</td><td>Low interest</td><td>Baseline</td><td>Good hooks</td><td>Strong hooks</td></tr>
+        <tr><td>Dials per connect</td><td>30+</td><td>15&ndash;20</td><td>10&ndash;15</td><td>5&ndash;10</td></tr>
+      </table>
+
+      <h3>Multi-Channel Lift</h3>
+      <div class="metrics-row">
+        
+        
+        
+        
+      </div>
+
+      <h3>SDR Activity Benchmarks</h3>
+      <table>
+        <tr><th>Activity</th><th>Daily</th><th>Weekly</th><th>Monthly</th></tr>
+        <tr><td>Emails sent</td><td>50&ndash;80</td><td>250&ndash;400</td><td>1,000&ndash;1,600</td></tr>
+        <tr><td>LinkedIn touches</td><td>15&ndash;25</td><td>75&ndash;125</td><td>300&ndash;500</td></tr>
+        <tr><td>Phone calls</td><td>30&ndash;60</td><td>150&ndash;300</td><td>600&ndash;1,200</td></tr>
+        <tr><td>Personalised videos</td><td>3&ndash;5</td><td>15&ndash;25</td><td>60&ndash;100</td></tr>
+        <tr><td>New prospects researched</td><td>10&ndash;20</td><td>50&ndash;100</td><td>200&ndash;400</td></tr>
+        <tr><td>Meetings booked (target)</td><td>1&ndash;2</td><td>5&ndash;10</td><td>20&ndash;40</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 7: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">07</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Same message across channels</h4>
+          <div class="why">Prospects see you copy-pasting and immediately disengage. It signals laziness and mass outreach.</div>
+          <div class="fix">Tailor the message and angle per channel. Email = formal insight. LinkedIn = conversational. Phone = direct ask.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Too many touches too fast</h4>
+          <div class="why">5 touches in 3 days across channels feels like stalking, not selling. Triggers blocks and spam reports.</div>
+          <div class="fix">Space touches 1&ndash;3 days apart. Never hit the same channel twice in one day. Let each touch breathe.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. No sequence logic or triggers</h4>
+          <div class="why">Time-based sequences ignore engagement. You email someone who already replied, or skip someone who clicked 4x.</div>
+          <div class="fix">Build conditional branches: if opened 3x &rarr; call. If replied &rarr; exit sequence. If no engagement by day 7 &rarr; new angle.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Pitching in the LinkedIn connect</h4>
+          <div class="why">Kills acceptance rates instantly. People connect to network, not to get sold to in the request.</div>
+          <div class="fix">Connection note = context only (mutual interest, their content, shared group). Pitch comes after they accept, if at all.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Skipping the breakup email</h4>
+          <div class="why">Missing the highest-converting email in the sequence. Breakup emails get 2&ndash;3x the reply rate of other follow-ups.</div>
+          <div class="fix">Always end with a breakup. "Closing your file" or "Not going to keep bugging you" works because it removes pressure.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Generic subject lines</h4>
+          <div class="why">"Quick question" and "Touching base" are invisible in a crowded inbox. 0% differentiation.</div>
+          <div class="fix">Use their company name, a trigger event, or a curiosity hook. Under 7 words. Lowercase.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>7. Not tracking per-channel metrics</h4>
+          <div class="why">Without channel-specific data, you can't optimise. You might be investing in channels that aren't converting.</div>
+          <div class="fix">Track open/reply/connect rates per channel per sequence. Review weekly. Kill what doesn't work, double down on what does.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>8. Sending long emails</h4>
+          <div class="why">Emails over 125 words see a steep drop in reply rates. Nobody reads a 300-word cold email from a stranger.</div>
+          <div class="fix">125 words max. One pain point, one proof point, one CTA. If you can't say it in 5 sentences, you haven't refined the message enough.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>9. Ignoring timezone and send times</h4>
+          <div class="why">Sending at 2 AM in their timezone means your email is buried by morning. Timing is 20% of deliverability.</div>
+          <div class="fix">Always send in the prospect's timezone. Tue&ndash;Thu, 8&ndash;10 AM or 1&ndash;3 PM. Test early AM (6&ndash;7 AM) for execs.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>10. No A/B testing</h4>
+          <div class="why">Running the same sequence for months without testing means you're leaving 30&ndash;50% improvement on the table.</div>
+          <div class="fix">Test one variable at a time: subject line, CTA, send time, channel order. Minimum 100 sends per variant before drawing conclusions.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 8: Advanced Tactics -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">08</span><h2 style="display:inline">Advanced Tactics</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <h3>Signal-Based Triggers</h3>
+      <p>Move from time-based sequences to event-driven outreach. Every signal is a reason to reach out with relevance.</p>
+      <table>
+        <tr><th>Signal Type</th><th>Example</th><th>Sequence Trigger</th><th>Messaging Angle</th></tr>
+        <tr><td>Funding round</td><td>Series B announced on Crunchbase</td><td>Enrol in "Post-Funding" sequence within 24h</td><td>"Congrats on the raise. Companies at your stage typically invest in [area]. Here's how we help..."</td></tr>
+        <tr><td>Job posting</td><td>Hiring first SDR Manager</td><td>Enrol in "Scaling Sales" sequence</td><td>"Saw you're hiring a [role]. That usually means [pain]. We help [similar companies] [outcome]."</td></tr>
+        <tr><td>Leadership change</td><td>New CRO joins from competitor</td><td>Enrol in "New Leader" 60-day sequence</td><td>"Welcome to [company]. New leaders at this stage typically review [area]. Happy to share what we see across [industry]."</td></tr>
+        <tr><td>Tech stack change</td><td>Added Salesforce (BuiltWith alert)</td><td>Enrol in "Tech Migration" sequence</td><td>"Noticed you recently moved to [tool]. Teams making that switch often need [capability]. Here's what we've seen work."</td></tr>
+        <tr><td>Competitor churn</td><td>Negative G2 review of competitor</td><td>Enrol in "Competitor Switching" sequence</td><td>"If you're evaluating alternatives to [competitor], here's a quick comparison and what [similar company] switched to."</td></tr>
+        <tr><td>Content engagement</td><td>Downloaded your whitepaper</td><td>Enrol in "Warm Inbound" sequence (24h delay)</td><td>"Saw you grabbed our guide on scaling SDR teams. Most teams reading this are dealing with [pain]. Is that you?"</td></tr>
+        <tr><td>Website visit</td><td>Visited pricing page 3x</td><td>Enrol in "High Intent" fast sequence</td><td>"A few folks from [company] have been checking out [product]. Happy to answer any questions or set up a quick demo."</td></tr>
+      </table>
+
+      <h3>Intent Data Layering &mdash; Scoring Model</h3>
+      <p>Combine signals into a composite score to determine sequence intensity.</p>
+      <table>
+        <tr><th>Score Range</th><th>Intent Level</th><th>Sequence Type</th><th>Channels</th><th>Cadence</th></tr>
+        <tr><td>0&ndash;10</td><td>Low intent</td><td>Standard nurture</td><td>Email only</td><td>1 touch/week for 3 weeks</td></tr>
+        <tr><td>11&ndash;20</td><td>Mid intent</td><td>Multi-channel standard</td><td>Email + LinkedIn</td><td>2&ndash;3 touches/week for 2 weeks</td></tr>
+        <tr><td>21&ndash;30</td><td>High intent</td><td>Aggressive multi-channel</td><td>Email + LinkedIn + Phone</td><td>4&ndash;5 touches/week for 3 weeks</td></tr>
+        <tr><td>31+</td><td>White-glove</td><td>Executive ABM</td><td>All channels + video + direct mail</td><td>Custom cadence, daily attention</td></tr>
+      </table>
+      <div class="highlight">
+        <strong>Scoring signals (examples):</strong> Website visit = 3pts | Pricing page = 5pts | Job posting for your category = 4pts | Funding round = 5pts | Downloaded content = 3pts | Competitor review = 6pts | Multiple stakeholders visiting = 8pts | Demo page = 7pts
+      </div>
+
+      <h3>A/B Testing Framework</h3>
+      <table>
+        <tr><th>What to Test</th><th>Expected Impact</th><th>Min Sample Size</th><th>Duration</th></tr>
+        <tr><td>Subject line</td><td>Significant open rate change</td><td>100 per variant</td><td>1&ndash;2 weeks</td></tr>
+        <tr><td>Email body (pain point angle)</td><td>Meaningful reply rate change</td><td>150 per variant</td><td>2&ndash;3 weeks</td></tr>
+        <tr><td>CTA (question vs statement)</td><td>Moderate reply rate change</td><td>100 per variant</td><td>1&ndash;2 weeks</td></tr>
+        <tr><td>Send time</td><td>Moderate open rate change</td><td>200 per variant</td><td>2 weeks</td></tr>
+        <tr><td>Channel order (email-first vs LI-first)</td><td>Meaningful overall reply change</td><td>200 per variant</td><td>3&ndash;4 weeks</td></tr>
+        <tr><td>Sequence length (5 vs 8 touches)</td><td>Moderate total reply change</td><td>200 per variant</td><td>4 weeks</td></tr>
+        <tr><td>Personalisation depth (L2 vs L3)</td><td>Strong reply rate change</td><td>100 per variant</td><td>2&ndash;3 weeks</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 9: ICP Variations -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">09</span><h2 style="display:inline">ICP Variations</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <p>Different buyer personas respond to different channels, message styles, and cadences. Use this matrix to adapt your sequences.</p>
+      <table>
+        <tr><th>ICP</th><th>Best Channels</th><th>Message Length</th><th>Key Tactic</th><th>Decision Speed</th></tr>
+        <tr>
+          <td><strong>Founders / CEOs</strong></td>
+          <td>Email + LinkedIn + Video</td>
+          <td>Very short (&lt;75 words)</td>
+          <td>Signal-based triggers + peer proof ("Other founders at your stage...")</td>
+          
+          <td>Fast (1&ndash;2 weeks)</td>
+        </tr>
+        <tr>
+          <td><strong>VPs / C-Suite</strong></td>
+          <td>Email + LinkedIn + Phone + Direct Mail</td>
+          <td>Short (&lt;100 words)</td>
+          <td>Multi-thread the buying committee. Custom video + executive brief</td>
+          
+          <td>Medium (2&ndash;6 weeks)</td>
+        </tr>
+        <tr>
+          <td><strong>Technical Buyers</strong></td>
+          <td>Email + LinkedIn + Community</td>
+          <td>Medium (100&ndash;150 words OK)</td>
+          <td>Lead with data, benchmarks, technical proof. No fluff. Link to docs/case studies</td>
+          
+          <td>Slow (4&ndash;8 weeks, need to evaluate)</td>
+        </tr>
+        <tr>
+          <td><strong>Ops Leaders (RevOps, MOps)</strong></td>
+          <td>Email + LinkedIn + Community</td>
+          <td>Medium (100&ndash;125 words)</td>
+          <td>ROI calculators, process improvement data, integration compatibility</td>
+          
+          <td>Medium (2&ndash;4 weeks)</td>
+        </tr>
+        <tr>
+          <td><strong>Directors / Managers</strong></td>
+          <td>Email + LinkedIn + Phone</td>
+          <td>Short&ndash;Medium (&lt;125 words)</td>
+          <td>Quick wins + team impact. "Here's what your peers are doing differently"</td>
+          
+          <td>Fast&ndash;Medium (1&ndash;4 weeks)</td>
+        </tr>
+      </table>
+      <div class="highlight">
+        <strong>Key pattern:</strong> The more senior the buyer, the shorter your message and the more channels you need. Directors respond well to email-only sequences. C-suite requires 3&ndash;4 channels and usually needs a multi-threaded approach (engaging multiple stakeholders at the same account).
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 10: Real Examples -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">10</span><h2 style="display:inline">Real Examples (Anonymised)</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <p>Four real sequence examples with actual copy. Company and personal details anonymised. Metrics are real.</p>
+
+      <!-- Example 1 -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Example 1: Standard 14-Day - Director-Level</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <p><strong>ICP:</strong> Director of Sales at SaaS companies, 50&ndash;200 employees, Series A/B</p>
+            
+
+            <div class="email-block">
+<span class="label">Day 1 &mdash; Email #1 (Cold Open)</span>
+Subject: Acme's outbound
+
+Hi Sarah,
+
+Noticed Acme is hiring 2 new AEs &mdash; congrats on the growth.
+
+Quick question: are your current SDRs keeping those AEs fed with enough pipeline, or is that a bottleneck?
+
+We helped Datadog's sales team go from 3 to 11 qualified meetings/week per SDR without adding headcount. Took about 6 weeks.
+
+Worth a 15-min chat to see if the approach fits?
+
+James</div>
+
+            <div class="email-block">
+<span class="label">Day 2 &mdash; LinkedIn Connection Request</span>
+Hi Sarah &mdash; fellow SaaS sales nerd here. Impressed by what you're building at Acme. Would love to connect.</div>
+
+            <div class="email-block">
+<span class="label">Day 4 &mdash; Email #2 (Value-Add)</span>
+Subject: re: Acme's outbound
+
+Sarah,
+
+One thing that's working well for sales teams scaling right now:
+
+Teams running email + LinkedIn sequences together see significantly better engagement than email alone. The key is channel-specific messaging (not copy-paste across channels).
+
+Here's a quick breakdown we put together: link
+
+Any of this relevant to what you're seeing at Acme?
+
+James</div>
+
+            <div class="email-block">
+<span class="label">Day 9 &mdash; LinkedIn DM</span>
+Hey Sarah &mdash; sent you a couple of emails about outbound at Acme. No worries if the timing's off.
+
+Curious though: are your SDRs running multi-channel or mostly email? Seeing a big shift in what's working this quarter.</div>
+
+            <div class="email-block">
+<span class="label">Day 14 &mdash; Email #4 (Breakup)</span>
+Subject: closing the loop
+
+Sarah,
+
+I've reached out a few times and haven't heard back, so I'll assume the timing isn't right.
+
+If outbound pipeline ever becomes a priority, happy to pick this up. I'll keep your details on file.
+
+All the best with the AE hires &mdash; exciting times at Acme.
+
+James</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example 2 -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Example 2: Aggressive 21-Day + Phone - VP-Level</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <p><strong>ICP:</strong> VP Sales at B2B tech companies, 200&ndash;1,000 employees, $10M+ ARR</p>
+            
+
+            <div class="email-block">
+<span class="label">Day 1 &mdash; Email #1 (Cold Open)</span>
+Subject: Sarah &mdash; pipeline question
+
+Hi Sarah,
+
+Your team posted a VP Rev Ops role last week &mdash; usually means pipeline efficiency is top of mind.
+
+We work with VPs of Sales at companies like Gong and Lattice to increase SDR output 40&ndash;60% without adding headcount. The main lever: multi-channel sequencing that actually works (not just more emails).
+
+Open to a 15-min call this week? I can share exactly what's working for teams at your stage.
+
+James</div>
+
+            <div class="email-block">
+<span class="label">Day 3 &mdash; Phone Call (Talk Track)</span>
+"Hi Sarah, this is James from Acme. Did I catch you at an OK time?
+
+If they say yes: Great, I'll keep this to 30 seconds. Noticed your team is hiring a VP Rev Ops &mdash; congrats. Usually when teams at your stage make that hire, it's because pipeline efficiency is becoming a bottleneck.
+
+We help VP Sales like yourself get 40&ndash;60% more output from existing SDRs using multi-channel sequences. Would it make sense to grab 15 minutes this week?
+
+If voicemail: Hi Sarah, James from Acme. Calling because I noticed your Rev Ops hire and thought our approach to multi-channel outbound might be relevant. I'll send a quick email as well. My number is 07700 900123."</div>
+
+            <div class="email-block">
+<span class="label">Day 7 &mdash; LinkedIn DM + Content Engagement</span>
+Sarah &mdash; just commented on your post about scaling SDR teams. Great thinking.
+
+Quick question: have you tested multi-channel sequences for your SDR team? Seeing 3&ndash;4x meeting rates for teams that add LinkedIn + phone to their email cadences.
+
+Happy to share the framework if useful. No pitch, just a doc we use internally.</div>
+
+            <div class="email-block">
+<span class="label">Day 12 &mdash; LinkedIn Voice Note (Script)</span>
+"Hey Sarah, this is James. Sending a quick voice note because I think it cuts through better than another text message.
+
+I've reached out a couple of times about helping your SDR team with multi-channel sequences. I know you're busy scaling &mdash; that's exactly why this might be relevant.
+
+Teams at your stage are getting 40&ndash;60% more meetings without adding headcount. If there's any interest, I'd love 15 minutes. If not, totally respect that. Have a great week."</div>
+
+            <div class="email-block">
+<span class="label">Day 21 &mdash; Email (Breakup)</span>
+Subject: should I close your file?
+
+Sarah,
+
+I've tried a few channels now and don't want to overstay my welcome.
+
+Three options:
+1. "Yes, let's chat" &mdash; I'll send a calendar link
+2. "Not now, try me in Q3" &mdash; I'll set a reminder
+3. "Not interested" &mdash; I'll close your file permanently
+
+Either way, wishing you well with the team growth at Acme.
+
+James</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example 3 -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Example 3: Executive ABM - CRO-Level</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <p><strong>ICP:</strong> CRO / Chief Revenue Officer at enterprise SaaS, 500+ employees</p>
+            
+
+            <div class="email-block">
+<span class="label">Week 1 &mdash; Email #1 (Research-Heavy)</span>
+Subject: Acme's revenue engine
+
+Sarah,
+
+I spent some time looking at Acme's GTM motion. A few observations:
+
+&bull; Your team grew 30% last year but job postings suggest SDR capacity is lagging behind AE growth
+&bull; You're running Outreach for outbound &mdash; solid choice but likely hitting ceiling on multi-channel
+&bull; Your competitors Salesloft and Gong are investing heavily in signal-based outreach
+
+We've helped CROs at Lattice ($50M ARR) and Braze ($80M ARR) solve this exact mismatch. The playbook took 8 weeks to implement and delivered 45% more qualified pipeline.
+
+I built a 1-page analysis of your GTM setup. Worth 15 minutes to walk through it?
+
+James</div>
+
+            <div class="email-block">
+<span class="label">Week 2 &mdash; Personalised Video (60-sec Script)</span>
+"Hi Sarah, James here. Made a quick video specifically for you.
+
+(Screen-share their website)
+Looking at Acme's website, I can see you're targeting mid-market SaaS. Your messaging focuses on revenue acceleration which is smart.
+
+(Switch to camera)
+Here's what I think the opportunity is: your outbound team is likely running email-heavy sequences. The data shows CROs at your stage who add LinkedIn and phone to the mix see a significant pipeline lift.
+
+I put together a one-page analysis of what this could look like for Acme. Link's below to grab 15 minutes and I'll walk you through it.
+
+Either way, impressive what you're building."</div>
+
+            <div class="email-block">
+<span class="label">Week 3 &mdash; Direct Mail Follow-Up Email</span>
+Subject: the notebook
+
+Sarah,
+
+Hope the Moleskine arrived. Thought you might appreciate something physical in a world of digital noise.
+
+Inside the front cover, I jotted down three ideas for Acme's outbound that I think could move the needle this quarter. Curious if any of them resonate.
+
+The offer stands: 15 minutes to walk through the full analysis I built for your team.
+
+James</div>
+
+            <div class="email-block">
+<span class="label">Week 4 &mdash; Executive Brief Email</span>
+Subject: what we'd do for Acme
+
+Sarah,
+
+Attached is a one-page executive brief: "How Acme Could Generate 45% More Qualified Pipeline in Q2."
+
+It covers:
+&bull; Your current outbound setup (based on public data + our analysis)
+&bull; Three specific gaps we identified
+&bull; The multi-channel playbook we'd recommend
+&bull; Expected impact (modelled on similar companies)
+
+No obligation. If it's useful, let's talk. If not, it's yours to keep.
+
+James</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example 4 -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Example 4: Re-Engagement Breakup</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <p><strong>ICP:</strong> Previously engaged prospects who went cold (30&ndash;90 days since last interaction)</p>
+            
+
+            <div class="email-block">
+<span class="label">Day 1 &mdash; Email #1 (Trigger-Based Re-Open)</span>
+Subject: Acme + the new VP hire
+
+Hi Sarah,
+
+We chatted back in January about your outbound strategy. At the time, the timing wasn't right &mdash; totally fair.
+
+Reaching back out because I noticed Acme just brought on a new VP of Sales. That usually shifts priorities around pipeline and outbound.
+
+Has anything changed on your end? Happy to pick up where we left off or start fresh.
+
+James</div>
+
+            <div class="email-block">
+<span class="label">Day 5 &mdash; Email #2 (New Value)</span>
+Subject: since we last spoke
+
+Sarah,
+
+A lot has changed since January:
+
+&bull; We launched a multi-channel sequencing module that directly addresses the outbound bottleneck you mentioned
+&bull; Ramp (similar to Acme) saw a major pipeline lift using our approach
+&bull; New data shows multi-channel outbound is outperforming email-only across B2B SaaS
+
+Any of this change the equation for Acme?
+
+James</div>
+
+            <div class="email-block">
+<span class="label">Day 7 &mdash; LinkedIn DM</span>
+Hey Sarah &mdash; been a while! Sent you a couple of emails about picking up our conversation from January.
+
+No pressure at all. Just wanted to flag that we've got some new data on multi-channel outbound that might be relevant to what you're building at Acme.
+
+Happy to share either way &mdash; useful even if the timing still isn't right.</div>
+
+            <div class="email-block">
+<span class="label">Day 10 &mdash; Email #3 (Honest Check-In)</span>
+Subject: am I reading this wrong?
+
+Sarah,
+
+Want to be straight with you: I've reached out a few times and haven't heard back.
+
+Totally possible that:
+a) You're swamped (peak season, I get it)
+b) This isn't a priority right now
+c) You've already solved the problem
+d) My emails are going to spam
+
+If it's (a) or (b), I'm happy to reconnect in Q3. If it's (c), congrats. If it's (d), that's embarrassing for me.
+
+A one-word reply is plenty. Either way, respect your time.
+
+James</div>
+
+            <div class="email-block">
+<span class="label">Day 14 &mdash; Email #4 (The Breakup)</span>
+Subject: closing your file
+
+Sarah,
+
+This is my last email. I'm going to close your file and won't reach out again unless you ask.
+
+If outbound pipeline ever becomes a priority again, my door is open. You've got my details.
+
+Wishing Acme a strong Q2. Genuinely rooting for you.
+
+James
+
+PS &mdash; If there's someone else on your team this would be more relevant for, happy to connect with them instead.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake &mdash; The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>
