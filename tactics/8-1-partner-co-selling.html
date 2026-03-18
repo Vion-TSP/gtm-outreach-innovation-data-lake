@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<parameter name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 8.1 — Technology Partner Co-Selling | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 8.1 - Partnerships & Ecosystem</div>
+  <h1>Technology Partner Co-Selling</h1>
+  <p class="desc">Form structured partnerships with complementary vendors to share leads, co-create content, and provide warm introductions to each other's customers. Both partners benefit from expanded reach and higher-quality leads from trusted peer recommendations.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium-High</span>
+    <span class="tag tag-cost">Cost: Low-Medium</span>
+    <span class="tag tag-icp">ICP: All ICPs</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Cold introductions from vendors feel like sales pitches. Warm introductions from trusted technology partners feel like helpful recommendations. Partner co-selling turns your partner's existing customer relationships into your warm leads, and vice versa, creating mutual value that neither could achieve alone.
+      </div>
+      <h3>The psychology behind partner co-selling</h3>
+      <ul>
+        <li><strong>Borrowed trust</strong> - When trusted vendor recommends another vendor, their credibility transfers. "If our CRM provider trusts them, maybe we should too." Trust borrowing accelerates sales cycles</li>
+        <li><strong>Solution completeness</strong> - Customers want complete solutions not point products. Partners who complement each other create better joint value proposition. Two integrated tools beat two separate tools</li>
+        <li><strong>Reduced risk perception</strong> - Partner endorsement reduces perceived risk of trying new vendor. "They work together so integration must be proven." Social proof from partner reduces buyer anxiety</li>
+        <li><strong>Account access</strong> - Partners have existing relationships at accounts you want to reach. Partner introduction gets you meetings that cold outreach never would. Relationship leverage matters</li>
+      </ul>
+      <h3>Why technology partnerships specifically</h3>
+      <p>Technology buyers increasingly adopt best-of-breed stacks rather than all-in-one platforms. This creates natural partnership opportunities between vendors serving adjacent needs. CRM partners with sales engagement. Analytics partners with data warehouse. Marketing automation partners with CDP. Complementary vendors serving same ICP are natural partners.</p>
+      <p><strong>The network effect:</strong> As you build multiple partner relationships, each partner's customer base becomes potential pipeline. Five strong partners each introducing you to 10 customers annually creates 50 warm opportunities. Partnership programmes compound over time as network grows.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Identify Partners</div><div class="wf-action">Complementary vendors</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">P</div><div class="wf-label">Pitch</div><div class="wf-action">Co-sell arrangement</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">S</div><div class="wf-label">Share Accounts</div><div class="wf-action">Via Crossbeam</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">C</div><div class="wf-label">Co-Create Content</div><div class="wf-action">Joint webinars/guides</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">W</div><div class="wf-label">Warm Intros</div><div class="wf-action">To each other</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">T</div><div class="wf-label">Track Revenue</div><div class="wf-action">Joint attribution</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify Complementary Partners</td>
+          <td>Look for vendors serving same ICP but different use case. Not direct competitors. Natural integration or workflow adjacency. Example: if you sell sales engagement, partner with CRM or sales intelligence vendors. Both sell to sales leaders but solve different problems</td>
+          <td>1-2 hours research</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Pitch Co-Selling Arrangement</td>
+          <td>Reach out to partner BD or sales leader proposing mutual lead sharing. Explain ICP overlap, how solutions complement, and value of warm introductions. Position as win-win not one-sided ask. Start small with pilot to build trust</td>
+          <td>30 min pitch call</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Share Overlapping Accounts</td>
+          <td>Use Crossbeam or Reveal to securely share customer and prospect lists. Identify overlap without exposing full databases. See which of their customers you want to reach and which of your customers they want to reach. Find mutual opportunities</td>
+          <td>1 hour setup, ongoing sync</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Co-Create Content</td>
+          <td>Produce joint content like webinars, guides, or case studies showcasing integrated solution. Both partners promote to their audiences. Doubles reach and demonstrates partnership value. Content creates reasons for warm introductions</td>
+          <td>2-4 hours per content piece</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Make Warm Intro Leads to Each Other</td>
+          <td>When partner has customer who needs your solution, they intro you. When you have customer who needs partner solution, you intro them. Track intros to ensure reciprocity. Warm intros convert higher than cold outreach</td>
+          <td>15 min per intro</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Track Joint Revenue</td>
+          <td>Attribute revenue to partner channel. Track intro-to-close rates. Measure ROI of partnership. Share wins with partner to build momentum. Successful partnerships justify investing more resources</td>
+          <td>Monthly reporting</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Start with one strong partner before scaling to many. Deep partnership with frequent lead sharing beats surface-level partnerships with no real collaboration. Prove the model works with one partner, then replicate with others.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Reveal or Crossbeam</strong></td>
+          <td>Free tier available</td>
+          <td>Securely sharing overlapping accounts with partners</td>
+          <td>Upload your customer and prospect lists. Partners upload theirs. Platform shows overlap without exposing full databases. Privacy-safe account matching. See mutual opportunities for intros</td>
+          <td>Requires both partners to adopt platform. Free tier has limited features. Advanced analytics and workflows require paid plans</td>
+        </tr>
+        <tr>
+          <td><strong>PartnerStack</strong></td>
+          <td>£500+ per month</td>
+          <td>Managing formal partner programme with tracking and payouts</td>
+          <td>Partner portal for lead registration and tracking. Revenue attribution. Automated commission payouts if offering financial incentives. Partner training and enablement. Reporting on partner performance</td>
+          <td>Expensive for early-stage partnerships. Best for mature programmes with many partners and formal commission structures. Overkill for simple lead sharing</td>
+        </tr>
+        <tr>
+          <td><strong>Partnerize</strong></td>
+          <td>$$$</td>
+          <td>Enterprise partner ecosystem management</td>
+          <td>Full partnership lifecycle management. Recruiting, onboarding, enabling, tracking, and optimising partners. Multi-partner tier management. Complex commission structures. Integration with major CRMs and marketing platforms</td>
+          <td>Enterprise pricing and complexity. Requires dedicated partner operations resources. Minimum annual contract typically £50k plus. Not for small partnership programmes</td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot CRM</strong></td>
+          <td>Free</td>
+          <td>Manually tracking partner intros and attribution</td>
+          <td>Use deal source field to tag partner-referred opportunities. Track which partners generate most pipeline. Report on partner channel performance. Simple solution without additional tools</td>
+          <td>Manual process. No automated account matching. Cannot see partner's customer base for proactive intro requests. Works for small scale but does not scale to many partners</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Reveal or Crossbeam free tier</strong> for account matching plus <strong>HubSpot Free CRM</strong> for tracking partner-referred deals. Validate that partnerships generate pipeline before investing in expensive partner management platforms.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Partner Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Partner Selection - Choose Complementary Not Competitive</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What makes good partner</h3>
+            <p>Not every vendor serving your ICP is good partner candidate. Best partnerships combine ICP overlap with solution complementarity and mutual incentive to collaborate. Wrong partner creates conflict or generates no value despite effort.</p>
+
+            <h3>Partner evaluation criteria</h3>
+            <ul>
+              <li><strong>ICP overlap</strong> - Do they sell to same buyers you sell to? If you target enterprise sales teams and they target SMB marketing teams, overlap is minimal. Need at least 50% ICP overlap</li>
+              <li><strong>Solution complementarity</strong> - Do your solutions work better together? Natural workflow integration or clear before-and-after relationship in customer journey. Example: data enrichment complements sales engagement</li>
+              <li><strong>No direct competition</strong> - They should not offer solution that could replace yours. Complementary means adjacent not overlapping. Partners who compete with you will not genuinely recommend you</li>
+              <li><strong>Similar company stage</strong> - Early-stage startup partnering with enterprise giant creates imbalance. Partner with companies at similar stage and scale. Balanced relationships work better</li>
+              <li><strong>Aligned values and reputation</strong> - Partner's brand reflects on you when you recommend them. Only partner with companies whose quality and ethics you genuinely trust</li>
+            </ul>
+
+            <h3>Partner types and examples</h3>
+            <table>
+              <tr><th>Partner Type</th><th>Relationship</th><th>Example</th></tr>
+              <tr>
+                <td>Upstream partner</td>
+                <td>Your customers need their solution before yours</td>
+                <td>If you sell sales analytics, partner with CRM vendors. Companies adopt CRM then need analytics on top</td>
+              </tr>
+              <tr>
+                <td>Downstream partner</td>
+                <td>Your customers need their solution after yours</td>
+                <td>If you sell lead generation, partner with marketing automation. Companies generate leads then need nurturing</td>
+              </tr>
+              <tr>
+                <td>Horizontal partner</td>
+                <td>Solve different problems for same buyer at same time</td>
+                <td>Sales engagement partners with call recording. Both used by same sales team for related workflows</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Overlap analysis:</strong> Use LinkedIn Sales Navigator to search for customers of potential partner. How many are also your ICP? If less than 30% overlap, partnership will generate limited mutual value. Look for 50%+ overlap for high-value partnerships.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formal Agreement sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Formal Agreement - Set Expectations Early</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why agreements matter</h3>
+            <p>Many partnerships fail not from bad fit but from misaligned expectations. One partner expects frequent intros, other sees it as casual relationship. Formal agreement clarifies what each partner commits to, preventing disappointment and resentment.</p>
+
+            <h3>Key agreement elements</h3>
+            <ul>
+              <li><strong>Intro cadence expectation</strong> - How many intros per quarter does each partner aim to provide? Setting targets creates accountability. Even informal targets like "aim for 2-3 qualified intros per quarter" helps</li>
+              <li><strong>Lead qualification criteria</strong> - What makes qualified intro? Clarify ICP fit requirements so partners do not refer poor-fit prospects. "Must be enterprise with 500 plus employees" prevents wasted intros</li>
+              <li><strong>Response time commitment</strong> - How quickly should each partner respond to intro requests? 48 hour response time prevents intros from going stale. Responsiveness builds trust</li>
+              <li><strong>Content collaboration plan</strong> - Will you co-create content? How often? Who leads production? Webinar every quarter? Joint case study? Agreeing upfront prevents partnership from being intro-only</li>
+              <li><strong>Attribution and tracking</strong> - How will you track which opportunities came from partner? Use specific deal source tags. Share pipeline data quarterly to demonstrate ROI</li>
+            </ul>
+
+            <h3>Agreement format</h3>
+            <p>Does not need to be legal contract. Simple one-page document or email summarising commitments works. Key is explicit agreement not formality. Review quarterly and adjust based on what is working.</p>
+
+            <div class="highlight">
+              <strong>Reciprocity tracking:</strong> Track intros provided versus intros received from each partner. Ideally should be roughly balanced. If heavily one-sided after 6 months, have honest conversation about rebalancing or deprioritising that partnership.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Co-Creation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Content Co-Creation - Webinars and Joint Resources</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why joint content matters</h3>
+            <p>Co-created content serves multiple purposes. Demonstrates partnership to market. Provides reason to stay engaged with partner. Generates leads for both partners. Educates audience on integrated solution. Content creates ongoing collaboration beyond ad-hoc intro requests.</p>
+
+            <h3>Effective joint content formats</h3>
+            <ul>
+              <li><strong>Co-hosted webinar</strong> - Both partners present. Each promotes to their audience. Double registration reach. Webinar topic shows how solutions work together. Attendees are warm leads for both</li>
+              <li><strong>Joint buyer guide</strong> - "Complete Guide to Building Modern Sales Stack" featuring both solutions. Distributed by both partners. Positions partnership as trusted resource</li>
+              <li><strong>Integration spotlight</strong> - Case study showing customer using both solutions together. Demonstrates real-world value of integration. Customer story provides social proof</li>
+              <li><strong>Comparison guide</strong> - "Evaluating Sales Tools: What to Look For" mentioning both solutions as best-in-class options. Educational not promotional</li>
+            </ul>
+
+            <h3>Content co-creation process</h3>
+            <ol>
+              <li><strong>Agree on topic</strong> - Choose subject relevant to both ICPs. Focus on shared pain point not product features</li>
+              <li><strong>Split responsibilities</strong> - Who handles production? Who promotes? Who follows up with leads? Clear division of labour</li>
+              <li><strong>Both partners promote</strong> - Each promotes to their audience. Track registrations by source to see which partner drove more engagement</li>
+              <li><strong>Share lead data</strong> - Both partners get access to attendee list. Follow up with relevant prospects. Joint content generates leads for both</li>
+            </ol>
+
+            <div class="highlight">
+              <strong>Promotion commitment:</strong> Before creating content, agree on promotion plan. Each partner commits to X promotional emails, Y social posts, Z outreach messages. Equal promotion effort ensures equal value. Imbalanced promotion creates resentment.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Making Intros sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Making Intros - Quality Over Quantity</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What makes good intro</h3>
+            <p>Bad intro: "You should talk to our partner." Good intro: "I mentioned your challenge with X to our partner who specialises in exactly this. They have helped companies like yours solve it. Worth 15 minutes?" Context and relevance make intro valuable not just connection.</p>
+
+            <h3>Intro best practices</h3>
+            <ul>
+              <li><strong>Qualify before introducing</strong> - Confirm customer actually has need for partner solution. Do not intro everyone just to hit numbers. Bad intros damage your credibility with both customer and partner</li>
+              <li><strong>Provide context</strong> - Tell partner why this intro is relevant. "They are struggling with Y which your solution addresses. Company size and industry match your ICP." Context helps partner personalise outreach</li>
+              <li><strong>Double opt-in</strong> - Ask customer if they want intro before connecting. "Would intro to partner who helps with X be useful?" Unsolicited intros annoy customers</li>
+              <li><strong>Forwardable blurb</strong> - Provide partner with paragraph about customer they can use in follow-up. "Acme is 500-person fintech dealing with X challenge. They already use your category and looking to improve." Makes partner's follow-up easier</li>
+              <li><strong>Follow up on outcome</strong> - Ask partner what happened with intro. Did customer respond? Did deal progress? Learning loop improves your intro quality over time</li>
+            </ul>
+
+            <h3>Intro email template</h3>
+            <p><strong>To Customer:</strong> "Sarah, given you mentioned challenges with X, I wanted to introduce you to James at Acme. They specialise in helping companies like yours with X. Worth 15 min call? Let me know if you would like intro."</p>
+            <p><strong>After customer agrees, to both:</strong> "Sarah, meet James. James, meet Sarah. Sarah's company is dealing with X as we discussed. James, I think your approach to Y would be really relevant here. I will let you two take it from here."</p>
+
+            <div class="highlight">
+              <strong>Reciprocity trigger:</strong> When partner provides great intro that leads to opportunity, send thank you note and immediately look for way to reciprocate. "Appreciate the intro to Acme. Let me look at our pipeline for companies who could use your solution." Active reciprocity builds strong partnerships.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Partnering with competitors not complements</h4>
+          <div class="why">You partner with company that solves same problem you solve. They will never genuinely recommend you because you compete for same budget. Partnership generates no value.</div>
+          <div class="fix">Only partner with vendors solving adjacent problems for same ICP. Solutions should complement not compete. Integration or natural workflow connection. Ensure no direct competition before formalising partnership.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. No formal agreement - unclear expectations</h4>
+          <div class="why">You assume partnership means frequent intros. Partner sees it as casual relationship. Misaligned expectations lead to disappointment and partnership fizzles without delivering value.</div>
+          <div class="fix">Document simple partnership agreement covering intro cadence, qualification criteria, content collaboration, and tracking. Even one-page summary clarifies expectations. Review quarterly and adjust.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. One-sided lead sharing - no reciprocity</h4>
+          <div class="why">Partner provides many qualified intros. You provide few or none in return. Imbalance creates resentment. Partner stops referring because reciprocity is missing.</div>
+          <div class="fix">Track intros given versus received. Aim for rough balance over 6 months. If you receive 10 intros, work hard to provide 8-10 back. Reciprocity is partnership foundation. Be proactive referring.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Not tracking attribution - cannot prove ROI</h4>
+          <div class="why">You do intros but never track which opportunities closed from partner channel. Cannot demonstrate ROI. Partnership feels like charity work rather than revenue driver.</div>
+          <div class="fix">Tag partner-referred deals in CRM with specific source. Track intro-to-opportunity and opportunity-to-close rates. Report on partner channel performance quarterly. Data justifies continued investment.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Choosing partners with wrong ICP overlap</h4>
+          <div class="why">You partner with vendor whose customers are mostly not your ICP. Limited overlap means few opportunities for mutual intros. Partnership generates minimal value despite effort.</div>
+          <div class="fix">Evaluate ICP overlap before formalising partnership. Need at least 50% overlap. Use account matching tools to verify overlap. Better to have one partner with great overlap than five partners with poor overlap.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Partnership exists only on paper - no active collaboration</h4>
+          <div class="why">You announce partnership then do nothing. No intros, no content, no engagement. Partnership is logo on website but generates zero pipeline.</div>
+          <div class="fix">Set quarterly goals for partnership activity. Two joint content pieces. Ten mutual intros. Regular check-in calls. Active collaboration not passive relationship. Partnerships require ongoing effort to deliver value.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

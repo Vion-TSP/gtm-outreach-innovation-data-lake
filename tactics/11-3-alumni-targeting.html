@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 11.3 - Alumni Network Targeting | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 11.3 - Warm Intro / Network</div>
+  <h1>Alumni Network Targeting</h1>
+  <p class="desc">Target prospects who share university alma maters or past employers with your team. Instant rapport through shared experience.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low</span>
+    <span class="tag tag-cost">Cost: Low</span>
+    <span class="tag tag-icp">ICP: Founders, C-suite</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Shared educational or professional background creates instant in-group status. Alumni connections bypass cold outreach skepticism and activate tribal affinity. The prospect sees you as one of their own rather than another salesperson.
+      </div>
+      <h3>The psychology of alumni connections</h3>
+      <ul>
+        <li><strong>In-group bias</strong> - Humans favor members of their own group. Sharing an alma mater or past employer triggers automatic positive bias</li>
+        <li><strong>Assumed shared values</strong> - Same school or company suggests shared experiences, culture, and values. This reduces perceived risk in engaging</li>
+        <li><strong>Instant conversation starter</strong> - Alumni connection provides natural opening that feels personal rather than salesy. "I noticed we both went to..." is warmer than "I saw your company does..."</li>
+        <li><strong>Network effect</strong> - Alumni naturally help fellow alumni. It's an unwritten social contract. Career advancement often happens through alumni networks</li>
+      </ul>
+      <h3>Why this works especially well for senior buyers</h3>
+      <p>Founders and C-suite executives are bombarded with outreach. They ignore most of it. But an alumni connection stands out. They're more likely to respond to someone who shares their background because it feels less transactional and more like networking.</p>
+      <p><strong>The authenticity factor:</strong> Alumni targeting only works if it's genuine. You can't fake having attended a school or worked at a company. This authenticity makes the connection feel real rather than manufactured.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Identify Alumni</div><div class="wf-action">Team backgrounds</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-linkedin">F</div><div class="wf-label">Filter Accounts</div><div class="wf-action">Shared alumni</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-email">C</div><div class="wf-label">Craft Message</div><div class="wf-action">Alumni reference</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">S</div><div class="wf-label">Send Outreach</div><div class="wf-action">Personalised</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-linkedin">B</div><div class="wf-label">Build Rapport</div><div class="wf-action">Shared stories</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify Your Team's Alumni Networks</td>
+          <td>Document where each team member went to school and where they previously worked. Include all universities, business schools, boot camps, and past employers. Create internal spreadsheet with this data</td>
+          <td>30 min (one-time team survey)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Filter Target Accounts by Shared Alumni</td>
+          <td>Use LinkedIn Sales Navigator alumni filter. Search for prospects at target accounts who share your team's educational or professional background. Export list of alumni matches</td>
+          <td>15-20 min per alma mater search</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Craft Alumni-Referenced Outreach</td>
+          <td>Write personalised message that opens with alumni connection. Reference specific shared experience (mascot, professor, company culture, well-known project). Make it feel genuine, not templated</td>
+          <td>10 min per message (high personalisation required)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Send Personalised Message</td>
+          <td>Send via LinkedIn connection request with note, or direct email if you have address. Keep it short and focused on connection rather than immediate sales pitch</td>
+          <td>2-3 min per send</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Build on Shared Experience</td>
+          <td>When they respond, deepen rapport through shared stories. Ask about their time at school/company. Share your own experiences. Build relationship before pitching product</td>
+          <td>15-20 min per conversation</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Company alumni networks are often overlooked but equally powerful. Someone who worked at Google, McKinsey, Goldman Sachs etc. has strong affinity for fellow alumni. Past employers work just as well as universities.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn Sales Navigator</strong></td>
+          <td>$99/mo per user</td>
+          <td>Advanced alumni filtering and lead search</td>
+          <td>Alumni filter lets you search by specific school and graduation year range. Also filters by past company employment. Can layer with other filters (title, location, company size). Save searches for ongoing prospecting</td>
+          <td>Requires Sales Navigator subscription (not available on free LinkedIn). Graduation year data sometimes incomplete on LinkedIn profiles</td>
+        </tr>
+        <tr>
+          <td><strong>LinkedIn Alumni Page</strong></td>
+          <td>Free</td>
+          <td>Quick manual search of school alumni network</td>
+          <td>Every university has a LinkedIn alumni page showing where alumni work, what they do, where they live. Filter by company, function, location. Completely free. Good for spot-checking specific target companies</td>
+          <td>No advanced filtering. Manual browsing only. Can't export lists. Limited to educational institutions (doesn't cover company alumni)</td>
+        </tr>
+        <tr>
+          <td><strong>Apollo.io</strong></td>
+          <td>$59/mo (Team plan)</td>
+          <td>Alumni filtering combined with email finding and sequences</td>
+          <td>Filter prospects by education and past employers. Automatically finds email addresses for alumni matches. Can immediately add to sequences. All-in-one prospecting + outreach platform</td>
+          <td>Alumni data less comprehensive than LinkedIn. Education field not always populated. Past employment data can be outdated</td>
+        </tr>
+        <tr>
+          <td><strong>ZoomInfo</strong></td>
+          <td>Custom pricing (typically $15,000+/yr)</td>
+          <td>Enterprise-level alumni search with direct dial phone numbers</td>
+          <td>Robust education and employment history data. Includes direct dial numbers for calling alumni. Advanced filtering by graduation year, degree type, major. Enterprise data quality</td>
+          <td>Expensive. Overkill for small teams. Annual contract required. Data refresh can lag several months</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>LinkedIn Alumni Page</strong> (free) for manual prospecting to prove the concept. Once validated, upgrade to <strong>LinkedIn Sales Navigator</strong> ($99/mo) for systematic alumni filtering at scale. Only consider <strong>ZoomInfo</strong> if you need phone numbers and have enterprise budget.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Genuine vs Forced sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Genuine vs Forced Connection (Authenticity Matters)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why forced alumni connections backfire</h3>
+            <p>If you only mention the alumni connection in passing and immediately pivot to sales pitch, prospects see through it. The alumni angle feels like a manipulation tactic. This damages credibility and makes you less effective than generic cold outreach.</p>
+
+            <h3>Genuine vs forced outreach</h3>
+            <table>
+              <tr><th>Forced (Bad)</th><th>Genuine (Good)</th></tr>
+              <tr>
+                <td>"I noticed we both went to University X. Quick question about your sales tech stack..."</td>
+                <td>"I noticed we both went to University X. I was there during the era when Professor Sarah was still teaching Strategy. Were you in any of her classes?"</td>
+              </tr>
+              <tr>
+                <td>"Fellow University X alum here. I work at Acme and we help companies like yours with..."</td>
+                <td>"Fellow University X alum here. I loved my time there but the winters were brutal. How do you look back on your experience?"</td>
+              </tr>
+              <tr>
+                <td>"We both worked at Big Tech Company. Wanted to reach out about..."</td>
+                <td>"I saw you were at Big Tech Company during their major transformation period. What was it like being there during that time? I joined right after."</td>
+              </tr>
+            </table>
+
+            <h3>How to make it genuine</h3>
+            <ul>
+              <li><strong>Share specific memories</strong> - Reference actual places, professors, events, or culture that only real alumni would know</li>
+              <li><strong>Ask about their experience first</strong> - Show genuine curiosity about their time at school/company before talking business</li>
+              <li><strong>Build rapport over multiple messages</strong> - Don't pitch immediately. Exchange 2-3 messages about shared experiences first</li>
+              <li><strong>Be vulnerable</strong> - Share something real about your own experience (good and bad). Authenticity invites authenticity</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> If you wouldn't send this message to someone you actually knew from school/company, don't send it to alumni prospects. Treat them like potential friends, not sales targets.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Company Alumni Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Company Alumni Strategy (Past Employers Count Too)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why company alumni networks are powerful</h3>
+            <p>People who worked at the same company share context that education alone doesn't provide. You understand the culture, the lingo, the war stories. Company alumni networks are especially strong at well-known brands with distinctive cultures.</p>
+
+            <h3>High-value company alumni networks</h3>
+            <table>
+              <tr><th>Company Type</th><th>Examples</th><th>Why It Works</th></tr>
+              <tr>
+                <td><strong>Tech Giants</strong></td>
+                <td>Google, Meta, Apple, Microsoft, Amazon</td>
+                <td>Strong culture and brand identity. Alumni networks are massive and well-connected. Shared understanding of scale and technical complexity</td>
+              </tr>
+              <tr>
+                <td><strong>Consulting Firms</strong></td>
+                <td>McKinsey, BCG, Bain, Deloitte, Accenture</td>
+                <td>Intense shared experience. Alumni maintain strong networks. Understand frameworks and business thinking. Often move to executive roles</td>
+              </tr>
+              <tr>
+                <td><strong>Investment Banks</strong></td>
+                <td>Goldman Sachs, Morgan Stanley, JP Morgan</td>
+                <td>Elite networks. Alumni tend to reach senior positions. Strong brand cache and shared culture</td>
+              </tr>
+              <tr>
+                <td><strong>Hyper-Growth Startups</strong></td>
+                <td>Stripe, Airbnb, Uber (in early days), successful unicorns</td>
+                <td>Shared experience of rapid growth chaos. Alumni often start their own companies or join other startups. Tight-knit communities</td>
+              </tr>
+              <tr>
+                <td><strong>Military</strong></td>
+                <td>Any branch of military service</td>
+                <td>Extremely strong bonds. Shared values around mission, discipline, teamwork. Alumni go out of their way to help fellow veterans</td>
+              </tr>
+            </table>
+
+            <h3>How to leverage company alumni connections</h3>
+            <ul>
+              <li><strong>Map your team's past employers</strong> - Include companies from 5-10 years ago, not just most recent roles</li>
+              <li><strong>Reference specific company culture</strong> - "You know how at Google everyone lived by OKRs..." This shows you were really there</li>
+              <li><strong>Mention shared pain points</strong> - "Do you remember the chaos of the org restructure in 2019?" Shared suffering builds camaraderie</li>
+              <li><strong>Ask about what they learned</strong> - "What did you take away from your time at X that you still use today?" Deeper than small talk</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Company alumni affinity is strongest during the first 3-5 years after someone leaves. The experience is still fresh and they still identify with that chapter of their career. Target recent alumni for best results.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timing and Graduation Years sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Timing and Graduation Years (Don't Just Target Same Year)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why graduation year matters less than you think</h3>
+            <p>Many people assume alumni connections only work with same graduation year. This is wrong. Someone who graduated 5 years before or after you still shares the alma mater identity. The school experience creates affinity regardless of exact timing.</p>
+
+            <h3>How to approach different graduation year gaps</h3>
+            <table>
+              <tr><th>Gap</th><th>Relationship Dynamic</th><th>Messaging Approach</th></tr>
+              <tr>
+                <td><strong>Same year (0-1 year difference)</strong></td>
+                <td>Peers - strongest immediate connection</td>
+                <td>"We overlapped at University X. Did you ever take classes in the Business School building?"</td>
+              </tr>
+              <tr>
+                <td><strong>Close years (2-4 year difference)</strong></td>
+                <td>Slightly senior or junior but still relatable</td>
+                <td>"I was at University X a few years after you. I bet the campus changed a lot between when you graduated and when I started."</td>
+              </tr>
+              <tr>
+                <td><strong>Moderate gap (5-10 year difference)</strong></td>
+                <td>Different era but still shared institution</td>
+                <td>"Fellow University X alum here, though different era. I'd love to hear what your experience was like compared to mine."</td>
+              </tr>
+              <tr>
+                <td><strong>Large gap (10+ year difference)</strong></td>
+                <td>Different generations but shared identity</td>
+                <td>"Once a University X alum, always a University X alum. Even though we were there in different decades, curious how you remember it."</td>
+              </tr>
+            </table>
+
+            <h3>When graduation year IS important</h3>
+            <ul>
+              <li><strong>Reunion timing</strong> - If prospect is approaching a reunion year (5th, 10th, 20th), alumni identity is heightened. Great time to reach out</li>
+              <li><strong>Recent grads</strong> - People within 3 years of graduation still strongly identify with being recent alumni. High responsiveness</li>
+              <li><strong>Nostalgia periods</strong> - Reach out during homecoming, major sports events, or significant school anniversaries. Alumni sentiment peaks</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Strategy tip:</strong> Cast a wide net on graduation years (plus/minus 10 years from your team members). Filter by other criteria (job title, company, location) to narrow down. Graduation year should be one of many filters, not the primary one.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multi-Touch Alumni Nurture sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Multi-Touch Alumni Nurture (Build Relationship Before Asking)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The slow-burn approach</h3>
+            <p>Don't pitch on first contact. Use the alumni connection to start a relationship. Most buyers need 5-7 touches before they're ready to engage. Alumni affinity makes each touch more effective.</p>
+
+            <h3>Multi-touch alumni sequence</h3>
+            <table>
+              <tr><th>Touch</th><th>Timing</th><th>Content</th><th>Goal</th></tr>
+              <tr>
+                <td>1</td>
+                <td>Day 1</td>
+                <td>LinkedIn connection request mentioning alumni status</td>
+                <td>Get accepted into network</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Day 3 (after acceptance)</td>
+                <td>Thank-you message asking about their experience at alma mater</td>
+                <td>Start conversation, build rapport</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Day 7</td>
+                <td>Share relevant article or insight with personal note</td>
+                <td>Provide value, stay top of mind</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Day 14</td>
+                <td>Comment on their LinkedIn post or share</td>
+                <td>Increase visibility, show genuine interest</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>Day 21</td>
+                <td>Mention how your company helps others in their situation, soft introduction</td>
+                <td>Plant seed without hard pitch</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>Day 30</td>
+                <td>Direct ask for quick call to discuss challenge you've noticed</td>
+                <td>Secure meeting</td>
+              </tr>
+            </table>
+
+            <h3>Content ideas for alumni touches</h3>
+            <ul>
+              <li><strong>School news</strong> - "Did you see University X just announced a new programme in your field?"</li>
+              <li><strong>Alumni achievements</strong> - "Saw another University X alum (Sarah) just raised a Series B. Our network is doing well."</li>
+              <li><strong>Shared professor/class reference</strong> - "I was just thinking about Professor James's class on Strategy. Did you ever take it?"</li>
+              <li><strong>Local alumni events</strong> - "There's a University X alumni happy hour next month. Will you be there?"</li>
+              <li><strong>Industry insights</strong> - "Given you're in sales tech and your University X background, thought you'd find this interesting..."</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Response trigger:</strong> If they engage meaningfully with any touch (more than one-word reply), accelerate the sequence. Strike while engagement is high. If no response after touch 3, space remaining touches further apart.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Making alumni connection the entire pitch</h4>
+          <div class="why">You mention you both went to the same school, then have nothing else interesting to say. The connection feels hollow and manipulative.</div>
+          <div class="fix">Use alumni status as the door opener, then bring genuine value. Have substance beyond the shared background.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Not being genuine</h4>
+          <div class="why">You reference the alma mater but clearly know nothing about it. Prospect can tell you're just using it as a tactic. Credibility destroyed.</div>
+          <div class="fix">Only use alumni connections you actually have. Reference specific details (buildings, professors, events, culture) that prove authenticity.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Overlooking non-university alumni (past employers work too)</h4>
+          <div class="why">You only search for university alumni and miss the powerful company alumni networks. Past employer connections are just as strong, sometimes stronger.</div>
+          <div class="fix">Map both educational AND professional backgrounds. Filter by past companies, not just schools.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Only targeting same graduation year</h4>
+          <div class="why">You limit searches to people who graduated the same year. Miss 90% of potential alumni connections.</div>
+          <div class="fix">Search plus/minus 10 years from your graduation. Alumni affinity transcends specific graduation year.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Pitching immediately after connection</h4>
+          <div class="why">You connect on LinkedIn, they accept, and your next message is a sales pitch. The alumni goodwill evaporates. Feels like bait-and-switch.</div>
+          <div class="fix">Build relationship over 3-5 touches before pitching. Use alumni connection to start genuine conversation first.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Not actually having anything relevant to offer beyond the connection</h4>
+          <div class="why">You reach out based on alumni status but your product/service isn't actually relevant to their needs. Wastes everyone's time.</div>
+          <div class="fix">Only use alumni angle when you also have genuine business fit. Alumni connection accelerates relevant conversations, it doesn't create relevance where none exists.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

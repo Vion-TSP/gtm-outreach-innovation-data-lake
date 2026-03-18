@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 5.1 — Executive Dinner (8-12 People) | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 5.1 - Event-Based Plays</div>
+  <h1>Executive Dinner (8-12 People)</h1>
+  <p class="desc">Host intimate dinners for C-suite and VP-level buyers featuring facilitated peer conversation without vendor pitches. Create high-trust environment where executives share challenges and learn from peers, positioning your company as valuable convener rather than pushy vendor.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: High</span>
+    <span class="tag tag-cost">Cost: High</span>
+    <span class="tag tag-icp">ICP: C-suite, VP-level, Founders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Senior executives are bombarded with transactional pitches but starved for authentic peer connection. An intimate dinner where they can discuss real challenges with others facing similar issues creates genuine value. When you facilitate these conversations without selling, you become a trusted advisor rather than another vendor.
+      </div>
+      <h3>The psychology behind executive dinners</h3>
+      <ul>
+        <li><strong>Scarcity and status</strong> - Limited invites signal exclusivity. Executives value access to peer circles they cannot easily reach. Being selected creates reciprocity obligation</li>
+        <li><strong>Safe vulnerability</strong> - Small group size and no-pitch rule allow authentic conversation about real challenges. Executives rarely get to speak candidly about what keeps them up at night</li>
+        <li><strong>Peer learning over vendor selling</strong> - People trust peer insights far more than vendor claims. Hearing how another CFO solved a problem carries weight no sales pitch can match</li>
+        <li><strong>Relationship depth</strong> - Three hours of facilitated conversation builds more trust than six months of cold emails. You become a real person, not a logo</li>
+      </ul>
+      <h3>Why dinners specifically</h3>
+      <p>Dinner provides natural structure for extended conversation. Breaking bread together is ancient relationship-building ritual. The setting is relaxed, not transactional. Alcohol loosens tongues. Multiple courses pace the evening and allow topics to evolve organically.</p>
+      <p><strong>The compounding effect:</strong> Attendees leave with valuable peer connections they did not have before. When you facilitate those connections, they associate you with the value of their new network. Future outreach from you carries weight of that positive experience.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Select Guests</div><div class="wf-action">8-12 executives</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">V</div><div class="wf-label">Book Venue</div><div class="wf-action">Private room</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">I</div><div class="wf-label">Send Invites</div><div class="wf-action">Personal outreach</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">P</div><div class="wf-label">Prep Topics</div><div class="wf-action">Discussion guide</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">H</div><div class="wf-label">Host Dinner</div><div class="wf-action">Facilitate conversation</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">F</div><div class="wf-label">Follow Up</div><div class="wf-action">Personal notes</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Select Target Guests</td>
+          <td>Identify 8-12 executives from target accounts who share common challenges or interests. Mix prospects and existing customers for credibility. Ensure role and seniority similarity so conversation stays relevant to all</td>
+          <td>2-3 hours research and planning</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Book Appropriate Venue</td>
+          <td>Reserve private dining room at high-quality restaurant. Venue should signal investment without being ostentatious. Private room essential for candid conversation. Test acoustics and layout if possible</td>
+          <td>1-2 hours venue research and booking</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Send Personal Invitations</td>
+          <td>Personalised email or LinkedIn message explaining the format, who else is attending (roles not names for privacy), and conversation topic. Emphasise no-pitch rule. Provide clear RSVP mechanism and logistics</td>
+          <td>30 min per invite, 4-6 hours total</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Prepare Discussion Topics</td>
+          <td>Research each attendee and identify 3-4 meaty topics likely to generate good conversation. Prepare opening questions and follow-up prompts. Brief any co-hosts on facilitation approach</td>
+          <td>2-3 hours prep</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Host the Dinner</td>
+          <td>Facilitate introductions. Set ground rules (Chatham House rules, no pitching). Guide conversation to ensure everyone contributes. Draw out quiet attendees. Keep energy moving between topics. Take mental notes but do not visibly record</td>
+          <td>3 hours event time</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Thoughtful Follow-Up</td>
+          <td>Send personalised thank you within 24 hours referencing specific moments from their contributions. Offer to make introductions between attendees who connected. Share any promised resources. Wait at least a week before any sales follow-up</td>
+          <td>2-3 hours follow-up</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Invite one or two existing happy customers to provide authentic peer perspective. Their willingness to attend signals that you are worth engaging with. Their stories carry more weight than anything you could say.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Venueflip</strong></td>
+          <td>Free</td>
+          <td>Finding and booking private dining rooms</td>
+          <td>Searchable database of private dining spaces with photos, capacity, and booking. Streamlines venue research. Shows pricing upfront so no surprises</td>
+          <td>UK-focused coverage. Limited options in smaller cities. Not all venues listed. Still requires direct contact for final booking</td>
+        </tr>
+        <tr>
+          <td><strong>Luma</strong></td>
+          <td>Free</td>
+          <td>Event invitations and RSVP management</td>
+          <td>Beautiful invite pages that feel premium. Easy RSVP tracking. Automated reminders. Calendar integration. Waitlist management if you oversubscribe</td>
+          <td>Very minimal branding customisation. Public event pages unless you pay for private mode. Cannot heavily customise email templates</td>
+        </tr>
+        <tr>
+          <td><strong>OpenTable</strong></td>
+          <td>Free</td>
+          <td>Restaurant research and standard reservations</td>
+          <td>Extensive restaurant database with reviews, photos, and availability. Good for initial research phase. Shows private dining availability at some venues</td>
+          <td>Private dining bookings usually require phone call. Limited filtering for group size or private rooms. Better for finding options than booking</td>
+        </tr>
+        <tr>
+          <td><strong>Notion or Airtable</strong></td>
+          <td>Free-$20/mo</td>
+          <td>Guest tracking and conversation prep</td>
+          <td>Track guest research, RSVP status, dietary restrictions, conversation topics. Shared with team. Link to CRM records. Template for repeatable dinners</td>
+          <td>Requires manual setup. No automated integrations with booking systems. Still need separate tool for invites</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Use <strong>Venueflip</strong> for venue research, <strong>Luma</strong> for invites and RSVP, <strong>Notion</strong> for guest research and prep tracking. Budget around £150-200 per person for dinner including wine at quality venue.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Guest Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Guest Selection - The Right Mix Matters</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Ideal guest profile</h3>
+            <p>The success of an executive dinner lives or dies on who attends. Wrong mix kills conversation. Right mix creates magic that attendees talk about for months.</p>
+
+            <h3>Selection criteria</h3>
+            <ul>
+              <li><strong>Similar seniority level</strong> - Mix VPs with C-suite and conversation fragments. Directors feel intimidated. Keep within one level maximum</li>
+              <li><strong>Shared challenges</strong> - Guests should face similar problems even if different industries. CFOs discussing scaling finance operations, Sales leaders tackling team growth</li>
+              <li><strong>Non-competitive</strong> - Do not invite direct competitors unless you explicitly want competitive tension. Usually better to keep industries diverse but complementary</li>
+              <li><strong>Strong opinions</strong> - Wallflowers kill dinner energy. Research attendees' thought leadership and look for people who engage, write, speak publicly</li>
+            </ul>
+
+            <h3>Prospect to customer ratio</h3>
+            <table>
+              <tr><th>Mix</th><th>When to Use</th><th>Effect</th></tr>
+              <tr>
+                <td>All prospects</td>
+                <td>New market or early stage</td>
+                <td>Pure peer learning environment. Harder to facilitate without existing customer stories. More pressure on you to guide conversation</td>
+              </tr>
+              <tr>
+                <td>70% prospects, 30% customers</td>
+                <td>Most common mix</td>
+                <td>Customers provide authentic proof points without feeling like plants. Prospects still drive majority of agenda</td>
+              </tr>
+              <tr>
+                <td>50-50 split</td>
+                <td>When you want customer community building</td>
+                <td>Risks feeling too vendor-centric. Works if customers are advocates who enjoy the peer connection itself</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Invitation strategy:</strong> Over-invite by 30%. Expect 20-30% drop-out rate even with confirmed RSVPs. Have waitlist of backup guests. Better to cancel 48 hours out than host dinner with 5 people.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Venue and Logistics sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Venue and Logistics - Details Matter</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Venue selection criteria</h3>
+            <p>Venue sends a signal about how much you value attendees. Too cheap feels insulting. Too flashy feels like you are showing off. Find the balance that says "we invested in making this special."</p>
+
+            <h3>Key venue requirements</h3>
+            <ul>
+              <li><strong>Private room</strong> - Non-negotiable. Open dining room kills candid conversation. Need to discuss challenges without being overheard</li>
+              <li><strong>Round or oval table</strong> - Everyone can see everyone else. No head of table creating hierarchy. Encourages equal participation</li>
+              <li><strong>Good acoustics</strong> - Low ceilings, soft surfaces, reasonable background music. If people must shout to be heard, intimacy dies</li>
+              <li><strong>Attentive but not intrusive service</strong> - Staff who can read the room. Food appears when needed but servers do not interrupt key moments</li>
+            </ul>
+
+            <h3>Logistics checklist</h3>
+            <table>
+              <tr><th>Element</th><th>Best Practice</th><th>Why It Matters</th></tr>
+              <tr>
+                <td>Timing</td>
+                <td>Start at 7pm on Tuesday, Wednesday, or Thursday</td>
+                <td>Monday too soon after weekend. Friday people want to go home. Early enough that dinner finishes by 10pm</td>
+              </tr>
+              <tr>
+                <td>Duration</td>
+                <td>Plan for 2.5-3 hours including arrival drinks</td>
+                <td>Long enough for depth. Short enough people do not check out. Build in buffer time</td>
+              </tr>
+              <tr>
+                <td>Menu</td>
+                <td>Pre-select menu with dietary accommodations</td>
+                <td>Removes ordering friction. Keeps everyone in sync on timing. Shows you thought ahead</td>
+              </tr>
+              <tr>
+                <td>Seating</td>
+                <td>Assign seats with name cards</td>
+                <td>Orchestrate who sits next to whom. Mix company types. Separate anyone likely to dominate conversation</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Budget planning:</strong> Plan £150-250 per person for quality venue with wine. For 10 people expect £1500-2500 total. Do not cheap out - you only get one chance to make the impression.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Facilitation Approach sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Facilitation Approach - How to Guide Without Dominating</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The facilitation mindset</h3>
+            <p>Your job is to make great conversation happen, not to be the star of the conversation. Best dinners are where attendees do 80% of talking and you guide with strategic questions and transitions.</p>
+
+            <h3>Opening the dinner</h3>
+            <ul>
+              <li><strong>Set ground rules upfront</strong> - "Everything shared tonight stays in the room. No pitching - this is peer learning not vendor selling. Please share honestly."</li>
+              <li><strong>Go around for introductions</strong> - Name, role, company, and one current challenge or goal. Establishes vulnerability and gives everyone a voice early</li>
+              <li><strong>Acknowledge the format</strong> - "I have some topics I thought would be interesting but let's go where the energy is. Interrupt me if something else is more valuable."</li>
+            </ul>
+
+            <h3>During the conversation</h3>
+            <table>
+              <tr><th>Scenario</th><th>Facilitation Technique</th><th>Example</th></tr>
+              <tr>
+                <td>Someone dominating</td>
+                <td>Politely redirect</td>
+                <td>"James, that is really interesting. Sarah, I know you have worked on something similar - what was your experience?"</td>
+              </tr>
+              <tr>
+                <td>Quiet participant</td>
+                <td>Directly invite</td>
+                <td>"Sarah, you mentioned during intros you are working on X. How does this relate to what James just described?"</td>
+              </tr>
+              <tr>
+                <td>Conversation stalls</td>
+                <td>Introduce new angle</td>
+                <td>"Shifting gears slightly - how are you thinking about this challenge in context of AI emerging as a factor?"</td>
+              </tr>
+              <tr>
+                <td>Someone pitching</td>
+                <td>Gently deflect</td>
+                <td>"That sounds interesting - happy to connect you two after dinner. For now, let's stay on the theme of how everyone is approaching this."</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>The power of silence:</strong> When you ask a question, let silence hang for 5-10 seconds. Resist urge to fill it. Someone will start talking and often it is the person who most needed to contribute.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Follow-Up Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Follow-Up Strategy - Converting Good Experience to Business</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Immediate follow-up</h3>
+            <p>Strike while memory is fresh but do not be transactional. The dinner built relationship capital - spend it wisely.</p>
+
+            <h3>24-hour follow-up</h3>
+            <ul>
+              <li><strong>Personal thank you email</strong> - Reference specific thing they said or moment from conversation. Make it clear you were paying attention to them specifically</li>
+              <li><strong>Make promised connections</strong> - If you offered to introduce attendees to each other or connect them with resources, do it immediately. Your reliability matters</li>
+              <li><strong>Share relevant content</strong> - If conversation touched on topic where you have useful content, share it with note: "This relates to what we discussed about X."</li>
+            </ul>
+
+            <h3>Sales follow-up timing</h3>
+            <table>
+              <tr><th>Timing</th><th>Approach</th><th>Why</th></tr>
+              <tr>
+                <td>Within 24 hours</td>
+                <td>Avoid</td>
+                <td>Feels transactional and destroys trust you built. They will feel used. Wait longer</td>
+              </tr>
+              <tr>
+                <td>7-10 days after</td>
+                <td>Soft outreach</td>
+                <td>"Really enjoyed our conversation at dinner. Would love to continue discussing how we might help with the challenge you mentioned." Still warm but not pushy</td>
+              </tr>
+              <tr>
+                <td>2-3 weeks after</td>
+                <td>Value-first offer</td>
+                <td>"Been thinking about what you shared at dinner. Would you find it useful if I pulled together analysis of X for Acme specifically?" Lead with value not ask</td>
+              </tr>
+            </table>
+
+            <h3>Long-term nurture</h3>
+            <p>Continue providing value without asking for anything. Share relevant articles. Make useful introductions. Invite to future events. Build relationship over months not days. When they are ready to buy, you will be first call.</p>
+
+            <div class="highlight">
+              <strong>Measurement approach:</strong> Track meetings booked within 90 days of dinner, opportunities created, and deals influenced. Executive dinners rarely create immediate pipeline but often shorten sales cycles dramatically by pre-building trust.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Pitching your product during dinner</h4>
+          <div class="why">Violates the no-pitch promise and makes attendees feel tricked. They came for peer learning and you hijacked it into a sales presentation. Trust destroyed instantly.</div>
+          <div class="fix">Save all selling for follow-up at least a week later. If attendees ask about your product, answer briefly and redirect to peer conversation. Your restraint builds more trust than any pitch could.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Inviting wrong seniority mix</h4>
+          <div class="why">Directors feel intimidated around C-suite and stay quiet. C-suite finds director-level concerns less relevant. Conversation fragments into parallel discussions that exclude people.</div>
+          <div class="fix">Keep within one level maximum. If targeting VPs, invite only VPs and C-suite. If targeting C-suite, do not include directors or managers. Shared seniority creates peer safety.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Choosing loud crowded venue</h4>
+          <div class="why">Background noise forces shouting. Lack of privacy kills candid sharing. People cannot hear each other and give up trying to engage. Dinner becomes endurance test not enjoyable experience.</div>
+          <div class="fix">Always book private room. Visit venue beforehand to test acoustics. Specify music volume limits. Ensure space is sized appropriately - too large feels empty, too small feels cramped.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Not facilitating conversation actively</h4>
+          <div class="why">Without facilitation, loudest person dominates and quiet attendees tune out. Conversation stays superficial or devolves into side chats. Value promised does not materialise.</div>
+          <div class="fix">Come prepared with discussion guide. Actively direct conversation. Draw out quiet participants. Politely redirect dominators. Introduce new angles when energy drops. Your facilitation is key value delivered.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Immediate transactional follow-up</h4>
+          <div class="why">Sending sales pitch within 24 hours makes entire dinner feel like elaborate lead generation scheme. Attendees feel manipulated. Relationship capital squandered.</div>
+          <div class="fix">Wait at least 7-10 days for sales follow-up. Immediate follow-up should be thank you and delivering promised value. Let relationship breathe before making asks.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Skimping on venue quality</h4>
+          <div class="why">Cheap venue signals you do not value their time. Mid-tier restaurant with decent food in non-private space feels like you are cutting corners. Attendees question whether they should have come.</div>
+          <div class="fix">Budget £150-250 per person for quality venue, pre-selected menu, and good wine. This is not place to cut costs. Investment in experience pays back many times in relationship quality.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

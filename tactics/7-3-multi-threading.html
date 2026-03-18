@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 7.3 — Multi-Threading Buying Group | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 7.3 - ABM Plays</div>
+  <h1>Multi-Threading (Buying Group)</h1>
+  <p class="desc">Map the full buying committee at enterprise accounts and run coordinated parallel outreach with role-specific messaging. Enterprise purchases average 11 stakeholders, multi-threading ensures you reach all key decision makers simultaneously rather than relying on a single champion.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: High</span>
+    <span class="tag tag-cost">Cost: Medium</span>
+    <span class="tag tag-icp">ICP: Enterprise Accounts</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Enterprise deals die not from objections but from single-threading. When you rely on one champion to sell internally for you, the deal stalls the moment that person gets busy, changes role, or loses political capital. Multi-threading creates redundancy and direct relationships across the buying committee, dramatically improving close rates.
+      </div>
+      <h3>The psychology behind multi-threading</h3>
+      <ul>
+        <li><strong>Social proof within organisation</strong> - When multiple stakeholders receive tailored outreach simultaneously, they start comparing notes internally. "Did you get that email from James too?" This internal buzz builds momentum</li>
+        <li><strong>FOMO among decision makers</strong> - If the VP of Sales is engaging with you but the CRO has not been contacted, the CRO feels left out of important evaluation. Multi-threading ensures nobody feels excluded from strategic decisions</li>
+        <li><strong>Political insurance</strong> - Enterprise politics are complex. Your champion might have detractors. By building relationships across the committee, you insulate the deal from internal political dynamics</li>
+        <li><strong>Genuine consensus building</strong> - Different stakeholders have different concerns. Finance cares about ROI, Operations cares about implementation, End Users care about usability. Addressing each directly builds true buy-in not just champion enthusiasm</li>
+      </ul>
+      <h3>Why buying committees specifically</h3>
+      <p>B2B enterprise purchases involve an average of 11 stakeholders according to Gartner research. Each stakeholder has veto power but nobody has unilateral approval authority. Your champion can love your solution, but if they cannot get Finance, IT, and Operations aligned, the deal does not happen. Multi-threading gives you direct line to each voice that matters.</p>
+      <p><strong>The amplification effect:</strong> When you engage multiple stakeholders with tailored messaging, you effectively run multiple parallel sales processes that reinforce each other. The VP of Engineering hears about technical benefits while the CFO hears about ROI. Both conclude independently that this makes sense, strengthening overall deal momentum.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">M</div><div class="wf-label">Map Committee</div><div class="wf-action">Org chart</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">I</div><div class="wf-label">Identify 3-5</div><div class="wf-action">Key stakeholders</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">C</div><div class="wf-label">Create Messaging</div><div class="wf-action">Role-specific</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">L</div><div class="wf-label">Launch Parallel</div><div class="wf-action">Sequences</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-phone">C</div><div class="wf-label">Coordinate</div><div class="wf-action">Timing touches</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-video">M</div><div class="wf-label">Meeting</div><div class="wf-action">Consolidate</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Map Buying Committee</td>
+          <td>Use LinkedIn, company website, org chart tools to identify all stakeholders involved in purchase decisions. Typical enterprise committee includes C-suite sponsor, budget owner, technical evaluator, operations lead, and end user representatives</td>
+          <td>45-60 min per account</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Identify 3-5 Key Stakeholders</td>
+          <td>From full committee map, prioritise 3-5 most critical stakeholders for initial outreach. Usually includes economic buyer who controls budget, technical buyer who evaluates solution, and coach or champion who can navigate internal process</td>
+          <td>15 min prioritisation</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Create Role-Specific Messaging</td>
+          <td>Develop customised value propositions for each role. CFO message focuses on ROI and financial impact. CTO message focuses on technical architecture and integration. Operations message focuses on implementation and change management</td>
+          <td>1-2 hours messaging creation</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Launch Parallel Sequences</td>
+          <td>Begin outreach to all 3-5 stakeholders simultaneously or within 24-48 hour window. Each receives sequence tailored to their role but coordinated timing ensures internal conversations happen naturally</td>
+          <td>30 min setup, ongoing touches</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Coordinate Touches</td>
+          <td>Time your touchpoints so stakeholders receive outreach in coordinated waves. When they discuss internally, multiple people have just been contacted creating sense of momentum rather than random one-off outreach</td>
+          <td>Ongoing coordination</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Consolidate to Single Meeting</td>
+          <td>As stakeholders respond, work to consolidate into group discovery call rather than separate 1-on-1 meetings. This ensures alignment from start and prevents information asymmetry across buying committee</td>
+          <td>Meeting scheduling</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> When reaching out to multiple stakeholders, be transparent about it. Mention in your message: "Also reaching out to Sarah in Finance and James in Operations to ensure we address all relevant perspectives." This transparency prevents feeling of going behind anyone's back and actually accelerates internal alignment.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn Sales Navigator</strong></td>
+          <td>£99/mo</td>
+          <td>Mapping buying committees and finding stakeholders</td>
+          <td>Advanced search filters to find decision makers by role and seniority. Org chart view shows reporting relationships. Sales Spotlights highlight job changes and promotions indicating buying committee shifts</td>
+          <td>Limited to LinkedIn data which may not reflect full org structure especially at large enterprises. Some companies restrict employee visibility</td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot CRM</strong></td>
+          <td>Free tier available</td>
+          <td>Tracking multi-stakeholder engagement across account</td>
+          <td>Free CRM tracks all interactions with contacts at an account. View roll-up of engagement across all stakeholders. Sequences for coordinated multi-touch campaigns</td>
+          <td>Free tier lacks advanced ABM features. Paid ABM tools provide better account-level orchestration and insights</td>
+        </tr>
+        <tr>
+          <td><strong>Clay</strong></td>
+          <td>Varies by usage</td>
+          <td>Enriching stakeholder data and finding contact information</td>
+          <td>Waterfall enrichment finds emails and phone numbers for stakeholders you have identified. Integration with multiple data providers maximises coverage. Automate stakeholder research at scale</td>
+          <td>Requires some technical comfort to set up workflows. Data quality varies by provider. May need multiple data sources for complete coverage</td>
+        </tr>
+        <tr>
+          <td><strong>Org Chart Tools</strong></td>
+          <td>Varies</td>
+          <td>Visualising reporting structure and influence</td>
+          <td>Tools like OrgChartHub or The Org map company hierarchies visually. Identify who reports to whom and spot key influencers based on position. Some provide crowd-sourced org data not publicly visible</td>
+          <td>Data freshness varies. Enterprise org structures change frequently. May be incomplete for private companies or specific divisions</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>LinkedIn Sales Navigator</strong> (£99/mo) for committee mapping combined with <strong>HubSpot Free CRM</strong> for tracking engagement. Once you have proven multi-threading improves close rates, add <strong>Clay</strong> for data enrichment and contact discovery to scale the approach across more accounts.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Committee Mapping sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Committee Mapping - Identify All Key Roles</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Typical enterprise buying committee roles</h3>
+            <p>Enterprise software purchases typically involve 6-12 stakeholders across multiple functions. Understanding standard buying committee roles helps you systematically identify who needs to be included rather than accidentally missing critical stakeholders.</p>
+
+            <h3>Standard buying committee personas</h3>
+            <table>
+              <tr><th>Role</th><th>Typical Title</th><th>Primary Concern</th><th>Influence Type</th></tr>
+              <tr>
+                <td><strong>Economic Buyer</strong></td>
+                <td>CFO, VP Finance, Budget Owner</td>
+                <td>ROI, budget impact, contract terms</td>
+                <td>Final approval authority on spend. Can kill deal but rarely champions alone</td>
+              </tr>
+              <tr>
+                <td><strong>Executive Sponsor</strong></td>
+                <td>CXO level, VP reporting to C-suite</td>
+                <td>Strategic alignment, organisational impact</td>
+                <td>Political air cover. Protects deal from internal objections. Essential for large strategic purchases</td>
+              </tr>
+              <tr>
+                <td><strong>Technical Buyer</strong></td>
+                <td>CTO, VP Engineering, IT Director</td>
+                <td>Technical feasibility, security, integration</td>
+                <td>Veto power on technical grounds. Must approve architecture and security. Can block if not satisfied</td>
+              </tr>
+              <tr>
+                <td><strong>Champion/Coach</strong></td>
+                <td>Manager, Director, Department Head</td>
+                <td>Solving their specific pain, looking good internally</td>
+                <td>Internal advocate who sells for you. Navigates politics and builds consensus. Most deals have a champion</td>
+              </tr>
+              <tr>
+                <td><strong>End User Representative</strong></td>
+                <td>Team Lead, Power User, Department Rep</td>
+                <td>Usability, day-to-day workflow impact</td>
+                <td>User adoption risk. If end users push back, implementation fails even if deal closes</td>
+              </tr>
+              <tr>
+                <td><strong>Operations/Implementation</strong></td>
+                <td>RevOps, IT Operations, Change Management</td>
+                <td>Implementation complexity, change management, support burden</td>
+                <td>Can slow or block deal based on implementation concerns. Critical for successful deployment</td>
+              </tr>
+            </table>
+
+            <h3>Research tactics to map committee</h3>
+            <ul>
+              <li><strong>LinkedIn org search</strong> - Search company name plus job title keywords like "finance director," "engineering vp," "operations lead" to identify stakeholders</li>
+              <li><strong>Company website</strong> - Leadership page and team pages often list key decision makers with bios and contact information</li>
+              <li><strong>Ask your champion</strong> - Once you have one engaged contact, ask directly: "Who else should be involved in evaluating this?" Most champions will map the committee for you</li>
+              <li><strong>Past deal patterns</strong> - Look at closed deals at similar companies. Which roles were involved? Use past patterns to predict current committee composition</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Completeness check:</strong> If your mapped buying committee has fewer than 5 people for an enterprise deal, you probably have not found everyone. Keep researching. Missing stakeholders appear late in the process and derail deals.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Role-Specific Messaging sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Role-Specific Messaging - Different Roles Different Value Props</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why one message to all stakeholders fails</h3>
+            <p>The CFO does not care about API architecture. The CTO does not care about finance team approval workflows. The Operations lead does not care about board-level strategy. Generic messaging that tries to appeal to everyone ends up resonating with nobody. Role-specific messaging acknowledges each stakeholder's unique priorities.</p>
+
+            <h3>Messaging frameworks by role</h3>
+            <table>
+              <tr><th>Stakeholder Role</th><th>Message Focus</th><th>Proof Points to Include</th></tr>
+              <tr>
+                <td>CFO / Finance</td>
+                <td>ROI, payback period, budget efficiency, cost savings vs current approach</td>
+                <td>Customer ROI data, TCO analysis, payback timeline, efficiency gains from similar companies</td>
+              </tr>
+              <tr>
+                <td>CTO / Technical</td>
+                <td>Architecture, security, scalability, integration complexity, technical risk</td>
+                <td>Technical architecture docs, security certifications, integration examples, uptime SLAs</td>
+              </tr>
+              <tr>
+                <td>Executive Sponsor</td>
+                <td>Strategic alignment, competitive advantage, transformation impact, organisational change</td>
+                <td>Executive case studies, industry analyst reports, strategic outcomes from peer companies</td>
+              </tr>
+              <tr>
+                <td>Operations</td>
+                <td>Implementation timeline, change management, training requirements, support model</td>
+                <td>Implementation case studies, typical timelines, training programmes, support SLAs</td>
+              </tr>
+              <tr>
+                <td>End Users</td>
+                <td>Ease of use, daily workflow improvements, time savings, reduced manual work</td>
+                <td>Product demos, user testimonials, before-after workflow comparisons, training resources</td>
+              </tr>
+            </table>
+
+            <h3>Example message variations</h3>
+            <p><strong>To CFO:</strong> "Sarah, companies like Acme typically see 3-to-1 ROI within first year by reducing manual finance reconciliation time. Happy to walk through the business case."</p>
+            <p><strong>To CTO:</strong> "James, wanted to share how Acme could leverage your existing Salesforce and Snowflake investments through our native integrations. No rip-and-replace required."</p>
+            <p><strong>To Operations Lead:</strong> "Noticed Acme is scaling quickly. Our typical implementation takes 6 weeks with minimal disruption. Happy to share how similar companies managed the change."</p>
+
+            <div class="highlight">
+              <strong>Consistency requirement:</strong> While messaging must be tailored by role, core positioning and benefits should remain consistent. Stakeholders will compare notes. If you tell Finance one thing and Engineering something contradictory, you lose credibility across the committee.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timing Coordination sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Timing Coordination - Synchronise Touchpoints</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why timing matters for multi-threading</h3>
+            <p>If you contact the CFO in January and the CTO in March, they have no reason to connect your outreach internally. When multiple stakeholders receive tailored outreach within the same week, they naturally discuss it with each other, creating organic internal momentum and making your company a topic of conversation in executive meetings.</p>
+
+            <h3>Coordination strategies</h3>
+            <ul>
+              <li><strong>Launch window approach</strong> - Send initial outreach to all 3-5 key stakeholders within 48-hour window. Tight enough timing that they compare notes, loose enough that it does not feel like spam</li>
+              <li><strong>Wave sequencing</strong> - Launch Wave 1 to primary stakeholders on Monday. If no response by Wednesday, launch Wave 2 to secondary stakeholders. Creates multiple chances for internal conversation</li>
+              <li><strong>Event-triggered coordination</strong> - When one stakeholder engages such as replying or taking a meeting, use that as trigger to reach back out to other stakeholders with updated message referencing the engagement</li>
+              <li><strong>Campaign themes</strong> - Use consistent theme or hook across messages to different stakeholders so when they compare, the coordination is obvious and intentional not accidental</li>
+            </ul>
+
+            <h3>Transparency in timing</h3>
+            <p>Be explicit about your multi-stakeholder approach. In your messages, mention that you are also reaching out to other relevant stakeholders. This transparency prevents concerns about going behind anyone's back and actually accelerates internal alignment.</p>
+            <p><strong>Example transparent language:</strong> "Sarah, given this impacts both Finance and Operations, I am also reaching out to James in your Ops team to ensure we address all relevant considerations. Happy to coordinate a joint conversation if that would be more efficient."</p>
+
+            <div class="highlight">
+              <strong>Calendar coordination tip:</strong> When multiple stakeholders respond positively, immediately suggest group discovery call rather than separate 1-on-1 meetings. "Would it make sense to get you, James, and Sarah together for 30 minutes rather than three separate calls?" This consolidates your selling effort and ensures alignment from the start.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Champion vs Committee sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Champion vs Committee - Do Not Ignore Your Champion</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The champion relationship dynamic</h3>
+            <p>Multi-threading does not mean abandoning your champion or going around them. Your champion is still critical for navigating internal politics and driving consensus. Multi-threading supplements and strengthens the champion relationship by building supporting relationships that reduce pressure on your champion to sell alone.</p>
+
+            <h3>How to multi-thread without alienating champion</h3>
+            <ul>
+              <li><strong>Inform before action</strong> - Tell your champion before reaching out to other stakeholders: "I would like to connect with Sarah in Finance to address any budget questions. Does that make sense? Anyone else I should include?"</li>
+              <li><strong>Position as support</strong> - Frame multi-threading as helping your champion succeed: "I want to make sure you have all the internal support you need. Let me handle the technical conversation with James so you do not have to."</li>
+              <li><strong>Share insights back</strong> - When other stakeholders engage, loop your champion in on what you learned: "Spoke with James. He is concerned about implementation timeline. Thought you should know so we can address it together."</li>
+              <li><strong>Champion stays primary</strong> - Your champion should still be your main point of contact and strategic advisor. Other relationships are important but supplementary</li>
+            </ul>
+
+            <h3>When champion resists multi-threading</h3>
+            <p>Some champions resist your attempts to engage other stakeholders, either from insecurity or desire to control the process. This is actually a red flag. True champions with political capital are confident having you engage other stakeholders. Resistance often signals the champion lacks influence to drive the deal.</p>
+            <table>
+              <tr><th>Champion Response</th><th>What It Signals</th><th>How to Handle</th></tr>
+              <tr>
+                <td>"Let me handle internal coordination"</td>
+                <td>Possible insecurity or limited influence</td>
+                <td>Probe gently: "Who else will need to approve this decision? Happy to support those conversations however helpful."</td>
+              </tr>
+              <tr>
+                <td>"You should not contact anyone without my approval"</td>
+                <td>Control issues or fear of exposure</td>
+                <td>Respect boundaries but qualify deal risk: "Help me understand the approval process. Who has veto power?"</td>
+              </tr>
+              <tr>
+                <td>"Sure, let me introduce you to X and Y"</td>
+                <td>Healthy champion with real influence</td>
+                <td>Ideal scenario. Leverage champion introductions to build additional relationships</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Risk mitigation:</strong> If your champion blocks all attempts at multi-threading and you cannot get access to other stakeholders, the deal is at high risk. Champion-only deals have much lower close rates and longer sales cycles. Consider whether to invest further or prioritise other opportunities.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Same message to all stakeholders</h4>
+          <div class="why">Sending identical generic message to CFO, CTO, and Operations Lead shows you have not thought about their individual priorities. Everyone ignores it.</div>
+          <div class="fix">Create role-specific messaging addressing each stakeholder's unique concerns. CFO gets ROI message, CTO gets technical architecture message, Operations gets implementation message. Tailor every outreach.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Not mapping the full committee upfront</h4>
+          <div class="why">You engage one or two people then discover late in sales cycle that there are five other stakeholders with veto power you never contacted. Deal stalls or dies.</div>
+          <div class="fix">Invest time upfront mapping full buying committee before first outreach. Identify 6-10 potential stakeholders across functions. Prioritise 3-5 for initial outreach but know who else exists.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Reaching only one person - single threading</h4>
+          <div class="why">You find a champion and stop there. Champion gets busy, leaves company, or loses political capital. Deal dies with them because you have no other relationships.</div>
+          <div class="fix">Always build relationships with at least 3 stakeholders minimum at enterprise accounts. Champion plus two others. Creates redundancy and insulates deal from single point of failure.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Not coordinating timing of touches</h4>
+          <div class="why">You contact CFO in January, CTO in March, Operations in May. Random uncoordinated timing means stakeholders never discuss your outreach internally. No momentum builds.</div>
+          <div class="fix">Synchronise initial outreach to all key stakeholders within 48-hour window. Creates natural internal conversation. Follow-up touches should also be coordinated in waves.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Ignoring champions at mid-level</h4>
+          <div class="why">You only target C-suite and VP-level stakeholders, ignoring Director or Manager-level champions who often drive deals from within. Miss key advocates.</div>
+          <div class="fix">Include mid-level stakeholders who will be daily users or implementation leads. They often have strong influence on decision and can champion effectively despite not being C-suite.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Going around champion without communication</h4>
+          <div class="why">You reach out to other stakeholders without telling your champion. Champion feels blindsided and loses trust in you. Relationship damaged.</div>
+          <div class="fix">Always inform champion before multi-threading. Position it as supporting them not going around them. Get their input on who to contact and how. Make them ally in multi-threading not victim.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

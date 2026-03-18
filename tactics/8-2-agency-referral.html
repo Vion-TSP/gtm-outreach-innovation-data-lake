@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 8.2 — Agency Referral Programme | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 8.2 - Partnerships & Ecosystem</div>
+  <h1>Agency Referral Programme</h1>
+  <p class="desc">Build a structured referral programme with complementary agencies and consultancies who serve your ICP. Create mutual incentives, standardise onboarding, track referrals transparently, and leverage their client relationships for warm introductions to qualified prospects.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low plus commissions</span>
+    <span class="tag tag-icp">ICP: Founders, C-suite Decision Makers</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Agencies and consultancies already have trusted relationships with your ideal customers. A referral from a trusted advisor carries infinitely more weight than a cold outreach message. By building structured partnerships with agencies serving your ICP, you tap into pre-existing trust and credibility.
+      </div>
+      <h3>The psychology behind agency referrals</h3>
+      <ul>
+        <li><strong>Trust transfer</strong> - When an agency refers your solution, their client views you through the lens of that established trust. You inherit credibility immediately rather than building it from scratch</li>
+        <li><strong>Framing authority</strong> - Agencies position themselves as experts who recommend best-in-class solutions. Their endorsement frames you as the obvious choice before you even speak to the prospect</li>
+        <li><strong>Problem awareness</strong> - Agencies typically refer you when they have identified a specific problem their client needs solved. The prospect is already problem-aware and solution-seeking, not cold and uninterested</li>
+        <li><strong>Mutual incentives</strong> - Financial incentives align agency interests with yours. They make money by helping you close deals, creating motivation to actively promote your solution rather than passively mentioning it</li>
+      </ul>
+      <h3>Why agencies want to refer</h3>
+      <p>Agencies face constant pressure to demonstrate value to clients. By referring complementary solutions that solve client problems, they strengthen their own client relationships while generating additional revenue. The best agency partners view referrals as a core part of their value proposition, not a side activity.</p>
+      <p><strong>The compounding effect:</strong> Each successful referral that delivers results strengthens the agency's confidence in your solution. They refer more actively and with stronger endorsements. Over time, top agency partners can become your most consistent lead source.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Identify</div><div class="wf-action">Target agencies</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">O</div><div class="wf-label">Outreach</div><div class="wf-action">Partnership pitch</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">S</div><div class="wf-label">Structure</div><div class="wf-action">Terms + incentives</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">E</div><div class="wf-label">Enable</div><div class="wf-action">Onboard partner</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">T</div><div class="wf-label">Track</div><div class="wf-action">Referrals portal</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">N</div><div class="wf-label">Nurture</div><div class="wf-action">Partner comms</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify Target Agencies</td>
+          <td>Research agencies and consultancies serving your ICP. Look for those offering complementary services who work with clients at your target company size and industry. Create list of 20-30 potential partners</td>
+          <td>2-3 hours research</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Outreach to Partners</td>
+          <td>Contact agency principals or partnership leads. Explain your solution, ideal referral profile, and why partnership makes sense for their clients. Focus on value they can offer clients, not just commissions they will earn</td>
+          <td>30 min per partner</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Structure Partnership Terms</td>
+          <td>Define commission structure, payment terms, referral criteria, and exclusivity if applicable. Document everything in simple partnership agreement. Make terms attractive but sustainable for your unit economics</td>
+          <td>2-3 hours drafting terms</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Enable Partners</td>
+          <td>Onboard agency teams with product training, client case studies, positioning guidance, and referral process. Provide partner portal access and marketing assets. Make it easy for them to refer with confidence</td>
+          <td>1-2 hours per partner onboarding</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Track Referrals Transparently</td>
+          <td>Implement partner portal or tracking system where agencies can submit referrals, monitor deal progress, and see commission status. Transparency builds trust and encourages more referrals</td>
+          <td>4-6 hours initial setup</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Nurture Partner Relationships</td>
+          <td>Regular partner communications with product updates, success stories, and performance feedback. Quarterly business reviews with top partners. Recognition programme for highest performers</td>
+          <td>1-2 hours monthly ongoing</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Start with 3-5 pilot partners rather than launching to 30 at once. Refine your onboarding, tracking, and communication processes with the pilot group before scaling. Learn what partner enablement content actually drives referrals versus what sits unused.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>PartnerStack</strong></td>
+          <td>$$</td>
+          <td>Scaling partner programmes with many agencies</td>
+          <td>Purpose-built partner portal with referral tracking, commission automation, partner onboarding workflows, and performance analytics. White-label portal reflects your brand</td>
+          <td>Cost scales with partner count and referral volume. Overkill for programmes with fewer than 10 active partners. Monthly minimum commitment required</td>
+        </tr>
+        <tr>
+          <td><strong>FirstPromoter</strong></td>
+          <td>$</td>
+          <td>Early-stage programmes needing basic tracking</td>
+          <td>Affordable partner tracking with unique referral links, commission calculation, and partner dashboard. Integrates with Stripe for automatic commission payouts. Simple setup</td>
+          <td>Limited customisation of partner experience. Basic reporting compared to enterprise solutions. Better for affiliate-style programmes than complex B2B partnerships</td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot Deals + Custom Objects</strong></td>
+          <td>$ (if already using HubSpot)</td>
+          <td>Companies already on HubSpot wanting to track in existing CRM</td>
+          <td>Create custom partner object in HubSpot, track referrals as deals with partner association, build partner-facing reports. Keeps everything in one system. Workflow automation for partner notifications</td>
+          <td>Requires manual setup and configuration. No built-in partner portal, so partners rely on email updates. More internal-facing than partner-facing tool</td>
+        </tr>
+        <tr>
+          <td><strong>Google Sheets + Forms</strong></td>
+          <td>Free</td>
+          <td>Testing concept with 1-3 pilot partners</td>
+          <td>Simple Google Form for referral submission, Sheet for tracking, manual commission calculation. Zero cost to validate demand before investing in dedicated tools</td>
+          <td>Completely manual process that does not scale. No automation, no partner visibility into deal progress, high admin overhead. Only viable for initial pilot phase</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Google Sheets plus Forms</strong> (free) for first 3 pilot partners. Once you have validated that agencies will actively refer, move to <strong>FirstPromoter</strong> for programmes under 20 partners or <strong>PartnerStack</strong> if scaling beyond that with serious investment in channel partnerships.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Partner Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Partner Selection - Quality Over Quantity</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Identify complementary agencies</h3>
+            <p>Not all agencies make good referral partners. Focus on those serving your exact ICP with complementary services where your solution fills a gap in their offering. A marketing agency that builds websites but does not offer SEO services might naturally refer SEO tools. A management consultancy might refer implementation software.</p>
+
+            <h3>Agency partner criteria</h3>
+            <ul>
+              <li><strong>ICP alignment</strong> - Do they work with companies at your target size, industry, and maturity stage? An agency serving enterprise will not refer tools for startups</li>
+              <li><strong>Complementary services</strong> - Does your solution enhance their service delivery without competing? You want to make their work easier, not threaten their revenue</li>
+              <li><strong>Client retention focus</strong> - Agencies with long-term client relationships are more valuable than project-based shops. Recurring client bases mean recurring referral opportunities</li>
+              <li><strong>Growth stage</strong> - Mid-sized agencies with 10-50 clients are often ideal. Large agencies move slowly, tiny agencies lack volume. Mid-sized shops have enough clients to matter but are nimble enough to act</li>
+            </ul>
+
+            <h3>Where to find potential partners</h3>
+            <table>
+              <tr><th>Source</th><th>How to Use It</th><th>What to Look For</th></tr>
+              <tr>
+                <td>Agency directories</td>
+                <td>Clutch, G2 Partner listings, industry association directories</td>
+                <td>Filter by client reviews, expertise areas, typical client size, and industry focus</td>
+              </tr>
+              <tr>
+                <td>LinkedIn</td>
+                <td>Search for agency principals commenting on topics relevant to your solution</td>
+                <td>Thought leaders already discussing problems your solution solves are natural advocates</td>
+              </tr>
+              <tr>
+                <td>Customer conversations</td>
+                <td>Ask existing customers which agencies they work with</td>
+                <td>Agencies already working with your customers understand your value and can vouch for results</td>
+              </tr>
+              <tr>
+                <td>Conference exhibitor lists</td>
+                <td>Industry conferences where agencies exhibit often serve your ICP</td>
+                <td>Agencies investing in exhibiting are serious about growth and partnerships</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Qualification tip:</strong> Before formal partnership discussions, research their client portfolio. If they list clients on their website, check whether those companies fit your ICP. No point building partnership with agency whose clients will never buy your solution.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Commission Structure sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Commission Structure - Align Incentives</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Design sustainable commission models</h3>
+            <p>Commission structure must be attractive enough to motivate active referrals but sustainable for your economics. Too low and partners will not prioritise you. Too high and you destroy your unit economics. The right structure balances both.</p>
+
+            <h3>Common commission models</h3>
+            <ul>
+              <li><strong>Flat fee per closed deal</strong> - Simple and predictable. Works well for lower-value transactions. Partner earns fixed amount regardless of deal size</li>
+              <li><strong>Percentage of first-year revenue</strong> - Scales with deal value. Common for SaaS subscriptions. Aligns partner incentives with larger deals</li>
+              <li><strong>Recurring revenue share</strong> - Partner earns percentage of subscription revenue for lifetime of customer. Highest motivation but requires careful calculation of lifetime value</li>
+              <li><strong>Tiered structure</strong> - Higher commission rates after partner refers a certain number of deals. Rewards top performers and encourages volume</li>
+            </ul>
+
+            <h3>Benchmark commission rates</h3>
+            <table>
+              <tr><th>Model Type</th><th>Typical Rate</th><th>Best Use Case</th></tr>
+              <tr>
+                <td>Flat fee</td>
+                <td>£500 to £2000 per deal</td>
+                <td>Products with predictable deal sizes and shorter sales cycles</td>
+              </tr>
+              <tr>
+                <td>Percentage first year</td>
+                <td>10-20% of first year contract value</td>
+                <td>SaaS products with annual contracts where customer lifetime value is understood</td>
+              </tr>
+              <tr>
+                <td>Recurring share</td>
+                <td>5-10% of monthly recurring revenue for 12-24 months</td>
+                <td>High-value, long-term customers where partner relationship is ongoing</td>
+              </tr>
+              <tr>
+                <td>Tiered percentage</td>
+                <td>10% for first 3 deals, 15% for next 7, 20% beyond 10</td>
+                <td>When building long-term partnerships and rewarding volume referrers</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Payment terms matter:</strong> Pay commissions within 30 days of customer payment, not contract signing. This protects you from paying on deals that never convert to revenue. Communicate payment timeline clearly upfront to manage partner expectations.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Partner Enablement sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Partner Enablement - Make Referrals Easy</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Equip partners to sell with confidence</h3>
+            <p>Agencies will not actively refer solutions they do not fully understand or trust. Comprehensive enablement transforms passive partners who occasionally mention you into active advocates who proactively identify referral opportunities and pitch your solution confidently.</p>
+
+            <h3>Essential enablement materials</h3>
+            <ul>
+              <li><strong>Product overview deck</strong> - 10-15 slides covering what you do, who you serve, key features, and typical outcomes. Agencies can use this internally or with clients</li>
+              <li><strong>Ideal referral profile</strong> - One-page document describing perfect referral including company size, industry, current pain points, and buying signals. Helps partners spot opportunities</li>
+              <li><strong>Case studies library</strong> - 3-5 detailed case studies showing before and after scenarios. Partners use these to demonstrate value to their clients</li>
+              <li><strong>Referral process guide</strong> - Step-by-step walkthrough of how to submit referral, what happens next, typical timeline, and when they get paid. Reduces friction and uncertainty</li>
+              <li><strong>FAQ document</strong> - Answers to common questions partners hear from clients such as pricing structure, implementation timeline, integrations available, and support model</li>
+            </ul>
+
+            <h3>Onboarding checklist</h3>
+            <table>
+              <tr><th>Onboarding Activity</th><th>Purpose</th><th>Duration</th></tr>
+              <tr>
+                <td>Kickoff call</td>
+                <td>Introduce partnership, align on goals, answer initial questions</td>
+                <td>30 min</td>
+              </tr>
+              <tr>
+                <td>Product demo</td>
+                <td>Hands-on walkthrough of platform and key use cases</td>
+                <td>45 min</td>
+              </tr>
+              <tr>
+                <td>Materials walkthrough</td>
+                <td>Tour of partner portal, enablement assets, referral process</td>
+                <td>20 min</td>
+              </tr>
+              <tr>
+                <td>First referral dry run</td>
+                <td>Practice submitting a hypothetical referral to test process</td>
+                <td>15 min</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Ongoing enablement:</strong> Partner enablement is not one-and-done. Send quarterly product updates highlighting new features that create referral opportunities. Share success stories showing how referred customers achieved results. Keep your solution top of mind.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Relationship Management sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Relationship Management - Nurture Top Partners</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Invest in high performers</h3>
+            <p>Partner performance follows power law distribution. A small number of agencies will drive majority of referrals. Identify these top performers early and invest disproportionately in strengthening those relationships. One great partner is worth ten mediocre ones.</p>
+
+            <h3>Partner communication cadence</h3>
+            <ul>
+              <li><strong>Monthly partner newsletter</strong> - Brief update on product news, customer wins, and upcoming opportunities. Keep partners informed without overwhelming them</li>
+              <li><strong>Quarterly business reviews with top partners</strong> - 30-minute call reviewing referrals generated, deals closed, commissions paid, and opportunities ahead. Show appreciation and discuss how to increase referrals</li>
+              <li><strong>Ad-hoc updates on referred deals</strong> - Email partners when their referred prospect moves through pipeline stages. Transparency builds trust and keeps them engaged</li>
+              <li><strong>Annual partner summit</strong> - If you have 10 plus active partners, consider hosting annual event for networking, product roadmap preview, and recognition awards</li>
+            </ul>
+
+            <h3>Recognition and rewards</h3>
+            <table>
+              <tr><th>Recognition Type</th><th>When to Use</th><th>Impact</th></tr>
+              <tr>
+                <td>Public shoutout</td>
+                <td>Partner refers first successful customer</td>
+                <td>Social recognition motivates continued referrals and attracts other potential partners</td>
+              </tr>
+              <tr>
+                <td>Partner of the quarter</td>
+                <td>Highest referrals or deal value in quarter</td>
+                <td>Creates friendly competition and highlights top performers as role models</td>
+              </tr>
+              <tr>
+                <td>Co-marketing opportunity</td>
+                <td>Partner generates 5 plus closed deals</td>
+                <td>Joint case study, webinar, or content strengthens partnership and gives them marketing value</td>
+              </tr>
+              <tr>
+                <td>Exclusive early access</td>
+                <td>Top-tier partners get preview of new features</td>
+                <td>Makes partners feel valued and gives them competitive edge with their clients</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Red flag watch:</strong> If a partner submits multiple referrals that do not convert or sends prospects who are not qualified, address it quickly. Have honest conversation about ideal referral profile. Do not let poor fit referrals damage relationship with unqualified leads.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Launching to too many partners at once</h4>
+          <div class="why">Recruiting 30 agency partners sounds impressive but you cannot properly enable and support that many simultaneously. Most become inactive immediately.</div>
+          <div class="fix">Start with 3-5 pilot partners. Build relationship depth, refine your enablement and tracking, learn what drives referrals. Scale to more partners only after proving model works.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Inadequate partner enablement</h4>
+          <div class="why">Handing agencies a partner login and expecting referrals without training or materials. Partners do not understand your solution well enough to confidently refer it.</div>
+          <div class="fix">Invest in comprehensive onboarding including product training, case studies, referral criteria guide, and ongoing communications. Make it easy for them to refer with confidence.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Opaque referral tracking</h4>
+          <div class="why">Partners submit referrals then hear nothing. No visibility into deal progress or commission status. Trust erodes and referrals stop.</div>
+          <div class="fix">Implement partner portal or regular email updates showing exactly where their referrals stand in pipeline. Transparency on deal stage and expected commission builds trust.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Commission structure too complex</h4>
+          <div class="why">Multi-tier commission tables with different rates for different product tiers and deal sizes. Partners cannot quickly calculate what they will earn so they disengage.</div>
+          <div class="fix">Keep commission structure simple. Flat percentage or fixed fee that is easy to understand. Partners should be able to calculate earnings in their head.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Treating all partners equally</h4>
+          <div class="why">Spreading attention evenly across 20 partners when 2 of them drive 80 percent of referrals. High performers feel undervalued and reduce activity.</div>
+          <div class="fix">Identify top performers and invest more in those relationships. Quarterly business reviews, co-marketing opportunities, exclusive previews. Reward performance.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. No feedback loop on referral quality</h4>
+          <div class="why">Accepting all referrals without communicating whether they are good fit. Partners keep sending unqualified prospects, wasting everyone's time.</div>
+          <div class="fix">Provide specific feedback on each referral. If prospect is not good fit, explain why and refine ideal referral profile with partner. Help them get better at identifying right opportunities.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

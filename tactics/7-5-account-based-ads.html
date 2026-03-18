@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 7.5 — Account-Based Advertising | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 7.5 - ABM Plays</div>
+  <h1>Account-Based Advertising</h1>
+  <p class="desc">Run LinkedIn and display ads targeted specifically at employees of high-value target accounts. Reach entire buying committee with coordinated messaging while sales team conducts direct outreach, creating multi-channel touchpoint strategy that builds awareness and credibility.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Medium-High</span>
+    <span class="tag tag-icp">ICP: All Buying Committee Members</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Cold outreach feels cold when it is the first time someone has heard of you. Account-based ads warm up target accounts before direct outreach, creating familiarity and credibility. When your sales team reaches out, prospects think "I have been seeing them everywhere" rather than "who is this random person?"
+      </div>
+      <h3>The psychology behind account-based ads</h3>
+      <ul>
+        <li><strong>Mere exposure effect</strong> - People prefer things they have seen before. When prospects see your ads for weeks before getting your email, you feel familiar rather than unknown. Familiarity breeds trust</li>
+        <li><strong>Social proof amplification</strong> - Seeing ads for a company signals that company has resources and legitimacy. Startups nobody heard of do not run ads. Established players do. Ads create perception of stability and market presence</li>
+        <li><strong>Omnichannel reinforcement</strong> - Seeing your message on LinkedIn ads, display ads, and sales emails creates pattern recognition. Message must be important if coming from multiple channels. Single channel outreach is easier to ignore</li>
+        <li><strong>Reaching silent stakeholders</strong> - Sales team cannot easily email entire buying committee. Ads reach all employees including influencers you do not know about yet. Coverage across full organisation not just known contacts</li>
+      </ul>
+      <h3>Why advertising specifically for ABM</h3>
+      <p>Traditional advertising targets broad audiences hoping some convert. Account-based advertising flips this, targeting only employees at your top 20-50 target accounts. Zero budget waste on irrelevant audiences. Every impression goes to someone you want to reach. ROI improves dramatically when targeting is this precise.</p>
+      <p><strong>The surround-sound strategy:</strong> Account-based ads work best combined with direct sales outreach, not as replacement for it. Ads create ambient awareness. Sales creates direct engagement. Together they build momentum faster than either alone.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">D</div><div class="wf-label">Define List</div><div class="wf-action">Target accounts</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">U</div><div class="wf-label">Upload</div><div class="wf-action">To ad platform</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">C</div><div class="wf-label">Create Creative</div><div class="wf-action">Role-specific</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">R</div><div class="wf-label">Run Campaigns</div><div class="wf-action">Multi-week</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-phone">M</div><div class="wf-label">Monitor</div><div class="wf-action">Account engagement</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-email">C</div><div class="wf-label">Coordinate</div><div class="wf-action">With sales outreach</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Define Target Account List</td>
+          <td>Create list of 20-50 target accounts for advertising. More than 50 dilutes budget too thin. Fewer than 20 may not provide enough volume for effective frequency. Focus on accounts with active sales engagement or high strategic value</td>
+          <td>30 min account selection</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Upload to Ad Platform</td>
+          <td>Upload company names to LinkedIn Campaign Manager or ABM platform like RollWorks. Platform matches to employee profiles. LinkedIn requires minimum list size but most ABM platforms accept smaller lists. Verify match rates before launching</td>
+          <td>15-30 min upload and verification</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Create Role-Specific Creative</td>
+          <td>Develop 3-5 ad variations with messaging tailored to different roles. Executive-focused ads about business outcomes. Technical ads about architecture and integration. Operations ads about implementation. Test multiple messages to see what resonates</td>
+          <td>2-4 hours creative development</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Run Campaigns</td>
+          <td>Launch campaigns targeting your account list. Set appropriate frequency caps to avoid annoying prospects with too many impressions. Run for minimum 4-6 weeks to build sufficient awareness. Budget depends on list size and platform</td>
+          <td>30 min setup, ongoing management</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Monitor Account Engagement</td>
+          <td>Track engagement at account level not just individual clicks. Are employees at target accounts seeing ads? Which accounts show highest engagement? Use account-level metrics to prioritise sales follow-up</td>
+          <td>15 min weekly monitoring</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Coordinate with Sales Outreach</td>
+          <td>Time direct sales outreach to begin 2-3 weeks after ads launch. This gives prospects time to see ads multiple times before receiving cold outreach. Coordinate messaging between ads and emails for consistency</td>
+          <td>Ongoing coordination</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Use retargeting to show different ad creative to people who engaged with initial ads. First-time viewers see awareness-stage messaging. People who clicked get consideration-stage messaging like case studies or ROI content. Sequential messaging moves prospects through journey.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn Campaign Manager</strong></td>
+          <td>Self-serve</td>
+          <td>Targeting B2B professionals by company and role</td>
+          <td>Native LinkedIn advertising platform. Target by company name plus job title, seniority, function. Reach decision makers where they are professionally active. Good account-level reporting</td>
+          <td>Expensive CPM compared to other platforms. Requires minimum list size for account targeting. Limited creative formats compared to display networks</td>
+        </tr>
+        <tr>
+          <td><strong>RollWorks</strong></td>
+          <td>£975/mo minimum</td>
+          <td>Multi-channel ABM advertising across web</td>
+          <td>Display ads across web targeting specific companies via IP matching. Reaches target accounts wherever they browse online. Account-level analytics showing engagement across buying committee. Integrates with CRM</td>
+          <td>High cost for small teams. Requires annual contract. IP targeting less precise than LinkedIn profile matching. Can show ads to guest wifi users not actual employees</td>
+        </tr>
+        <tr>
+          <td><strong>Terminus</strong></td>
+          <td>$$$</td>
+          <td>Enterprise ABM platform with advertising component</td>
+          <td>Full ABM platform including advertising, web personalisation, and analytics. Multi-channel campaigns across display, social, and video. Strong reporting on account engagement and pipeline influence</td>
+          <td>Expensive enterprise pricing. Requires significant investment beyond just ad spend. Better suited for mature ABM programmes not testing approach</td>
+        </tr>
+        <tr>
+          <td><strong>Demandbase</strong></td>
+          <td>$$$</td>
+          <td>Account intelligence and advertising combined</td>
+          <td>Combines account identification, intent data, and advertising in single platform. Shows which accounts are in-market based on behaviour. Targets ads to accounts showing buying signals</td>
+          <td>Complex platform with steep learning curve. Enterprise pricing. Overkill for simple account-based advertising. Best for teams doing sophisticated ABM orchestration</td>
+        </tr>
+        <tr>
+          <td><strong>6sense</strong></td>
+          <td>$$$</td>
+          <td>Predictive ABM with integrated advertising</td>
+          <td>AI-powered account identification and prioritisation. Predictive models show which accounts likely to buy. Integrated advertising to target high-propensity accounts. Revenue attribution across channels</td>
+          <td>Premium pricing typically £50k plus annually. Requires data integration work. Best for enterprise teams with dedicated ABM resources. Not for startups or small teams</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>LinkedIn Campaign Manager</strong> (self-serve pricing) to test account-based advertising on 20-30 target accounts. Validate that ads improve sales outcomes before investing in expensive ABM platforms. Once proven, consider <strong>RollWorks</strong> (£975/mo) for multi-channel reach beyond LinkedIn.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Account List Size sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Account List Size - Focus Not Spray</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The targeting trade-off</h3>
+            <p>Account-based advertising budget is finite. Target too many accounts and nobody sees your ads enough times to build awareness. Target too few and you cannot generate enough pipeline to justify ad spend. Sweet spot is usually 20-50 accounts depending on budget and average account size.</p>
+
+            <h3>How to size target list</h3>
+            <ul>
+              <li><strong>Budget-driven approach</strong> - Calculate how many accounts you can reach with sufficient frequency. Assume £1,000-£2,000 per month per account for meaningful reach on LinkedIn. £20k monthly budget supports 10-20 accounts</li>
+              <li><strong>Pipeline-driven approach</strong> - Work backwards from pipeline goals. If you need 10 new opportunities per quarter and ads drive opportunities at 20% rate, target 50 accounts</li>
+              <li><strong>Sales capacity approach</strong> - Match ad targeting to sales capacity. If sales team can actively work 30 accounts, target those 30 with ads to support their efforts</li>
+            </ul>
+
+            <h3>List composition</h3>
+            <table>
+              <tr><th>Account Tier</th><th>Characteristics</th><th>Percentage of List</th></tr>
+              <tr>
+                <td>Tier 1 - Active opportunities</td>
+                <td>Current deals in pipeline. Ads accelerate and support active sales process</td>
+                <td>30-40% of list</td>
+              </tr>
+              <tr>
+                <td>Tier 2 - Priority targets</td>
+                <td>High-fit accounts not yet engaged. Ads create awareness before sales outreach begins</td>
+                <td>40-50% of list</td>
+              </tr>
+              <tr>
+                <td>Tier 3 - Strategic accounts</td>
+                <td>Long-term targets, key logos, or expansion opportunities. Ads build slow-burn awareness</td>
+                <td>10-20% of list</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Concentration rule:</strong> If your target list exceeds 50 accounts and budget is constrained, split into cohorts. Run ads to Cohort A for 8 weeks, then switch to Cohort B. Better to reach 25 accounts effectively than 50 accounts inadequately.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Creative Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Creative Strategy - Role-Specific Not Generic</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why role-specific creative matters</h3>
+            <p>Account-based advertising reaches entire buying committee from CFO to Operations Manager to Engineering Lead. Generic ads that try to appeal to all roles resonate with none. Role-specific creative acknowledges different priorities and increases relevance for each stakeholder.</p>
+
+            <h3>Creative variations by role</h3>
+            <table>
+              <tr><th>Target Role</th><th>Ad Message Focus</th><th>Example Headline</th></tr>
+              <tr>
+                <td>C-suite Executives</td>
+                <td>Business outcomes, competitive advantage, strategic impact</td>
+                <td>"How leading enterprises are transforming customer engagement"</td>
+              </tr>
+              <tr>
+                <td>Finance / Budget Owners</td>
+                <td>ROI, cost savings, efficiency gains, payback period</td>
+                <td>"See how companies like yours achieve 3-to-1 ROI in first year"</td>
+              </tr>
+              <tr>
+                <td>Technical Buyers</td>
+                <td>Architecture, security, integration, technical differentiators</td>
+                <td>"Built for enterprise security and scale - see our architecture"</td>
+              </tr>
+              <tr>
+                <td>Operations / Implementation</td>
+                <td>Ease of deployment, change management, support model</td>
+                <td>"From signed to launched in 6 weeks - implementation guide"</td>
+              </tr>
+              <tr>
+                <td>End Users / Practitioners</td>
+                <td>Daily workflow improvements, time savings, ease of use</td>
+                <td>"Stop wasting hours on manual processes - see the new way"</td>
+              </tr>
+            </table>
+
+            <h3>Creative format best practices</h3>
+            <ul>
+              <li><strong>Lead with value not features</strong> - Headlines should promise outcomes relevant to that role. Save feature details for landing page</li>
+              <li><strong>Use social proof</strong> - Include customer logos or testimonials from similar companies. "Trusted by 500 enterprises" builds credibility</li>
+              <li><strong>Clear call-to-action</strong> - Tell viewer exactly what to do next. "Download ROI guide," "Watch 3-min demo," "See customer stories"</li>
+              <li><strong>Visual consistency</strong> - Maintain brand consistency across all creative variations so buying committee recognises ads as coming from same vendor</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Testing approach:</strong> Start with 3-5 creative variations targeted at different roles. Run for 2-3 weeks then analyse which messages generate highest engagement. Double down on winning creative and pause underperformers. Continuously refresh creative every 4-6 weeks to avoid ad fatigue.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coordination with Sales sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Coordination with Sales - Not Just Ads in Isolation</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why coordination multiplies impact</h3>
+            <p>Account-based ads alone rarely drive direct conversions. Prospects do not fill out forms from display ads. Ads create awareness that makes sales outreach more effective. Coordination between ads and sales turns parallel efforts into compounding force.</p>
+
+            <h3>Coordination tactics</h3>
+            <ul>
+              <li><strong>Timing sequence</strong> - Launch ads 2-3 weeks before sales outreach begins. Gives prospects time to see ads multiple times before receiving cold email. First email feels less cold when they have seen your brand</li>
+              <li><strong>Message consistency</strong> - Align ad messaging with sales email messaging. If ads promote specific case study or value proposition, sales emails should reference same themes. Reinforces message through repetition</li>
+              <li><strong>Account-level visibility</strong> - Share ad engagement data with sales team. Which accounts are seeing ads most? Which creative are they engaging with? Sales can reference this in outreach: "Given your interest in our approach to X..."</li>
+              <li><strong>Retargeting site visitors</strong> - When prospects visit website from sales email, retarget them with ads reinforcing the message. Multi-touchpoint engagement increases conversion</li>
+            </ul>
+
+            <h3>Sales enablement talking points</h3>
+            <p>Equip sales team to mention ads in outreach when appropriate. Not every email should reference ads, but when relevant, acknowledgement can build rapport.</p>
+            <p><strong>Example:</strong> "You have probably been seeing us around LinkedIn lately. We are focusing on helping companies like Acme solve X. Would love to show you specifically how."</p>
+
+            <div class="highlight">
+              <strong>Feedback loop:</strong> Sales team should share which accounts are responding positively to outreach. Increase ad spend on responsive accounts to maintain momentum. Decrease or pause ad spend on accounts showing no interest after multiple touches. Reallocate budget dynamically based on sales feedback.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Measurement sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Measurement - Account Engagement Not Clicks</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why traditional metrics mislead</h3>
+            <p>Standard ad metrics like click-through rate and cost per click are designed for direct response campaigns. Account-based advertising is brand-building within specific accounts. Success is measured by account-level engagement and sales outcomes not individual ad clicks.</p>
+
+            <h3>Account-based metrics that matter</h3>
+            <table>
+              <tr><th>Metric</th><th>What It Measures</th><th>Target Benchmark</th></tr>
+              <tr>
+                <td>Account reach</td>
+                <td>Percentage of target accounts seeing ads at least once</td>
+                <td>80%+ of target list</td>
+              </tr>
+              <tr>
+                <td>Frequency per account</td>
+                <td>Average impressions per person at target accounts</td>
+                <td>8-12 impressions over 4 weeks</td>
+              </tr>
+              <tr>
+                <td>Account engagement rate</td>
+                <td>Percentage of accounts with any engagement such as clicks or site visits</td>
+                <td>15-25% of accounts</td>
+              </tr>
+              <tr>
+                <td>Pipeline influence</td>
+                <td>Opportunities created from advertised accounts versus non-advertised accounts</td>
+                <td>2-3x higher opportunity rate</td>
+              </tr>
+              <tr>
+                <td>Sales cycle impact</td>
+                <td>Time from first touch to close for advertised accounts</td>
+                <td>10-20% faster sales cycles</td>
+              </tr>
+            </table>
+
+            <h3>Attribution challenges</h3>
+            <p>Account-based ads work indirectly. Prospects see ads, become aware, then respond to sales outreach. Attribution models struggle with this because ads get no direct credit for conversions that happen via sales email. Use account-based reporting that shows lift in advertised accounts versus control group.</p>
+
+            <div class="highlight">
+              <strong>Measurement framework:</strong> Run ads to 30 target accounts while keeping 30 similar accounts as control group with no ads. Compare opportunity creation, pipeline velocity, and close rates between advertised and control groups. Difference demonstrates ad impact independent of attribution complexity.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Targeting too many accounts - diluting budget</h4>
+          <div class="why">You target 200 accounts with limited budget. Nobody sees your ads enough times to build awareness. Budget spread so thin that impact is negligible.</div>
+          <div class="fix">Focus on 20-50 accounts maximum depending on budget. Better to reach 25 accounts with sufficient frequency than 200 accounts with one impression each. Concentration drives awareness.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Same creative for all roles - no personalisation</h4>
+          <div class="why">CFO, CTO, and Operations Manager all see identical generic ad. Nobody finds it relevant to their specific priorities. Engagement is low across the board.</div>
+          <div class="fix">Create 3-5 creative variations with role-specific messaging. Target ads based on job title or seniority. CFO sees ROI message, CTO sees technical message, Operations sees implementation message. Relevance drives engagement.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Not coordinating ads with sales outreach</h4>
+          <div class="why">Ads and sales operate in silos. Sales does not know which accounts are seeing ads. Ads do not align with sales messaging. Separate efforts that do not reinforce each other.</div>
+          <div class="fix">Launch ads 2-3 weeks before sales outreach. Share ad engagement data with sales team. Align ad and email messaging around consistent themes. Coordinate timing so ads warm up accounts before sales reaches out.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Measuring clicks instead of account engagement</h4>
+          <div class="why">You focus on click-through rate and cost per click. Miss the point that ads build awareness not drive direct conversions. Declare failure based on wrong metrics.</div>
+          <div class="fix">Measure account-level engagement such as reach, frequency, and site visits from target accounts. Compare opportunity rates between advertised and non-advertised accounts. Focus on sales impact not ad clicks.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No frequency caps - annoying prospects</h4>
+          <div class="why">You show same ad to same person 50 times in a week. Prospects get annoyed seeing your ad constantly. Brand perception suffers from overexposure.</div>
+          <div class="fix">Set frequency caps limiting impressions per person per week. Typical cap is 2-3 impressions per person per week. Enough to build awareness without becoming intrusive. Balance reach and frequency.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Running ads in isolation - not part of ABM programme</h4>
+          <div class="why">You run ads but no other ABM tactics. No personalised outreach, no custom content, no multi-threading. Ads alone without coordinated efforts fail to move deals.</div>
+          <div class="fix">Ads are one component of comprehensive ABM approach. Combine with personalised emails, custom landing pages, content hubs, and multi-stakeholder outreach. Integrated campaign drives results not single tactic.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

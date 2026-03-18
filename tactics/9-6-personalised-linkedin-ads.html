@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 9.6 — Personalised LinkedIn Ads (Loom ABM) | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 9.6 - Creative / Guerrilla</div>
+  <h1>Personalised LinkedIn Ads (Loom ABM)</h1>
+  <p class="desc">Run hyper-targeted LinkedIn ad campaigns to specific accounts with custom creative including their company name, logo, or personalised video messages. Create ads that only employees of target companies will see, demonstrating extreme relevance and capturing attention that generic ads cannot.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium-High</span>
+    <span class="tag tag-cost">Cost: Medium-High</span>
+    <span class="tag tag-icp">ICP: All Decision Makers</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Most LinkedIn ads are generic and ignored. When decision-maker scrolls their feed and sees ad featuring their own company name or personalised video message addressing them directly, pattern interrupt is massive. They stop scrolling and pay attention because this is clearly not random targeting.
+      </div>
+      <h3>The psychology behind account-specific ads</h3>
+      <ul>
+        <li><strong>Ego hook</strong> - Seeing your own company name or receiving video addressed to you triggers immediate interest. Humans are hardwired to notice personal references in sea of generic content</li>
+        <li><strong>Effort signal</strong> - Creating custom ad creative for single account demonstrates serious interest. Prospect thinks "They invested time specifically targeting us" which creates reciprocity obligation</li>
+        <li><strong>Relevance assumption</strong> - Personalised ad implies solution must be highly relevant. Prospect assumes if company is targeting them specifically, there must be strong fit worth exploring</li>
+        <li><strong>Status validation</strong> - Being singled out for custom advertising makes prospect feel important. Especially effective with senior executives accustomed to VIP treatment</li>
+      </ul>
+      <h3>Why LinkedIn specifically</h3>
+      <p>LinkedIn allows targeting by specific company names combined with job titles. You can run ads that only reach VP-level people at Acme, creating effectively private billboard visible only to your target buying committee. No other advertising platform offers this level of precision at business level.</p>
+      <p><strong>The compounding effect:</strong> When multiple stakeholders at same company see personalised ads over several weeks, they start discussing it internally. "Have you seen these ads targeting our company?" creates buzz and brand awareness before sales team even reaches out.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Select</div><div class="wf-action">Target accounts</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">R</div><div class="wf-label">Research</div><div class="wf-action">Pain points</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">C</div><div class="wf-label">Create</div><div class="wf-action">Custom creative</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Set Up</div><div class="wf-action">Campaign targeting</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">M</div><div class="wf-label">Monitor</div><div class="wf-action">Engagement</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">F</div><div class="wf-label">Follow Up</div><div class="wf-action">Direct outreach</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Select Target Accounts</td>
+          <td>Choose 5-10 high-value accounts for personalised ad campaigns. Focus on companies with large enough buying committees to justify ad spend. Need at least 15-20 target individuals per account for viable audience size</td>
+          <td>1 hour account selection</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Research Pain Points</td>
+          <td>Deep research into each target account including recent news, LinkedIn posts from executives, industry challenges, and competitive landscape. Identify 2-3 specific pain points you can address in ad messaging</td>
+          <td>30-45 min per account</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Create Custom Creative</td>
+          <td>Design ad creative featuring target company name, logo, or record personalised Loom videos addressing their specific challenges. Create multiple ad variations for testing. Each account gets unique creative</td>
+          <td>1-2 hours per account</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Set Up Campaign Targeting</td>
+          <td>Create separate LinkedIn ad campaign for each target account. Set targeting to company name plus relevant job titles and seniority levels. Budget allocation per account based on audience size and deal potential</td>
+          <td>30 min per campaign setup</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Monitor Engagement</td>
+          <td>Track which individuals from target accounts are clicking ads, viewing videos, or visiting landing pages. Use LinkedIn Insight Tag and CRM tracking to identify engaged prospects for sales follow-up</td>
+          <td>15 min daily monitoring</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Follow Up with Direct Outreach</td>
+          <td>Sales team reaches out to prospects who engaged with ads. Reference ad content in outreach: "Saw you checked out the analysis we built specifically for Acme." Warm introduction via their ad engagement</td>
+          <td>Ongoing sales activity</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Combine personalised LinkedIn ads with direct email and LinkedIn messages for multi-touch ABM campaign. Ads create awareness while direct outreach drives conversations. Reinforce same message across all channels for maximum impact.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn Campaign Manager</strong></td>
+          <td>Variable ad spend</td>
+          <td>All account-based LinkedIn advertising</td>
+          <td>Native LinkedIn ad platform with company name targeting, job title filters, seniority level selection, and detailed engagement analytics. Supports video ads, image ads, and carousel formats. Required tool for this tactic</td>
+          <td>Requires minimum audience size per campaign. Small companies with few employees may not meet threshold. Ad costs can be high in competitive industries. Learning curve for campaign optimisation</td>
+        </tr>
+        <tr>
+          <td><strong>Canva</strong></td>
+          <td>Free or Pro £10/mo</td>
+          <td>Creating custom ad images with company branding</td>
+          <td>Easy design tool for creating professional ad creative. Templates for LinkedIn ad sizes. Simple logo placement and text overlay. Brand kit feature stores target company logos for reuse across campaigns</td>
+          <td>Limited compared to professional design tools. Templates can look generic if not customised. Better for image ads than complex animations or interactive content</td>
+        </tr>
+        <tr>
+          <td><strong>Loom</strong></td>
+          <td>Free or Business £10/mo per user</td>
+          <td>Recording personalised video messages for ad creative</td>
+          <td>Quick screen and camera recording for personalised video ads. Thumbnail customisation shows company name before video plays. View analytics show who watched and for how long. Embed directly in LinkedIn video ads</td>
+          <td>Video quality is functional but not cinematic. Limited editing capabilities within Loom. Viewer must click to unmute which reduces engagement. Best for authentic, informal style not polished production</td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot with LinkedIn Integration</strong></td>
+          <td>Included in HubSpot Marketing Hub</td>
+          <td>Tracking ad engagement and connecting to CRM</td>
+          <td>Automatically capture LinkedIn ad clicks and conversions into HubSpot CRM. Associate ad engagement with contact records. Trigger workflows based on ad interaction. Sales team sees which prospects engaged with ads</td>
+          <td>Requires HubSpot subscription. Integration setup can be technical. LinkedIn tracking pixel needed on landing pages. Attribution is not perfect, especially for view-through engagement</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Use <strong>LinkedIn Campaign Manager</strong> (required platform) plus <strong>Canva Pro</strong> (10 per month) for image ads and <strong>Loom Business</strong> (10 per month per user) for personalised video ads. Integrate with <strong>HubSpot</strong> if you use it to track engagement and enable sales follow-up.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Account Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Account Selection - High Value Targets Only</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Justify cost with deal size</h3>
+            <p>Personalised LinkedIn ads are expensive per account. Running month-long campaign targeting single company can cost several thousand pounds. This tactic only makes economic sense for high-value deals where customer lifetime value justifies aggressive customer acquisition cost.</p>
+
+            <h3>Account viability criteria</h3>
+            <ul>
+              <li><strong>Deal size threshold</strong> - Target accounts where expected deal value is at least 10x your monthly ad spend per account. If spending £2000 per month on ads for one account, need realistic shot at £20k plus deal</li>
+              <li><strong>Buying committee size</strong> - Need sufficient number of target stakeholders at company to build viable LinkedIn audience. Minimum 15-20 individuals matching your ICP criteria. Too small and campaign will not reach enough people</li>
+              <li><strong>Active buying signals</strong> - Recent funding, expansion, leadership changes, or public discussion of problems you solve. Timing matters; do not waste budget on accounts not currently in buying mode</li>
+              <li><strong>Strategic importance</strong> - Even if deal size is smaller, some accounts are worth targeting for logo value, industry influence, or expansion potential. Factor strategic value beyond initial contract</li>
+            </ul>
+
+            <h3>Budget allocation framework</h3>
+            <table>
+              <tr><th>Account Type</th><th>Monthly Budget</th><th>Campaign Duration</th><th>Expected Reach</th></tr>
+              <tr>
+                <td>Enterprise (500 plus employees)</td>
+                <td>£2000-£5000</td>
+                <td>2-3 months</td>
+                <td>Reach 30-50 decision makers multiple times</td>
+              </tr>
+              <tr>
+                <td>Mid-market (100-500 employees)</td>
+                <td>£1000-£2000</td>
+                <td>1-2 months</td>
+                <td>Reach 15-30 decision makers multiple times</td>
+              </tr>
+              <tr>
+                <td>SMB (under 100 employees)</td>
+                <td>Not recommended</td>
+                <td>-</td>
+                <td>Audience too small for effective campaign</td>
+              </tr>
+              <tr>
+                <td>Strategic logo account</td>
+                <td>£3000-£10000</td>
+                <td>3-6 months sustained campaign</td>
+                <td>Blanket coverage of entire leadership team</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>ROI reality check:</strong> Before launching campaigns, calculate customer acquisition cost ceiling you can afford based on deal size and margin. Be honest about whether personalised LinkedIn ads fit within that ceiling. This tactic is powerful but expensive.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Creative Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Creative Strategy - Relevance Over Polish</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Personalisation that gets noticed</h3>
+            <p>Goal of creative is pattern interrupt, not winning design awards. Target needs to immediately recognise ad is specifically for them. Authenticity and relevance beat glossy production values. Focus creative energy on demonstrating you understand their specific situation.</p>
+
+            <h3>Creative approaches ranked by impact</h3>
+            <ul>
+              <li><strong>Personalised video message</strong> - Highest impact. Record Loom video addressing company by name and discussing their specific challenges. Authentic and cannot be ignored when they see their company name in video thumbnail</li>
+              <li><strong>Company logo plus custom headline</strong> - Strong impact. Their logo at top of ad with headline like "James, here's how Acme can reduce customer churn." Personal and company-specific</li>
+              <li><strong>Industry-specific visual with company name</strong> - Good impact. Screenshot or visual showing something relevant to their industry with their company name overlaid. Shows you understand their context</li>
+              <li><strong>Data or insight specific to their company</strong> - Moderate impact. Statistic or insight derived from research about their company or industry. Demonstrates expertise but less immediate pattern interrupt</li>
+            </ul>
+
+            <h3>Messaging framework</h3>
+            <table>
+              <tr><th>Message Element</th><th>Purpose</th><th>Example</th></tr>
+              <tr>
+                <td>Company name mention</td>
+                <td>Immediate pattern interrupt and personalisation signal</td>
+                <td>"Acme, we built this specifically for you"</td>
+              </tr>
+              <tr>
+                <td>Specific pain point</td>
+                <td>Demonstrate understanding of their challenges</td>
+                <td>"Struggling with customer data silos across your tech stack?"</td>
+              </tr>
+              <tr>
+                <td>Relevant outcome</td>
+                <td>Show what is possible if they solve problem</td>
+                <td>"See how similar companies reduced churn while scaling revenue"</td>
+              </tr>
+              <tr>
+                <td>Low-friction CTA</td>
+                <td>Make next step easy and non-threatening</td>
+                <td>"See the 3-minute overview we built for Acme"</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Video tips:</strong> For Loom videos, keep under 2 minutes. Start with their company name and specific challenge in first 10 seconds. Smile, be authentic, show your face. Overly scripted feels fake. Natural enthusiasm beats perfect delivery.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campaign Setup sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Campaign Setup - Precise Targeting</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>LinkedIn targeting configuration</h3>
+            <p>Success depends on reaching right people at target account. Too broad and you waste budget on irrelevant employees. Too narrow and you miss key decision makers. Layer targeting criteria to build precise audience of buying committee members.</p>
+
+            <h3>Targeting layers to apply</h3>
+            <ul>
+              <li><strong>Company name</strong> - Enter exact company name as it appears on LinkedIn. Verify spelling matches their LinkedIn company page. This is primary targeting criterion</li>
+              <li><strong>Job titles</strong> - Include all relevant titles on buying committee such as VP Sales, Director Marketing, Head of Operations. Use LinkedIn title suggestions to find variations</li>
+              <li><strong>Seniority level</strong> - Filter by seniority to focus on decision makers. Typically Director level and above for enterprise deals. Include Manager level for mid-market</li>
+              <li><strong>Job functions</strong> - Supplement titles with job function categories like Sales, Marketing, IT to catch people with non-standard titles</li>
+            </ul>
+
+            <h3>Campaign structure options</h3>
+            <table>
+              <tr><th>Structure</th><th>When to Use</th><th>Pros</th><th>Cons</th></tr>
+              <tr>
+                <td>One campaign per account</td>
+                <td>Testing with small number of accounts</td>
+                <td>Simple to manage, clear budget per account, easy reporting</td>
+                <td>Does not scale well beyond 5-10 accounts, admin overhead</td>
+              </tr>
+              <tr>
+                <td>Campaign per industry with account-specific ads</td>
+                <td>Targeting many accounts in same industry</td>
+                <td>Easier campaign management, can share some creative elements</td>
+                <td>Less granular control over budget per account</td>
+              </tr>
+              <tr>
+                <td>Campaign per buying committee role</td>
+                <td>Different messages for different roles</td>
+                <td>Tailored messaging by job function, test role-specific approaches</td>
+                <td>Complex setup, requires multiple creative variations</td>
+              </tr>
+              <tr>
+                <td>Single campaign with matched audiences</td>
+                <td>Advanced setup with many accounts</td>
+                <td>Scalable to 50 plus accounts, automated targeting</td>
+                <td>Requires matched audience upload, less transparency per account</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Audience size warning:</strong> LinkedIn requires minimum audience size to launch campaign, typically 300 plus members. If your target account does not have enough employees matching your criteria, LinkedIn will not allow campaign to run. Check audience size estimate before investing in creative.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance Tracking sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Performance Tracking - Connect Ads to Pipeline</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Track beyond standard metrics</h3>
+            <p>LinkedIn Campaign Manager shows clicks and impressions, but real value is in identifying which individuals engaged and connecting ad exposure to sales conversations. Implement tracking that shows sales team who has seen ads before outreach call.</p>
+
+            <h3>Essential tracking implementations</h3>
+            <ul>
+              <li><strong>LinkedIn Insight Tag on landing pages</strong> - Tracks visitors from ads including company and job title. See which specific roles are clicking through from each target account</li>
+              <li><strong>CRM integration</strong> - Connect ad engagement data to contact records in CRM. Sales reps see that prospect viewed ad 3 times before conversation, informing their approach</li>
+              <li><strong>UTM parameters</strong> - Tag all ad links with UTM codes including account name. Track landing page visits per account in Google Analytics</li>
+              <li><strong>Video view analytics</strong> - For Loom videos, track which individuals watched, how much they watched, and whether they shared. High engagement signals buying interest</li>
+            </ul>
+
+            <h3>Metrics hierarchy</h3>
+            <table>
+              <tr><th>Metric</th><th>What It Tells You</th><th>Action Threshold</th></tr>
+              <tr>
+                <td>Impression frequency</td>
+                <td>How many times target individuals see your ad</td>
+                <td>Aim for 5-10 impressions per person per month for awareness</td>
+              </tr>
+              <tr>
+                <td>Click-through rate</td>
+                <td>How compelling your creative and message are</td>
+                <td>LinkedIn average is 0.5-1%, aim for 2% plus with personalised ads</td>
+              </tr>
+              <tr>
+                <td>Landing page engagement</td>
+                <td>Whether visitors find value after clicking</td>
+                <td>Time on page over 2 minutes signals genuine interest</td>
+              </tr>
+              <tr>
+                <td>Account-level engagement</td>
+                <td>How many individuals from target account interacted</td>
+                <td>5 plus individuals engaging signals account-wide awareness</td>
+              </tr>
+              <tr>
+                <td>Pipeline influence</td>
+                <td>Whether ad exposure correlates with opportunities created</td>
+                <td>Track time from first ad exposure to sales conversation initiation</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Attribution challenge:</strong> Linking ad exposure directly to closed deals is difficult. Focus on leading indicators like named individuals engaging, sales conversations with ad-aware prospects, and shortened sales cycles. Ads create awareness; sales closes deals.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Targeting accounts too small</h4>
+          <div class="why">Running personalised ad campaigns for companies with only 5-10 target individuals. Audience too small to meet LinkedIn minimums or justify ad spend.</div>
+          <div class="fix">Focus on mid-market and enterprise accounts with at least 15-20 buying committee members. Smaller accounts are not viable for this tactic regardless of deal size.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Generic creative with just company name</h4>
+          <div class="why">Adding company logo to otherwise generic ad and calling it personalised. No specific insights or relevant messaging. Feels like lazy mail merge.</div>
+          <div class="fix">Research each account deeply and reference specific challenges, initiatives, or context in creative. Personalisation must go beyond surface-level name-dropping.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. No landing page personalisation</h4>
+          <div class="why">Personalised ad clicks through to generic landing page with no mention of target company. Experience disconnect kills conversion.</div>
+          <div class="fix">Create dedicated landing pages for each account continuing personalisation from ad. Mention company name, show relevant case studies, maintain contextual relevance.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Running campaigns without sales coordination</h4>
+          <div class="why">Marketing runs personalised ad campaigns but sales team has no visibility into who is engaging. Miss opportunities to leverage warm awareness in outreach.</div>
+          <div class="fix">Implement tracking that notifies sales when prospects engage with ads. Coordinate direct outreach to reference ad content and capitalise on awareness created.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Insufficient budget or duration</h4>
+          <div class="why">Running campaigns for only week or two with minimal budget. Not enough impressions to build awareness or saturate target buying committee.</div>
+          <div class="fix">Commit to at least 4-8 weeks per account with sufficient budget to reach target individuals 5-10 times. Awareness campaigns need time and frequency to work.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. No performance tracking beyond clicks</h4>
+          <div class="why">Only measuring standard metrics like impressions and clicks. No visibility into which individuals engaged or impact on pipeline.</div>
+          <div class="fix">Implement LinkedIn Insight Tag, CRM integration, and video analytics. Track named individuals engaging and correlate ad exposure with sales conversations.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 9.2 — Creative Direct Mail Packages | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 9.2 - Creative / Guerrilla</div>
+  <h1>Creative Direct Mail Packages</h1>
+  <p class="desc">Send physical packages with relevant gifts and personalised notes to high-value prospects. Bypasses digital filters entirely and creates memorable brand moments that drive conversations with C-suite and VP-level buyers.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Medium-High</span>
+    <span class="tag tag-icp">ICP: C-suite, VP-level</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Physical packages bypass every digital filter. Spam filters, LinkedIn connection limits, email blocklists - none of them matter when a branded package lands on someone's desk. The tactile experience creates memory formation that digital outreach never achieves.
+      </div>
+      <h3>The psychology behind direct mail packages</h3>
+      <ul>
+        <li><strong>Reciprocity trigger</strong> - Receiving an unexpected gift creates psychological debt. Most people feel obligated to acknowledge or reciprocate in some way</li>
+        <li><strong>Pattern interrupt at physical level</strong> - Opening a package is a multi-sensory experience (touch, sight, sometimes smell). This creates stronger memory encoding than clicking an email</li>
+        <li><strong>Social proof and status</strong> - Receiving packages signals importance. Executives often display gifts in their office or mention them to colleagues, extending your reach</li>
+        <li><strong>Endowment effect</strong> - Once someone owns something (even a small gift), they value it more highly and feel more connected to the giver</li>
+      </ul>
+      <h3>Why this works specifically for enterprise</h3>
+      <p>Enterprise buyers are insulated from cold outreach by layers of gatekeepers, assistants, and spam filters. A physical package sidesteps all of this. Mail rooms deliver packages directly to recipients. Assistants hand over packages. The physical nature demands attention in a way digital never can.</p>
+      <p><strong>The format advantage:</strong> Unlike emails that can be deleted in seconds, packages require physical interaction. Even if the recipient doesn't engage immediately, the package sits on their desk as a visual reminder of your outreach.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-email">S</div><div class="wf-label">Select Targets</div><div class="wf-action">10-20 high-value accounts</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-phone">C</div><div class="wf-label">Choose Gift</div><div class="wf-action">Relevant to ICP</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-email">W</div><div class="wf-label">Write Note</div><div class="wf-action">Personal message</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-phone">S</div><div class="wf-label">Ship Package</div><div class="wf-action">Via Sendoso/Reachdesk</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">E</div><div class="wf-label">Email on Delivery</div><div class="wf-action">Same day it arrives</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">F</div><div class="wf-label">Follow Up Call</div><div class="wf-action">2 days later</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Select High-Value Targets</td>
+          <td>Identify 10-20 accounts worth the investment. Calculate: if package costs $50-100, is this account worth at least $5,000-10,000 in potential revenue? Focus on C-suite and VP-level buyers only</td>
+          <td>30 min (research & prioritisation)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Choose Relevant Gift</td>
+          <td>Gift must connect to their role, company, or a pain point you solve. Examples: coffee subscription for sales leaders (fuelling late nights), noise-cancelling headphones for remote workers, industry-specific books. Avoid generic swag</td>
+          <td>20-30 min per batch (can reuse same gift for similar ICPs)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Write Personal Note</td>
+          <td>Handwrite or use robotic pen service. Reference why you chose this specific gift for them. Keep under 100 words. Include soft CTA: "Would love to chat about X if relevant"</td>
+          <td>5-10 min per note</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Ship Package</td>
+          <td>Use platforms like Sendoso, Reachdesk, Postal, or Alyce. They handle sourcing, packaging, shipping, and tracking. Set delivery for mid-week (Tue-Thu) for best impact</td>
+          <td>10-15 min to set up batch</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Email Day of Delivery</td>
+          <td>Most platforms notify you when package is delivered. Send email same day: "A package should have arrived for you today. Thought you'd appreciate X because of Y. No strings attached, but happy to chat if useful"</td>
+          <td>5 min per email</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Follow Up Call 2 Days Later</td>
+          <td>Call or send LinkedIn message 2 days post-delivery. Reference package: "Following up on the package I sent. Did you get a chance to check it out?" Use as conversation starter, not hard pitch</td>
+          <td>10-15 min per follow-up</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Coordinate package delivery with a relevant trigger event (new funding round, executive hire, product launch). This makes the gift feel timely and thoughtful rather than random outreach.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Sendoso</strong></td>
+          <td>$$$</td>
+          <td>Enterprise ABM campaigns, high-volume sending</td>
+          <td>Massive gift marketplace, global shipping, CRM integrations (Salesforce, HubSpot), ROI tracking dashboards. Warehouse storage for your branded items</td>
+          <td>Expensive (enterprise pricing, often $15,000+ annual minimum). Overkill for small teams or low-volume campaigns</td>
+        </tr>
+        <tr>
+          <td><strong>Reachdesk</strong></td>
+          <td>$$</td>
+          <td>Mid-market teams, UK/EU focus</td>
+          <td>Strong UK and EU gift selection and shipping. Integration with sales engagement platforms. Simpler interface than Sendoso. Pay-as-you-go option available</td>
+          <td>Smaller gift selection vs Sendoso. US shipping can be slower/more expensive. Limited analytics compared to enterprise tools</td>
+        </tr>
+        <tr>
+          <td><strong>Postal</strong></td>
+          <td>$$-$$$</td>
+          <td>All-in-one direct mail (notes, gifts, packages)</td>
+          <td>Combines handwritten notes and gifting in one platform. Strong Salesforce integration. eGifts option (send digital gift cards if physical address unknown)</td>
+          <td>User interface can be clunky. Setup requires training. Pricing not transparent (contact sales)</td>
+        </tr>
+        <tr>
+          <td><strong>Alyce</strong></td>
+          <td>$$</td>
+          <td>AI-powered gift selection, personalisation at scale</td>
+          <td>AI recommends gifts based on recipient profile and preferences. Allows recipients to swap gift if they don't want it (reduces waste). Strong analytics on gift acceptance rates</td>
+          <td>Less direct control over exact gift sent (AI chooses from options). Recipient swap feature can feel impersonal to some buyers</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> For teams starting out, use <strong>Postal</strong> (pay-as-you-go, good for 10-20 packages/month). For scaling ABM teams with budget, use <strong>Sendoso</strong> (best integrations, analytics, and gift selection). UK/EU-focused teams should consider <strong>Reachdesk</strong> for better local shipping and gift options.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Gift Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Gift Selection (Relevant to ICP, Not Generic Swag)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why generic gifts fail</h3>
+            <p>Branded pens, t-shirts, and cheap gadgets scream "mass marketing." They get thrown away or stuffed in a drawer. The gift must feel chosen specifically for the recipient to trigger reciprocity.</p>
+
+            <h3>Good vs bad gift choices</h3>
+            <table>
+              <tr><th>Bad (Generic)</th><th>Good (Relevant)</th></tr>
+              <tr>
+                <td>Company-branded water bottle</td>
+                <td>Premium coffee subscription (for sales leaders who work long hours)</td>
+              </tr>
+              <tr>
+                <td>Logo t-shirt</td>
+                <td>Noise-cancelling headphones (for remote workers in noisy environments)</td>
+              </tr>
+              <tr>
+                <td>Cheap Bluetooth speaker</td>
+                <td>Industry-specific book with personalised note about why this chapter is relevant</td>
+              </tr>
+              <tr>
+                <td>Random snack box</td>
+                <td>Local specialty food from their city (shows you researched where they're based)</td>
+              </tr>
+            </table>
+
+            <h3>Gift selection framework</h3>
+            <ul>
+              <li><strong>Role-based</strong> - What does this person's job involve? Sales leaders: coffee, whisky, sales books. Engineers: mechanical keyboards, coding books, desk toys. Marketers: design books, creative tools</li>
+              <li><strong>Company-based</strong> - What's relevant to their business? SaaS company: book on scaling software teams. Retail: industry trend report. Manufacturing: innovation case studies</li>
+              <li><strong>Pain point-based</strong> - What problem do they face that your solution addresses? If you solve remote work collaboration issues, send high-quality webcam or desk setup items</li>
+              <li><strong>Personal interest-based</strong> - Check LinkedIn for hobbies or interests. Runner? Running gear. Coffee enthusiast? Specialty beans. Book lover? Recent bestseller in their field</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> If you could send the exact same gift to 100 different people without changing anything, it's too generic. The best gifts feel chosen for one specific person.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personalisation at Scale sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Personalisation at Scale (Research Each Recipient)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why personalisation is non-negotiable</h3>
+            <p>Direct mail packages are expensive. If you're spending $50-150 per package, the personalisation must justify the cost. A generic package with a generic note gets the same results as a $5 handwritten card - which means you wasted your budget.</p>
+
+            <h3>Research checklist per recipient</h3>
+            <table>
+              <tr><th>Source</th><th>What to Find</th><th>How to Use It</th></tr>
+              <tr>
+                <td>LinkedIn profile</td>
+                <td>Recent posts, interests, job changes, shared connections</td>
+                <td>Reference in note: "Saw your post on AI in sales. Totally agree on X." Or: "Congrats on the new role as VP Sales"</td>
+              </tr>
+              <tr>
+                <td>Company news</td>
+                <td>Funding, product launches, expansions, awards</td>
+                <td>"Congrats on Series B. Scaling post-raise is tough - thought this book on hypergrowth would be timely"</td>
+              </tr>
+              <tr>
+                <td>Tech stack</td>
+                <td>Tools they use (from job postings, LinkedIn, BuiltWith)</td>
+                <td>If they use Salesforce and you integrate with it: "Noticed you're on Salesforce. We work with a lot of SF teams to solve X"</td>
+              </tr>
+              <tr>
+                <td>Social profiles</td>
+                <td>Hobbies, interests, personal brand</td>
+                <td>If they post about running: include running-related gift with note about "fuelling your next marathon"</td>
+              </tr>
+            </table>
+
+            <h3>Note personalisation examples</h3>
+            <p><strong>Generic (bad):</strong> "Hi Sarah, I thought you might enjoy this coffee. Let me know if you'd like to chat about how we can help."</p>
+            <p><strong>Personalised (good):</strong> "Hi Sarah, Saw Acme just hit 50 employees. Congrats! Scaling sales ops at this stage is brutal - I've seen teams struggle with X. Thought you might appreciate the caffeine boost while building out your new team. Happy to share what's worked for other VP Sales in similar growth stages if useful."</p>
+
+            <div class="highlight">
+              <strong>Time investment:</strong> Spend 10-15 min researching each recipient before choosing gift and writing note. This research makes the difference between a package that gets ignored and one that starts a conversation.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timing and Coordination sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Timing and Coordination (Email on Delivery, Call 2 Days Later)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why timing matters</h3>
+            <p>A package alone is interesting but not actionable. The follow-up email and call are what convert interest into meetings. Poor timing kills conversion - too early and they haven't received it yet (awkward), too late and they've forgotten about it.</p>
+
+            <h3>Optimal follow-up sequence</h3>
+            <table>
+              <tr><th>Timeline</th><th>Action</th><th>Message Template</th></tr>
+              <tr>
+                <td>Day 0</td>
+                <td>Package ships</td>
+                <td>No message yet. Track delivery via platform</td>
+              </tr>
+              <tr>
+                <td>Day 3-5 (delivery day)</td>
+                <td>Email same day it's delivered</td>
+                <td>"Hi Sarah, a package should have arrived for you today. I sent you some coffee because I know scaling a sales team at your stage means a lot of late nights. No strings attached, but I'd love to share some insights on X if relevant. Let me know if you'd like to chat."</td>
+              </tr>
+              <tr>
+                <td>Day 5-7 (2 days post-delivery)</td>
+                <td>Follow-up call or LinkedIn message</td>
+                <td>Call: "Hi Sarah, it's James from Acme. I sent you a package earlier this week - just following up to see if you had a chance to check it out?" LinkedIn: "Following up on the package. Hope you enjoyed the coffee. Would love to chat about X when you have 15 min."</td>
+              </tr>
+              <tr>
+                <td>Day 10-12 (if no response)</td>
+                <td>Final email touchpoint</td>
+                <td>"Sarah, following up one last time on the package I sent. If now's not a good time, no worries - but wanted to make sure you received it. Happy to reconnect down the road when timing's better."</td>
+              </tr>
+            </table>
+
+            <h3>Delivery day coordination tips</h3>
+            <ul>
+              <li><strong>Set delivery alerts</strong> - Most platforms (Sendoso, Reachdesk, Postal) notify you when package is delivered. Set these up and respond immediately</li>
+              <li><strong>Mid-week delivery</strong> - Schedule delivery for Tuesday-Thursday. Avoid Monday (too hectic) and Friday (people leave early or work remote)</li>
+              <li><strong>Confirm address beforehand</strong> - For high-value packages, send a quick email first: "I have something to send you. Are you still based at [office address]?" This prevents wasted sends</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> If you can, call the front desk or reception the day after delivery to confirm the package was delivered to the right person. This also primes the recipient - when their assistant mentions "a package arrived for you," they're curious before they even open it.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Budget Management sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Budget Management (Match Gift Value to Account Potential)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The ROI calculation</h3>
+            <p>Direct mail is expensive. A $100 package only makes sense if the account is worth $10,000+ in potential revenue. You need clear criteria for who gets packages and how much to spend per send.</p>
+
+            <h3>Spend tiers by account value</h3>
+            <table>
+              <tr><th>Account Value</th><th>Package Budget</th><th>Gift Examples</th></tr>
+              <tr>
+                <td>$5,000-10,000 ACV</td>
+                <td>$25-40</td>
+                <td>Book + handwritten note, specialty coffee bag, desk plant</td>
+              </tr>
+              <tr>
+                <td>$10,000-50,000 ACV</td>
+                <td>$50-75</td>
+                <td>Noise-cancelling headphones, whisky bottle, premium coffee subscription (1 month)</td>
+              </tr>
+              <tr>
+                <td>$50,000-100,000 ACV</td>
+                <td>$100-150</td>
+                <td>High-end tech gadgets, multi-month subscriptions, curated gift boxes</td>
+              </tr>
+              <tr>
+                <td>$100,000+ ACV</td>
+                <td>$200+</td>
+                <td>Premium experiences (wine tasting kit with virtual sommelier), luxury items, custom-built gifts</td>
+              </tr>
+            </table>
+
+            <h3>Budget control best practices</h3>
+            <ul>
+              <li><strong>Set monthly caps</strong> - Limit direct mail spend to 10-15% of total marketing budget. Track per-send ROI monthly</li>
+              <li><strong>Approval workflows</strong> - Require manager approval for packages over $100. Prevents wasteful spending on low-quality accounts</li>
+              <li><strong>Test small first</strong> - Send 10-15 packages in month one. Measure response rate and meeting conversion before scaling up</li>
+              <li><strong>Reuse successful gifts</strong> - Once you find a gift that works for your ICP, buy in bulk for discount and reuse across similar prospects</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> Package cost should be no more than 1% of expected account value. A $10,000 opportunity justifies a $100 package. A $100,000 enterprise deal can justify a $500-1,000 package if it's strategic.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Irrelevant gift (generic swag no one wants)</h4>
+          <div class="why">You send branded pens, t-shirts, or cheap gadgets. Recipients see it as junk mail and throw it away immediately.</div>
+          <div class="fix">Choose gifts relevant to their role, company stage, or personal interests. Spend 10-15 min researching each recipient before selecting the gift. Avoid anything with your logo on it.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. No personal note included</h4>
+          <div class="why">You send a gift with no context or explanation. Recipient has no idea who you are or why you sent it. Package feels like random spam.</div>
+          <div class="fix">Always include a handwritten or robotic-pen note explaining why you chose this gift for them specifically. Reference something personal (company news, role, shared connection). Make it about them, not about you.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. No follow-up plan (send package and wait passively)</h4>
+          <div class="why">You send the package and hope they reach out. Most recipients appreciate the gift but never take action unless prompted.</div>
+          <div class="fix">Email the day of delivery referencing the package. Call or LinkedIn message 2 days later. Use the package as a conversation starter, not a standalone tactic. Follow-up is what converts.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Sending to office when they work remotely</h4>
+          <div class="why">You send to company HQ but the recipient works from home full-time or in a different office. Package sits in a mailroom or gets returned.</div>
+          <div class="fix">Check LinkedIn for remote work mentions. Send a quick email before shipping: "I have something to send you. Still based at [address]?" For high-value targets, consider home address (available via data enrichment) or ask directly.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Package too expensive for account value</h4>
+          <div class="why">You send $200 gifts to accounts worth $5,000 annually. The ROI doesn't justify the spend and you burn through budget fast.</div>
+          <div class="fix">Match gift value to account potential. Use spending tiers: $25-40 for small accounts, $50-75 for mid-market, $100-150 for enterprise, $200+ for strategic mega-deals. Require approval for high-cost packages.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. No tracking (don't know if package was delivered or opened)</h4>
+          <div class="why">You send packages with no delivery confirmation. You follow up before it arrives (awkward) or don't know if it got lost in the mail.</div>
+          <div class="fix">Use platforms with delivery tracking (Sendoso, Reachdesk, Postal all offer this). Set up notifications for delivery. Only follow up after confirmed delivery. For critical packages, call reception to confirm receipt.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

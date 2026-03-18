@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 9.7 — Breakup Email / Message | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 9.7 - Creative / Guerrilla</div>
+  <h1>Breakup Email / Message</h1>
+  <p class="desc">Send a final email to unresponsive prospects explicitly stating you will stop reaching out. The pressure release paradoxically triggers responses from people who felt guilty ignoring you but were too busy to engage. Last-ditch effort that often revives cold leads.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low</span>
+    <span class="tag tag-cost">Cost: Free</span>
+    <span class="tag tag-icp">ICP: All Decision Makers</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Prospects often ignore outreach not because they are uninterested but because they are overwhelmed. They feel guilty but responding feels like work. A breakup email removes that pressure by explicitly saying you will stop. Paradoxically, this triggers responses because now they can engage without feeling chased.
+      </div>
+      <h3>The psychology behind breakup emails</h3>
+      <ul>
+        <li><strong>Guilt relief</strong> - Prospect has felt low-level guilt about ignoring your messages. Breakup email absolves them by saying it is okay. This emotional release prompts them to finally respond</li>
+        <li><strong>Scarcity trigger</strong> - Announcing you are moving on creates sense of closing window. Prospect thinks "Wait, maybe I should respond before this opportunity disappears completely"</li>
+        <li><strong>Loss aversion</strong> - Humans hate losing options even if they were not actively pursuing them. Being removed from outreach list feels like loss, motivating response to keep door open</li>
+        <li><strong>Pressure removal</strong> - Knowing you will not follow up again removes feeling of being pestered. Prospect can respond on their terms without expecting persistent follow-up</li>
+      </ul>
+      <h3>Why breakup specifically</h3>
+      <p>Traditional follow-ups maintain pressure to respond, which keeps prospects in avoidance mode. Breakup email flips dynamic entirely. By explicitly ending pursuit, you give prospect control back. Many respond simply to acknowledge your respectful exit or to express that timing was just bad, opening door to future conversation.</p>
+      <p><strong>The compounding effect:</strong> Even prospects who do not respond immediately often remember breakup email favourably. Months later when they need your solution, they recall you were respectful of their time and did not pester endlessly. They reach out proactively because you handled rejection well.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Identify</div><div class="wf-action">Cold prospects</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">S</div><div class="wf-label">Segment</div><div class="wf-action">By touchpoints</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">C</div><div class="wf-label">Craft</div><div class="wf-action">Breakup message</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Send</div><div class="wf-action">Final email</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">M</div><div class="wf-label">Monitor</div><div class="wf-action">Responses</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">E</div><div class="wf-label">Engage</div><div class="wf-action">Or archive</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify Cold Prospects</td>
+          <td>Pull list of prospects who have not responded after multiple outreach attempts. Typically those who have received 3-5 emails or messages over 2-4 weeks with zero engagement. These are candidates for breakup message</td>
+          <td>15 min CRM filtering</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Segment by Touchpoints</td>
+          <td>Group prospects by how many times you have reached out and through which channels. Different breakup messages for those you have emailed 3 times versus those you have emailed 5 times and called twice</td>
+          <td>10 min segmentation</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Craft Breakup Message</td>
+          <td>Write brief, respectful message acknowledging lack of response, stating you will stop reaching out, and leaving door open if they want to connect in future. Keep it short and professional without being passive-aggressive</td>
+          <td>20 min drafting template</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Send Final Email</td>
+          <td>Send breakup email to cold prospects. Do not include any sales pitch or call to action beyond acknowledging they can reach out if circumstances change. Make it clear this is goodbye, not another follow-up</td>
+          <td>10 min sending</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Monitor Responses</td>
+          <td>Watch for replies over next 48-72 hours. Many responses come quickly as prospect reacts to sense of loss. Some trickle in over following weeks</td>
+          <td>5 min daily for week</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Engage or Archive</td>
+          <td>For prospects who respond positively, restart conversation based on their reply. For those who do not respond at all, archive them from active outreach and move on. Do not send follow-up to breakup email</td>
+          <td>Varies by responses</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Wait at least 2-3 weeks and 3-4 touchpoints before sending breakup email. Sending too early looks impatient. Need enough history that prospect recognises you have genuinely tried before stepping back.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Instantly</strong></td>
+          <td>$ per sending account</td>
+          <td>Automated email sequences including breakup emails</td>
+          <td>Build multi-step sequences with breakup email as final step. Automatically sends to prospects who reach end of sequence with no engagement. Track opens and replies. Pause individual prospects if they engage mid-sequence</td>
+          <td>Automated approach can feel impersonal if not carefully crafted. Need to maintain good sender reputation. Works best for high-volume outreach where some automation is acceptable</td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot Sequences</strong></td>
+          <td>Included in Sales Hub</td>
+          <td>Semi-automated follow-up sequences for HubSpot users</td>
+          <td>Create email sequences with breakup email as final step. Sequences pause automatically if prospect replies or books meeting. Integrated with CRM so you see full engagement history. Task reminders for manual follow-up steps</td>
+          <td>Requires HubSpot Sales Hub subscription. More manual than dedicated cold email tools. Best for lower-volume, higher-touch outreach where you want control</td>
+        </tr>
+        <tr>
+          <td><strong>Gmail or Outlook</strong></td>
+          <td>Free</td>
+          <td>Manual breakup emails for low-volume, high-value prospects</td>
+          <td>Maximum personalisation and authenticity. Write each breakup email individually referencing specific previous conversations. Shows genuine respect and care. Best for strategic accounts worth white-glove treatment</td>
+          <td>Does not scale beyond handful of prospects. No tracking or automation. Entirely manual process. Only viable for most important prospects or very small outreach volume</td>
+        </tr>
+        <tr>
+          <td><strong>LinkedIn Messages</strong></td>
+          <td>Free with connection</td>
+          <td>Breakup messages for LinkedIn-based outreach</td>
+          <td>Send breakup message via LinkedIn if that is primary outreach channel. More casual and conversational than email. Higher response rates for some audiences who live on LinkedIn. Free if you are already connected</td>
+          <td>Character limits constrain message length. Requires existing connection for direct messaging. Cannot automate like email sequences. Need to track manually who has been sent breakup message</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Use <strong>Instantly</strong> or <strong>HubSpot Sequences</strong> for volume breakup emails as final step in automated sequences. Reserve manual <strong>Gmail</strong> breakup emails for top 20 strategic accounts where personalisation matters most. <strong>LinkedIn Messages</strong> for prospects who primarily engage there.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Message Crafting sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Message Crafting - Respectful and Brief</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Tone and structure matter enormously</h3>
+            <p>Breakup email must walk fine line between professional and personal. Too formal feels like automated message. Too casual can come across as passive-aggressive. Aim for respectful acknowledgment of their silence combined with graceful exit that leaves door open.</p>
+
+            <h3>Essential message elements</h3>
+            <ul>
+              <li><strong>Acknowledgment of silence</strong> - Recognise that they have not responded without making them feel guilty. "I know you have been busy" not "You have ignored my emails"</li>
+              <li><strong>Explicit statement of ending outreach</strong> - Be crystal clear this is final message. "This will be last email from me" removes ambiguity and triggers loss aversion</li>
+              <li><strong>No hard feelings</strong> - Show you understand and respect their decision not to engage. No passive-aggressive comments about wasted effort</li>
+              <li><strong>Open door for future</strong> - Brief mention that they can reach out if circumstances change. Keeps option alive without pressure</li>
+            </ul>
+
+            <h3>Breakup email templates</h3>
+            <div class="email-block"><span class="label">Template 1: Professional and Concise</span>Hi Sarah,
+
+I have reached out a few times but have not heard back, which tells me now is not the right time.
+
+I will stop reaching out. If circumstances change and you would like to explore how we help companies like Acme reduce customer churn, feel free to reach out.
+
+All the best,
+James</div>
+
+            <div class="email-block"><span class="label">Template 2: Warmer with Context</span>Hi Sarah,
+
+I have sent a few emails about helping Acme tackle customer churn challenges. Since I have not heard back, I am guessing either timing is not right or this is not a priority at the moment.
+
+No worries at all. I will close your file on my end so you do not get any more emails from me.
+
+If things change down the road and you want to revisit, you know where to find me. Wishing you success with whatever you are focused on.
+
+Cheers,
+James</div>
+
+            <div class="highlight">
+              <strong>What to avoid:</strong> Never be passive-aggressive ("I guess you are too busy for solutions that could save you money"). Never include sales pitch ("One last thing before I go..."). Never threaten scarcity ("This offer expires"). Keep it genuine and respectful.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timing Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Timing Strategy - Not Too Soon, Not Too Late</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Optimal timing for breakup email</h3>
+            <p>Send breakup too early and prospect thinks you give up easily. Send too late and they have completely forgotten who you are. Sweet spot is after enough attempts that you have established genuine effort but before you become annoying pest they actively avoid.</p>
+
+            <h3>Touchpoint guidelines</h3>
+            <ul>
+              <li><strong>After 3-4 email attempts</strong> - Minimum number to establish pattern. Fewer looks impatient. Space emails 3-5 days apart so this spans 2-3 weeks</li>
+              <li><strong>After multi-channel outreach</strong> - Stronger if you have tried email plus LinkedIn or email plus phone. Shows genuine effort across channels</li>
+              <li><strong>After value-add touchpoints</strong> - Most effective if previous emails offered genuine value, not just sales pitches. Breakup after being helpful carries more weight</li>
+              <li><strong>Before you become nuisance</strong> - Stop before crossing line into harassment. If you have sent 7-8 emails with no response, breakup should have come sooner</li>
+            </ul>
+
+            <h3>Sequence timing examples</h3>
+            <table>
+              <tr><th>Sequence Type</th><th>Total Duration</th><th>Number of Touchpoints</th><th>Breakup Timing</th></tr>
+              <tr>
+                <td>Standard email sequence</td>
+                <td>3 weeks</td>
+                <td>4 emails spaced 4-5 days apart</td>
+                <td>Final email in sequence</td>
+              </tr>
+              <tr>
+                <td>Multi-channel outreach</td>
+                <td>4 weeks</td>
+                <td>3 emails, 2 LinkedIn messages, 1 call attempt</td>
+                <td>Week 4 after all channels tried</td>
+              </tr>
+              <tr>
+                <td>High-value account</td>
+                <td>6 weeks</td>
+                <td>5 personalised emails with resources</td>
+                <td>Week 6 after demonstrating significant effort</td>
+              </tr>
+              <tr>
+                <td>Event follow-up</td>
+                <td>2 weeks</td>
+                <td>3 emails referencing event meeting</td>
+                <td>Week 2 if no response to meeting follow-up</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Seasonal considerations:</strong> Avoid sending breakup emails right before major holidays or industry event seasons when prospects are legitimately overwhelmed. They may have intended to respond but never got chance. Give them benefit of doubt around timing.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Response Handling sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Response Handling - Restart Conversation Gracefully</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Types of responses you will receive</h3>
+            <p>Breakup emails generate diverse responses requiring different handling approaches. Some prospects apologise and want to engage. Others explain timing was bad and ask you to follow up later. Some simply say thank you for respecting their silence. Each requires tailored response.</p>
+
+            <h3>Response categories and handling</h3>
+            <ul>
+              <li><strong>"Sorry, timing was just bad - let's talk"</strong> - Immediate interest. Respond quickly to schedule call. They are ready to engage now</li>
+              <li><strong>"Not right now but check back in 3 months"</strong> - Genuine future interest. Thank them, add reminder in CRM, follow up exactly when they suggested</li>
+              <li><strong>"Thanks for understanding, will reach out if needed"</strong> - Polite acknowledgment. Simply thank them and move on. They know how to find you</li>
+              <li><strong>"Actually, I have been meaning to respond..."</strong> - Guilt-driven engagement. Move forward professionally without dwelling on previous silence</li>
+            </ul>
+
+            <h3>Response templates by type</h3>
+            <table>
+              <tr><th>Their Response</th><th>Your Reply</th><th>Next Action</th></tr>
+              <tr>
+                <td>Apology and request to discuss</td>
+                <td>"No worries at all. Here is my calendar link - grab any time that works for you"</td>
+                <td>Move to discovery call immediately</td>
+              </tr>
+              <tr>
+                <td>Ask to follow up later</td>
+                <td>"Sounds good. I will reach out in 3 months as you suggested. Best of luck with X in meantime"</td>
+                <td>Set CRM reminder for exact date</td>
+              </tr>
+              <tr>
+                <td>Polite acknowledgment</td>
+                <td>"Appreciate you letting me know. All the best with your initiatives"</td>
+                <td>Archive from active outreach</td>
+              </tr>
+              <tr>
+                <td>Referral to colleague</td>
+                <td>"Thanks for intro. I will reach out to Sarah directly and mention you connected us"</td>
+                <td>Contact referred person with warm intro</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Critical rule:</strong> Never follow up again on breakup email if they do not respond. Sending "Just checking if you saw my last email" after breakup completely undermines it and looks desperate. If they do not respond to breakup, they are truly not interested. Move on.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Integration with Sequences sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Integration with Sequences - Automate the Breakup</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Build breakup into outreach cadence</h3>
+            <p>Most effective use of breakup emails is building them into standard outreach sequences as final step. This ensures every cold prospect eventually receives graceful exit rather than being abandoned mid-sequence or pestered indefinitely. Systematise the process.</p>
+
+            <h3>Sequence structure with breakup</h3>
+            <ul>
+              <li><strong>Email 1 (Day 0): Initial value offer</strong> - Lead with insight or resource relevant to their role and company</li>
+              <li><strong>Email 2 (Day 4): Different angle</strong> - Address different pain point or use case showing breadth of understanding</li>
+              <li><strong>Email 3 (Day 8): Social proof</strong> - Share brief case study or customer quote from similar company</li>
+              <li><strong>Email 4 (Day 13): Question or ask</strong> - Simple question to lower barrier to response or direct meeting request</li>
+              <li><strong>Email 5 (Day 18): Breakup</strong> - Respectful exit message making clear this is final outreach</li>
+            </ul>
+
+            <h3>Automation considerations</h3>
+            <table>
+              <tr><th>Consideration</th><th>Approach</th><th>Why It Matters</th></tr>
+              <tr>
+                <td>Pause on any engagement</td>
+                <td>Stop automated sequence if prospect opens, clicks, or replies to any email</td>
+                <td>Sending breakup to engaged prospect looks robotic. Manual follow-up is better</td>
+              </tr>
+              <tr>
+                <td>Personalisation tokens</td>
+                <td>Use first name, company name, and relevant details in breakup template</td>
+                <td>Even automated breakup should feel personal. Generic "Dear user" kills effect</td>
+              </tr>
+              <tr>
+                <td>Send time optimisation</td>
+                <td>Send breakup emails at same optimal time as rest of sequence</td>
+                <td>Consistency in send times maintains professional appearance</td>
+              </tr>
+              <tr>
+                <td>Response monitoring</td>
+                <td>Set up alerts for replies to breakup emails for immediate follow-up</td>
+                <td>Fast response to breakup replies shows you were genuine, not fully automated</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Hybrid approach:</strong> Consider automating first 4 emails but manually reviewing list before sending breakup. This lets you remove anyone you have had offline interactions with or who showed micro-engagement not captured in automation. Best of efficiency and thoughtfulness.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Passive-aggressive tone</h4>
+          <div class="why">Breakup email includes guilt-tripping language like "I guess you are too busy" or "Sorry for bothering you". Comes across as petty and damages brand.</div>
+          <div class="fix">Keep tone genuinely respectful and professional. Acknowledge their silence without judgment. Make it about respecting their time, not your wounded ego.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Including sales pitch</h4>
+          <div class="why">Cannot resist adding "One last thing..." or feature recap in breakup email. Undermines entire premise that you are backing off.</div>
+          <div class="fix">Breakup email should contain zero sales content. Just acknowledgment of silence, statement of ending outreach, and brief open door for future. That is all.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Sending too early</h4>
+          <div class="why">Sending breakup after only 1-2 attempts or within first week. Looks impatient and gives up too quickly to be credible.</div>
+          <div class="fix">Wait for at least 3-4 touchpoints over 2-3 weeks minimum. Need to establish pattern of genuine effort before graceful exit makes sense.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Following up on breakup email</h4>
+          <div class="why">Sending "Did you see my last email?" after breakup message. Completely destroys credibility and makes you look desperate or dishonest about stopping.</div>
+          <div class="fix">Breakup email is final message, period. If they do not respond, archive them and move on. Following up on breakup is sales cardinal sin.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Generic automated template obvious to recipient</h4>
+          <div class="why">Breakup reads like obvious mail merge with wrong personalisation tokens or generic "Dear valued prospect" language. Kills emotional impact.</div>
+          <div class="fix">Even if automated, ensure personalisation tokens are correct and template reads naturally. Test sends to yourself. Should feel personal even if at scale.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Too long and rambling</h4>
+          <div class="why">Multi-paragraph breakup email explaining in detail why you are backing off, how many times you tried, what you wanted to share. Nobody reads it.</div>
+          <div class="fix">Keep breakup email under 4-5 sentences maximum. Brief and respectful beats long and explanatory. They get the point quickly or not at all.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

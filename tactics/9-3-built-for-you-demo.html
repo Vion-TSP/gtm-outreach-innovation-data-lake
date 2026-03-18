@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 9.3 — We Built This For You Demo | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 9.3 - Creative / Guerrilla</div>
+  <h1>We Built This For You Demo</h1>
+  <p class="desc">Pre-configure your product with the prospect's data, logo, and use case. Record a personalised walkthrough showing exactly how they would use it. Creates immediate value visualisation and dramatically shortens sales cycles with technical buyers and founders.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: High</span>
+    <span class="tag tag-cost">Cost: Low</span>
+    <span class="tag tag-icp">ICP: C-suite, Founders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Prospects don't want to imagine how your product could work for them - they want to see it already working for them. Pre-configuring your product with their actual data removes all friction from visualisation. They open the link and immediately see their company name, their logo, their use case already built out.
+      </div>
+      <h3>The psychology behind custom demos</h3>
+      <ul>
+        <li><strong>Ownership effect</strong> - Seeing their company name and logo in your product creates psychological ownership before they've bought anything. It feels like it's already theirs</li>
+        <li><strong>Reduced cognitive load</strong> - Generic demos force prospects to mentally translate "how this demo applies to my situation." Custom demos eliminate that work. The value is immediately obvious</li>
+        <li><strong>Signal of effort</strong> - Building something custom for them signals serious intent and investment. This creates reciprocity obligation to at least take the meeting</li>
+        <li><strong>Social proof internally</strong> - Recipients forward the demo to colleagues: "Look what this vendor built for us." This expands your reach inside the account</li>
+      </ul>
+      <h3>Why this works for technical buyers</h3>
+      <p>Technical buyers and founders are sceptical of sales pitches. They want proof, not promises. A custom demo is proof. You're not telling them it works - you're showing them it already works with their data. This bypasses scepticism entirely.</p>
+      <p><strong>The format advantage:</strong> Unlike scheduled demos (which require calendar coordination and gatekeeping), a recorded custom demo can be watched anytime, forwarded to stakeholders, and rewatched for clarity. It's asynchronous sales at its best.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-email">R</div><div class="wf-label">Research Target</div><div class="wf-action">Company data/use case</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-phone">C</div><div class="wf-label">Configure Product</div><div class="wf-action">Load their data</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">R</div><div class="wf-label">Record Walkthrough</div><div class="wf-action">Loom/video</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">S</div><div class="wf-label">Send Demo Link</div><div class="wf-action">Personalised email</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-phone">T</div><div class="wf-label">Track Views</div><div class="wf-action">Monitor engagement</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-email">F</div><div class="wf-label">Follow Up</div><div class="wf-action">Based on viewing data</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Research Target Company</td>
+          <td>Understand their business model, customer base, tech stack, and likely use case for your product. Pull publicly available data (website copy, customer testimonials, job postings) that you can use in the demo</td>
+          <td>15-20 min per prospect</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Configure Product with Their Data</td>
+          <td>Create demo account with their company name and logo. Load sample data that reflects their use case. If you're a CRM, create fake contacts that match their customer profile. If you're analytics, create dashboards with their KPIs. Make it realistic</td>
+          <td>20-30 min per demo (gets faster with practice)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Record Personalised Walkthrough</td>
+          <td>Use Loom or similar to record 3-5 min screen-share demo. Address them by name, reference their company specifics, walk through the configured demo pointing out features relevant to their pain points. Keep it conversational, not scripted</td>
+          <td>10-15 min (including 1-2 takes)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Send Personalised Demo Link</td>
+          <td>Email with subject: "Built this for Acme" or "Quick demo customised for you." Body: explain what you built and why. Include Loom link and optional calendar link for follow-up discussion</td>
+          <td>5 min per email</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Track Who Views</td>
+          <td>Loom shows view counts and watch time. See if they watched full video, rewatched sections, or forwarded to colleagues. This data informs follow-up timing and messaging</td>
+          <td>2 min to check analytics</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Follow Up Based on Engagement</td>
+          <td>If they watched: follow up within 24h asking for feedback. If they watched multiple times or forwarded: they're highly interested - call immediately. If no view after 3 days: send reminder email</td>
+          <td>10 min per follow-up</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> If your product allows it, give them live access to the configured demo environment (not just a recording). Let them click around themselves. This increases engagement and lets them explore features you didn't cover in the video.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Your Product + Demo Environments</strong></td>
+          <td>Free (internal)</td>
+          <td>Creating custom configured instances</td>
+          <td>Full product functionality. Can create unlimited demo accounts with different configurations. Prospects see real product, not screenshots</td>
+          <td>Requires your product to support easy account creation and data loading. Not all products make this simple</td>
+        </tr>
+        <tr>
+          <td><strong>Loom</strong></td>
+          <td>Free (up to 25 videos), $12/mo Pro</td>
+          <td>Recording and sharing screen-share demos</td>
+          <td>Simple recording, instant shareable links, view analytics (who watched, how long, rewatches). Trim and edit videos after recording. Custom thumbnails for branding</td>
+          <td>Free plan limits to 25 videos total (must delete old ones). 5 min max video length on free tier. Pro plan needed for longer videos and unlimited library</td>
+        </tr>
+        <tr>
+          <td><strong>Vidyard</strong></td>
+          <td>Free (limited), $19/mo Pro</td>
+          <td>Video hosting with advanced analytics</td>
+          <td>Detailed viewer analytics (which sections watched, drop-off points, geographic location). Video CTAs (add calendar link overlay in video). Integration with HubSpot and Salesforce</td>
+          <td>More expensive than Loom. Steeper learning curve. Analytics can be overwhelming for simple use cases</td>
+        </tr>
+        <tr>
+          <td><strong>Custom Demo Platforms (Navattic, Storylane, Walnut)</strong></td>
+          <td>$$$</td>
+          <td>Building no-code interactive demos at scale</td>
+          <td>Create interactive product tours without engineering. Capture your product UI, make it clickable, add personalisation variables. Scales to hundreds of custom demos. Analytics on every click</td>
+          <td>Expensive (enterprise pricing, often $10,000+ annually). Overkill if you can just spin up real demo accounts. Best for complex products where real demos are hard to configure</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>your product + Loom</strong> (free or $12/mo). This covers most use cases. Only invest in custom demo platforms (Navattic, Storylane, Walnut) if your product is too complex to configure quickly or if you're sending 50+ custom demos per month and need automation.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Data Configuration sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Data Configuration (Realistic Data That Matches Their Use Case)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why data quality matters</h3>
+            <p>Generic demo data (names like John Doe, companies like Acme Corp) screams lazy outreach. The power of this tactic is in the specificity. The data must feel like it could actually be their data.</p>
+
+            <h3>Data sourcing strategies</h3>
+            <ul>
+              <li><strong>Public website scraping</strong> - Pull their customer testimonials, case study names, product categories from their website. Use these as sample data points</li>
+              <li><strong>Industry benchmarks</strong> - If you're showing analytics or metrics, use realistic numbers for their industry and company size. Research typical KPIs for their sector</li>
+              <li><strong>Tech stack inference</strong> - Use BuiltWith or job postings to see what tools they use. Configure integrations or data imports to match their stack</li>
+              <li><strong>LinkedIn research</strong> - Pull employee names and titles from LinkedIn. Use realistic role names in your demo data (if you're a CRM, create contacts with titles that match their team structure)</li>
+            </ul>
+
+            <h3>Configuration checklist</h3>
+            <table>
+              <tr><th>Element</th><th>What to Customise</th><th>Where to Find Data</th></tr>
+              <tr><td>Account name</td><td>Their actual company name</td><td>Obvious (website, LinkedIn)</td></tr>
+              <tr><td>Logo</td><td>Their company logo</td><td>Website, LinkedIn, Clearbit</td></tr>
+              <tr><td>User names</td><td>Realistic names/roles for their team</td><td>LinkedIn (check their team page)</td></tr>
+              <tr><td>Data points</td><td>Sample data reflecting their business</td><td>Website (customer types, product categories), industry benchmarks</td></tr>
+              <tr><td>Metrics/KPIs</td><td>Realistic numbers for their stage/industry</td><td>Industry reports, competitor analysis, Crunchbase</td></tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> Spend 70% of your time on data configuration, 30% on recording. A well-configured demo with mediocre narration beats a perfectly narrated demo with generic data every time.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Video Recording Tips sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Video Recording Tips (Keep Under 5 Min, Address Specific Pain Points)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why shorter is better</h3>
+            <p>Busy executives will watch a 3 min video. They will not watch a 15 min video. You have one chance to hold attention. Use it wisely. Focus on one core use case, not a comprehensive product tour.</p>
+
+            <h3>Video structure</h3>
+            <table>
+              <tr><th>Section</th><th>Duration</th><th>What to Cover</th></tr>
+              <tr>
+                <td>Intro</td>
+                <td>30 sec</td>
+                <td>"Hi Sarah, I built this quick demo for Acme. I noticed you're hiring SDRs and scaling outbound. Here's how we'd help you manage that."</td>
+              </tr>
+              <tr>
+                <td>Context</td>
+                <td>30 sec</td>
+                <td>"I configured this with your company name and created sample data based on your customer profile. What you're seeing is how it would look for your team."</td>
+              </tr>
+              <tr>
+                <td>Walkthrough</td>
+                <td>2-3 min</td>
+                <td>Show 2-3 key features that solve their specific pain point. Point out where their data appears. Click through realistic workflows. Narrate what you're doing and why it matters to them</td>
+              </tr>
+              <tr>
+                <td>Close</td>
+                <td>30 sec</td>
+                <td>"That's a quick look. I can give you access to this demo environment if you want to click around yourself. Happy to discuss how this would work for your specific setup. Calendar link below."</td>
+              </tr>
+            </table>
+
+            <h3>Narration best practices</h3>
+            <ul>
+              <li><strong>Speak to them directly</strong> - Use "you" and "your team," not "users" or "customers." Make it personal</li>
+              <li><strong>Explain the why, not just the what</strong> - Don't just say "here's the dashboard." Say "this dashboard shows your SDR activity in real-time, so you can spot issues before they become problems"</li>
+              <li><strong>Point out their data</strong> - Explicitly call out when you're showing their company name, logo, or customised data: "See, I used your actual customer segments here"</li>
+              <li><strong>Don't script it</strong> - Conversational tone beats polished script. It's okay to pause or say "um" occasionally. Sounds more authentic</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Do a quick test recording first. Watch it back. If you would skip forward or zone out, your prospect will too. Redo it. Aim for energy and specificity, not perfection.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Follow-Up Based on Viewing Data sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Follow-Up Based on Viewing Data (Track Engagement, Time Follow-Up)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why viewing analytics matter</h3>
+            <p>Loom and Vidyard show who watched, how long, and whether they rewatched or shared. This data is gold for follow-up timing and messaging. Someone who watched all 5 min gets a different follow-up than someone who bailed after 30 sec.</p>
+
+            <h3>Follow-up strategy by engagement level</h3>
+            <table>
+              <tr><th>Viewing Behavior</th><th>What It Means</th><th>Follow-Up Action</th></tr>
+              <tr>
+                <td>Watched 100%, multiple views</td>
+                <td>Highly interested, likely shared internally</td>
+                <td>Call immediately or send urgent email: "Saw you watched the demo a few times. Would love to give you live access to explore. When can we chat?"</td>
+              </tr>
+              <tr>
+                <td>Watched 70-100%, single view</td>
+                <td>Interested, evaluating</td>
+                <td>Follow up within 24h: "Thanks for checking out the demo. What did you think? Happy to walk through any questions or give you access to the environment."</td>
+              </tr>
+              <tr>
+                <td>Watched 30-70%, single view</td>
+                <td>Curious but not hooked, or got interrupted</td>
+                <td>Follow up in 2-3 days: "Noticed you started the demo. Curious if it was relevant or if I missed the mark on your use case. Happy to build a different version if needed."</td>
+              </tr>
+              <tr>
+                <td>Watched less than 30%</td>
+                <td>Not relevant, or timing is bad</td>
+                <td>Follow up in 5-7 days: "Saw you didn't get through the demo. Totally fine if timing's not right. Let me know if you want me to try again in a few months."</td>
+              </tr>
+              <tr>
+                <td>No view after 3 days</td>
+                <td>Missed the email or deprioritised</td>
+                <td>Send reminder: "Following up on the custom demo I built for Acme. Did you get a chance to check it out? Only takes 3 min."</td>
+              </tr>
+            </table>
+
+            <h3>Advanced follow-up tactics</h3>
+            <ul>
+              <li><strong>Reference specific sections</strong> - If Loom shows they rewatched a particular section, mention it: "Noticed you rewatched the reporting section. Want to dive deeper on that?"</li>
+              <li><strong>Offer live access</strong> - If engagement is high, give them login credentials to the configured demo so they can explore themselves</li>
+              <li><strong>Multi-stakeholder tracking</strong> - If video was shared to multiple people (Loom shows this), follow up acknowledging the team interest: "Saw a few people on your team watched this. Happy to do a live walkthrough for everyone."</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Set up Loom notifications so you're alerted the moment someone watches. If a high-priority prospect watches at 3pm, you can follow up by 4pm while you're still top of mind. Speed wins.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scaling Considerations sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Scaling Considerations (Timebox Setup, Reuse Components)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The scaling challenge</h3>
+            <p>Custom demos are high-effort. If you spend 60 min per demo, you can only do 5-6 per week. To scale this tactic, you need to reduce setup time without sacrificing quality.</p>
+
+            <h3>Efficiency strategies</h3>
+            <ul>
+              <li><strong>Template configurations</strong> - Create 3-4 base configurations for common ICP segments (e.g., SaaS companies, e-commerce, agencies). Start with template and customise rather than building from scratch each time</li>
+              <li><strong>Reusable data sets</strong> - Build libraries of realistic sample data for common industries. Instead of creating new contacts/products/metrics every time, swap in pre-built data sets</li>
+              <li><strong>Narration scripts</strong> - Write 2-3 narration scripts for common pain points. Personalise the intro and close, but reuse the middle walkthrough sections</li>
+              <li><strong>Time limits</strong> - Cap setup at 30 min max per demo. If you can't configure it in 30 min, your product is too complex for this tactic (use interactive demo platforms instead)</li>
+            </ul>
+
+            <h3>When NOT to use this tactic</h3>
+            <table>
+              <tr><th>Situation</th><th>Why It Won't Work</th><th>Alternative</th></tr>
+              <tr><td>Product requires 60+ min setup</td><td>Too time-intensive, ROI doesn't justify effort</td><td>Use interactive demo platforms (Navattic, Storylane) that let you build once and personalise variables</td></tr>
+              <tr><td>No clear visual differentiation</td><td>If demo looks the same for everyone regardless of data, customisation isn't impactful</td><td>Stick to standard demos or focus personalisation on use case narrative, not data</td></tr>
+              <tr><td>Accounts worth less than $10,000 ACV</td><td>Effort doesn't match potential value</td><td>Use this for enterprise only. For SMB, use standard recorded demos or live demos</td></tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> Only use this tactic for accounts worth at least $10,000 ACV and where you can configure a realistic demo in under 30 min. Otherwise, the ROI doesn't justify the effort.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Demo doesn't work properly (broken features or bugs)</h4>
+          <div class="why">You send a demo link but when they click in, something is broken or doesn't load. This destroys credibility instantly.</div>
+          <div class="fix">Always test the demo environment yourself before sending. Click through the full workflow. Make sure all features work. Have a colleague test it as a sanity check. If your product is buggy in demos, fix that before using this tactic.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Too much data (overwhelming, not helpful)</h4>
+          <div class="why">You load the demo with hundreds of data points trying to be thorough. Prospect opens it and is overwhelmed. Can't figure out what to focus on.</div>
+          <div class="fix">Less is more. Show just enough data to illustrate the use case. If it's a CRM, create 10-15 sample contacts, not 500. If it's analytics, show 2-3 key metrics, not 20 dashboards. Clarity beats comprehensiveness.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Not explaining what they're seeing</h4>
+          <div class="why">You send the demo link with no context. Prospect opens it, sees their company name, but doesn't understand what they're looking at or why it matters.</div>
+          <div class="fix">Narrate the demo. Record a Loom walkthrough explaining what you built and why. Point out the customised elements. Connect features to their specific pain points. Context is everything.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. No clear CTA (they watch, then nothing happens)</h4>
+          <div class="why">You send an impressive demo but don't tell them what to do next. They watch it, think "cool," then move on with their day.</div>
+          <div class="fix">End the video with a clear CTA: "I can give you live access to this environment to explore, or we can jump on a call to discuss your specific setup. Calendar link is below." Make the next step obvious and easy.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Spending too long per demo (not sustainable)</h4>
+          <div class="why">You spend 90 min building each custom demo. You can only do 3-4 per week, and it burns you out quickly.</div>
+          <div class="fix">Timebox to 30 min max per demo. Create template configurations for common ICP segments. Reuse data sets and narration scripts. If you can't configure a realistic demo in 30 min, use interactive demo platforms or stick to live demos.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Generic data that doesn't match their business</h4>
+          <div class="why">You put their logo on a generic demo with placeholder data (John Doe, Acme Corp). Feels lazy and templated, defeating the purpose.</div>
+          <div class="fix">Research their business and use realistic data. Pull customer types from their website, use industry-appropriate metrics, create contacts with job titles that match their team structure. Data quality is what makes this tactic work.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

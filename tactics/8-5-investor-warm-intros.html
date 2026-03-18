@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 8.5 — Investor Network Warm Intros | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 8.5 - Partnerships & Ecosystem</div>
+  <h1>Investor Network Warm Intros</h1>
+  <p class="desc">Leverage your investors' portfolio companies for warm introductions to target accounts. VCs and angels actively facilitate connections between portfolio companies, creating credible pathways to decision-makers that cold outreach cannot match.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low-Medium</span>
+    <span class="tag tag-cost">Cost: Free</span>
+    <span class="tag tag-icp">ICP: Founders, C-suite Decision Makers</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> VCs and angel investors maintain close relationships with portfolio founders. When investor makes introduction between two portfolio companies, both sides view it as high-signal. Founders trust their investors' judgment, so intro comes pre-validated. No cold pitch can compete with that credibility.
+      </div>
+      <h3>The psychology behind investor intros</h3>
+      <ul>
+        <li><strong>Credibility transfer</strong> - Investor backing both companies creates immediate trust. If your VC believes you are worth connecting with, target founder assumes you must be legitimate and valuable</li>
+        <li><strong>Social proof at scale</strong> - Being portfolio company of respected VC is social proof in itself. Target knows you have been vetted, funded, and are building something significant</li>
+        <li><strong>Reciprocity in ecosystem</strong> - Portfolio founders understand ecosystem dynamics. They know helping fellow portfolio companies creates goodwill and potential for future reciprocation. Cultural expectation of mutual support</li>
+        <li><strong>Investor pressure</strong> - Founders generally want to maintain positive relationship with their investors. When investor requests they take meeting with portfolio company, most will accommodate even if slightly inconvenient</li>
+      </ul>
+      <h3>Why investor networks specifically</h3>
+      <p>Investors actively curate portfolios of companies that can help each other. They facilitate introductions because portfolio success benefits them. Unlike random LinkedIn connections, investor networks come with built-in incentive alignment. Everyone wins when portfolio companies do business together.</p>
+      <p><strong>The compounding effect:</strong> Each successful intro through investor network strengthens your relationship with that investor. They become more willing to make future introductions. Over time, your investors become active sales champions, constantly identifying opportunities to connect you with relevant portfolio companies.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">M</div><div class="wf-label">Map</div><div class="wf-action">Portfolio</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">I</div><div class="wf-label">Identify</div><div class="wf-action">Target companies</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">R</div><div class="wf-label">Research</div><div class="wf-action">Fit + timing</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">R</div><div class="wf-label">Request</div><div class="wf-action">Intro from investor</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">E</div><div class="wf-label">Engage</div><div class="wf-action">Initial meeting</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">R</div><div class="wf-label">Report</div><div class="wf-action">Back to investor</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Map Investor Portfolio</td>
+          <td>Research full portfolio of your investors using their websites, Crunchbase, and portfolio pages. Create spreadsheet listing all portfolio companies with basic details such as stage, industry, and employee count</td>
+          <td>1-2 hours per investor</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Identify Target Companies</td>
+          <td>Filter portfolio list for companies matching your ICP. Look for those at right stage, industry, and size. Prioritise companies where your solution addresses clear need based on public information</td>
+          <td>30 min filtering and prioritisation</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Research Fit and Timing</td>
+          <td>Deep dive into priority targets. Review their website, recent news, LinkedIn posts from founders, and tech stack. Identify specific reasons why now is right time and what value you bring</td>
+          <td>15-20 min per target company</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Request Intro from Investor</td>
+          <td>Email investor with specific request for intro to target company. Include brief context on why you believe it would be valuable connection for both sides. Make it easy for investor to forward your message</td>
+          <td>10-15 min crafting request</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Engage in Initial Meeting</td>
+          <td>When intro is made, respond promptly and professionally. Schedule call within week if possible. Treat it as high-value meeting because investor reputation is on line. Deliver value and be helpful</td>
+          <td>30-45 min meeting</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Report Back to Investor</td>
+          <td>Close loop with investor after meeting. Brief update on how conversation went and what next steps are. Thank them for intro. This encourages future introductions and shows respect for their time</td>
+          <td>5 min follow-up email</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Do not request intros to entire portfolio at once. Start with 2-3 highest-fit companies. Successful outcomes from first intros build investor confidence in making more. Batch requests quarterly rather than overwhelming investors with constant asks.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn</strong></td>
+          <td>Free or Premium £30/mo</td>
+          <td>Finding connections and researching portfolio companies</td>
+          <td>See shared connections with investor, view portfolio founder profiles, identify warm intro paths. Premium shows who viewed your profile and allows InMail. Essential for network mapping</td>
+          <td>Data freshness varies. Not all portfolio companies are clearly labeled. Requires manual research to build comprehensive portfolio map</td>
+        </tr>
+        <tr>
+          <td><strong>Crunchbase</strong></td>
+          <td>Free basic, Pro £49/mo</td>
+          <td>Comprehensive portfolio research and investor mapping</td>
+          <td>Lists investor portfolios with funding details, company stage, and key metrics. Filter by industry, stage, and location. Export portfolio lists for analysis. Track new investments from your VCs</td>
+          <td>Premium features require Pro subscription. Some investor portfolios are incomplete or outdated. Focus on larger, active VCs with better data coverage</td>
+        </tr>
+        <tr>
+          <td><strong>The Swarm</strong></td>
+          <td>Free community access</td>
+          <td>Connecting with other SaaS founders and leveraging investor networks</td>
+          <td>Community of SaaS founders organized by investor. Facilitates warm intros between portfolio companies. Regular virtual and in-person events. Strong culture of helping fellow founders</td>
+          <td>Primarily focused on certain investor portfolios. Need to be accepted into community. Value depends on active participation and relationship building</td>
+        </tr>
+        <tr>
+          <td><strong>Google Sheets</strong></td>
+          <td>Free</td>
+          <td>Tracking intro requests and outcomes</td>
+          <td>Simple tracking system for portfolio companies you have targeted, intro status, meeting outcomes, and follow-up actions. Share access with sales team. No cost, infinitely customisable</td>
+          <td>Completely manual process. No automation or integrations. Requires discipline to maintain. Only as valuable as your commitment to updating it</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>LinkedIn</strong> (premium if budget allows for better research) plus <strong>Crunchbase Pro</strong> (49 per month) for comprehensive portfolio mapping. Track intro requests and outcomes in <strong>Google Sheets</strong>. Join <strong>The Swarm</strong> if backed by participating investors for community-facilitated connections.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Portfolio Research sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Portfolio Research - Know Before You Ask</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Map investor portfolios systematically</h3>
+            <p>Investors have dozens to hundreds of portfolio companies. Requesting intros blindly wastes their time and yours. Invest upfront effort mapping portfolios thoroughly so you can target highest-fit opportunities with specific rationale. Quality over quantity.</p>
+
+            <h3>Portfolio research checklist</h3>
+            <ul>
+              <li><strong>Investor portfolio pages</strong> - Start with official portfolio page on VC website. Lists active investments with links to company websites and often includes brief descriptions</li>
+              <li><strong>Crunchbase investor profile</strong> - Comprehensive view of all investments including historical exits. Filter by active portfolio only to focus on current companies</li>
+              <li><strong>LinkedIn connections</strong> - Check which portfolio founders are already in your extended network. Second-degree connections create easier warm intro paths</li>
+              <li><strong>Portfolio company news</strong> - Recent funding rounds, product launches, or expansion announcements signal active growth phase and potential buying intent</li>
+            </ul>
+
+            <h3>Portfolio prioritisation matrix</h3>
+            <table>
+              <tr><th>Criteria</th><th>High Priority</th><th>Medium Priority</th><th>Low Priority</th></tr>
+              <tr>
+                <td>ICP fit</td>
+                <td>Perfect match on size, industry, and role</td>
+                <td>Close fit with minor deviations</td>
+                <td>Loose fit requiring significant customisation</td>
+              </tr>
+              <tr>
+                <td>Timing signals</td>
+                <td>Recent funding, expansion, or hiring for roles you enable</td>
+                <td>Steady growth but no obvious trigger</td>
+                <td>No public signals of relevant activity</td>
+              </tr>
+              <tr>
+                <td>Problem awareness</td>
+                <td>Publicly discussing challenges you solve</td>
+                <td>Industry faces problem but company not vocal about it</td>
+                <td>Unclear whether they experience your problem</td>
+              </tr>
+              <tr>
+                <td>Relationship strength</td>
+                <td>Your investor is lead investor or board member</td>
+                <td>Your investor participated in round but not lead</td>
+                <td>Your investor has minimal relationship with company</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Documentation tip:</strong> Build portfolio tracking spreadsheet including columns for company name, ICP fit score, timing signals, investor relationship strength, and intro status. Update quarterly as portfolios evolve. Reference this before requesting intros.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Request Crafting sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Request Crafting - Make It Easy to Forward</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Write intros investors want to make</h3>
+            <p>Investors receive constant requests for introductions. Stand out by making your request specific, low-effort, and mutually beneficial. Best intro requests demonstrate clear thinking about why connection makes sense and provide ready-to-forward context investor can send directly.</p>
+
+            <h3>Intro request structure</h3>
+            <ul>
+              <li><strong>Specific ask</strong> - Name exact company and person you want intro to. "Can you introduce me to Sarah at Acme?" not "Can you introduce me to relevant portfolio companies?"</li>
+              <li><strong>Context on fit</strong> - Brief explanation of why you believe connection would be valuable for both sides. Show you have done homework</li>
+              <li><strong>Forwardable paragraph</strong> - Include 2-3 sentence paragraph investor can copy-paste directly when making intro. Do the work for them</li>
+              <li><strong>Timing flexibility</strong> - Acknowledge you understand investor is busy. No pressure for immediate action. Patience shows respect for their time</li>
+            </ul>
+
+            <h3>Request email template</h3>
+            <div class="email-block">Hi James,
+
+Hope you are well. Quick question on portfolio intros.
+
+I am looking to connect with Sarah at Acme. We help companies in their space solve X challenge, and I noticed they recently announced Y initiative which suggests strong fit for what we do.
+
+If you are comfortable making intro, here is forwardable context:
+
+"Sarah, wanted to connect you with our portfolio company Rebel. They help companies like Acme solve X challenge through Y approach. Given your recent Z initiative, thought this could be timely connection. Both sides worth knowing."
+
+No rush on this - happy to wait for timing that makes sense. Let me know if you need any other context.
+
+Thanks,
+[Your name]</div>
+
+            <div class="highlight">
+              <strong>Frequency guidance:</strong> Limit intro requests to one every 4-6 weeks per investor. Batch 2-3 targets into single request rather than sending separate emails for each. Respect investor time to maintain relationship quality.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Intro Conversion sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Intro Conversion - Make Investor Look Good</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Honour intro with professionalism</h3>
+            <p>When investor makes introduction, their reputation is attached to it. How you handle that intro reflects on them. Respond promptly, be respectful of target's time, and deliver genuine value. Poor behaviour damages investor's willingness to make future intros.</p>
+
+            <h3>First response best practices</h3>
+            <ul>
+              <li><strong>Respond within 24 hours</strong> - Fast response shows respect for both investor's effort and target's time. Demonstrates you are organised and serious</li>
+              <li><strong>Thank investor publicly</strong> - Keep investor on thread initially when thanking them. Acknowledges their role and keeps them informed</li>
+              <li><strong>Move to direct thread quickly</strong> - After initial thanks, move investor to BCC and continue directly with target. Investors do not want to be copied on sales conversations</li>
+              <li><strong>Make scheduling easy</strong> - Provide calendar link or specific time options. Do not make target work to find meeting slot. Friction kills momentum</li>
+            </ul>
+
+            <h3>Meeting approach with portfolio companies</h3>
+            <table>
+              <tr><th>Do</th><th>Don't</th><th>Why</th></tr>
+              <tr>
+                <td>Lead with curiosity about their challenges</td>
+                <td>Launch into product pitch immediately</td>
+                <td>Discovery first approach shows you care about fit, not just making sale</td>
+              </tr>
+              <tr>
+                <td>Reference specific context from research</td>
+                <td>Give generic pitch you give everyone</td>
+                <td>Personalisation demonstrates respect and shows intro was thoughtfully requested</td>
+              </tr>
+              <tr>
+                <td>Offer value even if not immediate fit</td>
+                <td>Disengage if they are not ready to buy</td>
+                <td>Helpful resources or connections build goodwill in ecosystem for long term</td>
+              </tr>
+              <tr>
+                <td>Close loop with investor after meeting</td>
+                <td>Go silent after meeting happens</td>
+                <td>Reporting back shows appreciation and encourages future intros</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Long-term view:</strong> Not every investor intro converts immediately. Some become customers months or years later. Others refer you to colleagues or become champions. Treat every intro as beginning of relationship, not transactional sale attempt.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Investor Relationship sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Investor Relationship - Earn More Intros</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Build reputation as valuable connector</h3>
+            <p>Investors make more intros for portfolio companies who handle previous intros well and reciprocate value. Become known as founder who respects intro process, delivers results, and helps other portfolio companies. Earn ongoing access to network rather than one-time favours.</p>
+
+            <h3>Building investor confidence</h3>
+            <ul>
+              <li><strong>Report outcomes consistently</strong> - Brief update after every intro on how conversation went. Positive outcomes encourage more intros. Even non-conversions show professionalism if reported thoughtfully</li>
+              <li><strong>Offer intros in return</strong> - Proactively introduce portfolio companies to others in your network when relevant. Investors notice who gives as well as takes</li>
+              <li><strong>Share learnings with portfolio</strong> - Contribute to investor portfolio communications with tactical insights or resources. Be known as helpful portfolio member</li>
+              <li><strong>Invite investors to wins</strong> - When intro leads to customer win, tell investor specifically. They love success stories and will share with portfolio</li>
+            </ul>
+
+            <h3>Reciprocity opportunities</h3>
+            <table>
+              <tr><th>Way to Give Back</th><th>How to Execute</th><th>Impact</th></tr>
+              <tr>
+                <td>Intro portfolio companies to your network</td>
+                <td>Scan portfolio quarterly and proactively offer relevant connections</td>
+                <td>Demonstrates ecosystem thinking and builds reciprocity credit</td>
+              </tr>
+              <tr>
+                <td>Mentor earlier-stage portfolio companies</td>
+                <td>Offer office hours or specific expertise sessions to earlier-stage founders</td>
+                <td>Strengthens your relationship with investor and builds goodwill across portfolio</td>
+              </tr>
+              <tr>
+                <td>Provide product feedback to portfolio companies</td>
+                <td>When you use portfolio company products, offer detailed constructive feedback</td>
+                <td>Helps portfolio companies improve while demonstrating your thoughtfulness</td>
+              </tr>
+              <tr>
+                <td>Participate in investor events</td>
+                <td>Attend portfolio gatherings and contribute meaningfully to discussions</td>
+                <td>Face time with investor and other founders strengthens network effects</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Ecosystem mindset:</strong> Best portfolio companies view investor network as long-term community, not short-term lead source. Invest in relationships across portfolio. Help others succeed. Over years, this becomes compounding advantage as entire network knows and trusts you.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Requesting intros to entire portfolio</h4>
+          <div class="why">Emailing investor asking for intros to all portfolio companies at once. Shows lack of thoughtfulness and overwhelms investor with work.</div>
+          <div class="fix">Research portfolio thoroughly and request intros to 2-3 highest-fit companies with specific rationale for each. Quality and specificity over volume.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. No follow-through after intro made</h4>
+          <div class="why">Investor makes intro then never hears back about outcome. They wonder if intro was valuable or if you dropped ball. Reluctant to make future intros.</div>
+          <div class="fix">Always close loop with investor after intro meeting. Brief email summarising outcome and thanking them. Takes two minutes and maintains goodwill.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Treating intro as guaranteed sale</h4>
+          <div class="why">Assuming warm intro means prospect will definitely buy. Coming on too strong with aggressive sales tactics because you expect easy close.</div>
+          <div class="fix">Treat investor intros with same discovery-based approach as other leads. Intro gets you meeting; you still need to establish fit, build trust, and deliver value.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Generic intro request with no context</h4>
+          <div class="why">Asking investor for intro without explaining why you think connection makes sense. Investor has to do research themselves or makes intro blindly.</div>
+          <div class="fix">Always include specific context on why target company is good fit and what value connection offers both sides. Make investor confident in making intro.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Slow response after intro is made</h4>
+          <div class="why">Waiting several days to respond to investor intro email. Target and investor both question your seriousness and professionalism.</div>
+          <div class="fix">Respond within 24 hours maximum to investor intros. Fast response signals respect, professionalism, and genuine interest. Momentum matters.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Taking without giving back</h4>
+          <div class="why">Constantly requesting intros from investor but never offering to help portfolio companies or contribute to ecosystem. One-sided extraction damages relationship.</div>
+          <div class="fix">Proactively look for ways to help other portfolio companies. Make intros, share expertise, provide feedback. Build reputation as valuable ecosystem member.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

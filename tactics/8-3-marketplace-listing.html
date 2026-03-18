@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 8.3 — Marketplace / Integration Listing | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 8.3 - Partnerships & Ecosystem</div>
+  <h1>Marketplace / Integration Listing</h1>
+  <p class="desc">List your product on major platform marketplaces like HubSpot, Salesforce AppExchange, Zapier, or Slack App Directory. Leverage their existing user bases actively searching for complementary solutions to generate inbound leads from buyers already using platforms you integrate with.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low</span>
+    <span class="tag tag-icp">ICP: Technical Buyers, Operations Teams</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Companies using platforms like HubSpot, Salesforce, or Slack actively browse their marketplaces seeking solutions to extend functionality. These buyers have budget allocated for tools, existing intent to solve problems, and technical infrastructure ready for integrations. You meet them at the exact moment they are searching.
+      </div>
+      <h3>The psychology behind marketplace discovery</h3>
+      <ul>
+        <li><strong>Platform trust transfer</strong> - Being listed in official marketplace confers credibility. Buyers assume you have been vetted and approved by trusted platform. You inherit some of their brand equity</li>
+        <li><strong>Solution-seeking mindset</strong> - Users browsing marketplaces are problem-aware and actively looking for solutions. They are not cold prospects; they are warm buyers in evaluation mode</li>
+        <li><strong>Integration expectation</strong> - Marketplace listing signals seamless integration with platform they already use. Reduces perceived implementation risk and friction. They know it will work with their existing tools</li>
+        <li><strong>Curated discovery</strong> - Marketplaces surface relevant solutions through categories, search, and recommendations. You appear precisely when buyers need what you offer, without requiring cold outreach</li>
+      </ul>
+      <h3>Why marketplaces drive quality leads</h3>
+      <p>Marketplace leads self-qualify through their behaviour. They use a platform you integrate with, meaning they fit certain firmographic criteria. They browsed to your category, indicating relevant pain point. They clicked your listing, showing active interest. This multi-step qualification delivers higher intent leads than most cold outreach channels.</p>
+      <p><strong>The compounding effect:</strong> Each install and positive review strengthens your marketplace presence. Higher ratings improve search rankings. More installs create social proof. Top listings in competitive categories can generate consistent inbound pipeline month after month with minimal ongoing effort.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Select</div><div class="wf-action">Target marketplace</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">B</div><div class="wf-label">Build</div><div class="wf-action">Integration</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">C</div><div class="wf-label">Create</div><div class="wf-action">Listing content</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Submit</div><div class="wf-action">For review</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">O</div><div class="wf-label">Optimise</div><div class="wf-action">SEO + screenshots</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">D</div><div class="wf-label">Drive</div><div class="wf-action">Reviews + installs</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Select Target Marketplace</td>
+          <td>Identify which platform marketplace your ICP uses most. Research marketplace traffic, listing requirements, and approval process. Prioritise platforms where your integration adds clear value</td>
+          <td>1-2 hours research</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Build Integration</td>
+          <td>Develop technical integration with platform following their API documentation and best practices. Ensure integration is robust, handles errors gracefully, and provides value users cannot get without it</td>
+          <td>1-4 weeks development depending on complexity</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Create Listing Content</td>
+          <td>Write compelling listing description highlighting key benefits and use cases. Create high-quality screenshots showing integration in action. Record demo video if marketplace supports it. Include clear pricing information</td>
+          <td>4-6 hours content creation</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Submit for Review</td>
+          <td>Complete marketplace submission process including technical review, security audit if required, and content approval. Respond promptly to any reviewer feedback or questions</td>
+          <td>1-3 weeks review process</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Optimise SEO and Visuals</td>
+          <td>Refine listing title and description for marketplace search keywords. Test different screenshots to highlight most compelling features. Add customer testimonials if permitted</td>
+          <td>2-3 hours optimisation</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Drive Reviews and Installs</td>
+          <td>Email existing customers who use target platform asking for marketplace reviews. Promote listing through your marketing channels. Consider running ads targeting platform users to boost initial installs and reviews</td>
+          <td>1-2 hours monthly ongoing</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Start with one high-value marketplace rather than spreading thin across many. Invest in getting listing to top of category through reviews and installs before expanding to additional marketplaces. Depth beats breadth for marketplace success.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>HubSpot App Marketplace</strong></td>
+          <td>Free to list</td>
+          <td>B2B tools targeting marketing, sales, or service teams</td>
+          <td>Large user base actively searching for integrations. Strong discovery features including category browsing and search. Co-marketing opportunities for featured apps. Detailed analytics on listing performance</td>
+          <td>Competitive marketplace with many apps per category. Review process can be thorough taking several weeks. Requires maintained integration as HubSpot API evolves</td>
+        </tr>
+        <tr>
+          <td><strong>Salesforce AppExchange</strong></td>
+          <td>Free to list, revenue share on paid apps</td>
+          <td>Enterprise tools integrating with Salesforce CRM</td>
+          <td>Massive enterprise user base with high willingness to pay. Well-established marketplace with strong buyer intent. Security review badge adds significant credibility. Access to Salesforce partner ecosystem</td>
+          <td>Rigorous security review process can take months. Higher development complexity due to Salesforce architecture. Revenue sharing on paid listings reduces margin</td>
+        </tr>
+        <tr>
+          <td><strong>Zapier</strong></td>
+          <td>Free to list</td>
+          <td>Any B2B SaaS looking for automation use cases</td>
+          <td>Connects your product to thousands of other apps through automation workflows. Users discover you while building Zaps. Relatively easy integration process. Drives adoption through workflow templates</td>
+          <td>Users often view Zapier integrations as workarounds not primary features. Integration quality depends on your API design. Less direct discovery than marketplace browsing</td>
+        </tr>
+        <tr>
+          <td><strong>Slack App Directory</strong></td>
+          <td>Free to list</td>
+          <td>Productivity tools enhancing team communication and workflows</td>
+          <td>Huge active user base of business teams. In-product discovery when users add apps to workspace. Strong engagement if app provides daily value. Simple OAuth installation flow</td>
+          <td>Very crowded directory with thousands of apps. Users have app fatigue and are selective. Requires ongoing maintenance as Slack updates platform. Best for tools with clear daily use case</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Prioritise <strong>HubSpot App Marketplace</strong> if targeting SMB marketing and sales teams (easiest path to market) or <strong>Salesforce AppExchange</strong> if targeting enterprise sales organisations (longer path but higher value). Add <strong>Zapier</strong> for automation use cases once core marketplace is established.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Marketplace Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Marketplace Selection - Choose Strategically</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Match marketplace to your ICP</h3>
+            <p>Not all marketplaces are equal. The best marketplace for your product depends on where your ICP spends time and which platforms they rely on daily. A productivity tool for engineers belongs in Slack or GitHub marketplace. A CRM enhancement belongs in HubSpot or Salesforce. Alignment matters more than marketplace size.</p>
+
+            <h3>Marketplace evaluation criteria</h3>
+            <ul>
+              <li><strong>ICP platform adoption</strong> - What percentage of your target customers use this platform? If your ICP does not use Salesforce, AppExchange listing generates zero value</li>
+              <li><strong>Category maturity</strong> - How many competitors already list in your category? Highly competitive categories make discovery harder. Look for categories with demand but limited supply</li>
+              <li><strong>Integration depth potential</strong> - Can you build meaningful integration that users value, or would it be superficial connection? Shallow integrations get poor reviews and low adoption</li>
+              <li><strong>Marketplace discovery features</strong> - How do users find apps? Strong search, category browsing, and recommendation engines increase your discoverability</li>
+            </ul>
+
+            <h3>Top marketplaces compared</h3>
+            <table>
+              <tr><th>Marketplace</th><th>Best ICP Fit</th><th>Competition Level</th><th>Review Difficulty</th></tr>
+              <tr>
+                <td>HubSpot</td>
+                <td>SMB marketing, sales, service teams</td>
+                <td>Medium-High</td>
+                <td>Medium</td>
+              </tr>
+              <tr>
+                <td>Salesforce</td>
+                <td>Enterprise sales organisations</td>
+                <td>Very High</td>
+                <td>High</td>
+              </tr>
+              <tr>
+                <td>Zapier</td>
+                <td>SMB teams needing automation</td>
+                <td>High</td>
+                <td>Low</td>
+              </tr>
+              <tr>
+                <td>Slack</td>
+                <td>Tech-forward teams, remote companies</td>
+                <td>Very High</td>
+                <td>Medium</td>
+              </tr>
+              <tr>
+                <td>Microsoft AppSource</td>
+                <td>Enterprise Microsoft shops</td>
+                <td>Medium</td>
+                <td>High</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Selection strategy:</strong> Start with single marketplace where your ICP concentration is highest. Build momentum there with reviews and installs before expanding. Better to rank highly in one marketplace than be invisible in five.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Listing Optimisation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Listing Optimisation - Stand Out in Search</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Optimise for marketplace search</h3>
+            <p>Most marketplace discovery happens through search. Users type problem or solution keywords then scan results. Your listing title, description, and category placement determine whether you appear in relevant searches. Optimise for how buyers search, not how you describe your product internally.</p>
+
+            <h3>Title and description best practices</h3>
+            <ul>
+              <li><strong>Lead with outcome not feature</strong> - "Automatically sync customer data to CRM" beats "Advanced API integration tool". Focus on what users accomplish, not how it works</li>
+              <li><strong>Include search keywords naturally</strong> - Research what terms buyers use to find solutions like yours. Work those keywords into title and first paragraph of description</li>
+              <li><strong>Specific use cases over generic claims</strong> - "Send Slack alerts when deals close" is more compelling than "Improve team communication". Specificity helps buyers self-identify fit</li>
+              <li><strong>Front-load value in first sentence</strong> - Many users only read first line before deciding whether to click. Make it count with clearest value proposition</li>
+            </ul>
+
+            <h3>Screenshot strategy</h3>
+            <table>
+              <tr><th>Screenshot Type</th><th>Purpose</th><th>Best Practice</th></tr>
+              <tr>
+                <td>Hero shot</td>
+                <td>Show integration in action immediately</td>
+                <td>First screenshot should clearly show your tool working within platform. Visual proof of integration quality</td>
+              </tr>
+              <tr>
+                <td>Key use case</td>
+                <td>Demonstrate most popular workflow</td>
+                <td>Annotated screenshot walking through primary use case step by step. Make it obvious what value user gets</td>
+              </tr>
+              <tr>
+                <td>Before and after</td>
+                <td>Illustrate problem solved</td>
+                <td>Side by side showing messy manual process versus clean automated solution. Concrete improvement</td>
+              </tr>
+              <tr>
+                <td>Data or dashboard</td>
+                <td>Show analytical value delivered</td>
+                <td>Dashboard view with key metrics or insights generated by integration. Proves data-driven value</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Testing approach:</strong> Marketplace platforms often provide listing analytics showing views, clicks, and installs. Test different titles, descriptions, and screenshot orders. Iterate based on data to improve conversion from view to install.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review Generation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Review Generation - Build Social Proof</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Reviews determine marketplace success</h3>
+            <p>Marketplace algorithms favour highly-rated listings with many reviews. Buyers filter by rating and read reviews before installing. Your first 10-20 reviews are critical for gaining traction. Without them, you remain invisible regardless of integration quality.</p>
+
+            <h3>Strategies to generate early reviews</h3>
+            <ul>
+              <li><strong>Email existing customers using platform</strong> - Identify customers who already use target platform. Send personal email explaining you launched marketplace listing and would appreciate review if they find integration valuable</li>
+              <li><strong>In-app prompt after positive interaction</strong> - When user completes successful action with integration, show prompt asking for marketplace review. Timing matters; ask immediately after moment of value</li>
+              <li><strong>Incentivise early adopters</strong> - Offer extended trial or account credit in exchange for honest review. Disclose incentive to maintain marketplace guidelines compliance</li>
+              <li><strong>Leverage beta testers</strong> - Beta users who tested integration before launch are invested in success. Ask them to be first reviewers once listing goes live</li>
+            </ul>
+
+            <h3>Review request messaging</h3>
+            <table>
+              <tr><th>Situation</th><th>Message Approach</th><th>Timing</th></tr>
+              <tr>
+                <td>Existing happy customer</td>
+                <td>Personal email from founder or account manager mentioning specific value they have received and asking for review</td>
+                <td>Within first 2 weeks of listing launch</td>
+              </tr>
+              <tr>
+                <td>User completes valuable action</td>
+                <td>In-app notification: "Glad this integration helped you accomplish X. Would you share your experience with a quick marketplace review?"</td>
+                <td>Immediately after successful action</td>
+              </tr>
+              <tr>
+                <td>Power user with high engagement</td>
+                <td>Personal video message acknowledging their usage and requesting detailed review highlighting features they use most</td>
+                <td>After 30 days of consistent usage</td>
+              </tr>
+              <tr>
+                <td>Customer shares positive feedback</td>
+                <td>Thank them for feedback and ask if they would be comfortable sharing similar thoughts in marketplace review</td>
+                <td>Same day as positive feedback</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Response strategy:</strong> Respond to every review, positive and negative. Thank positive reviewers publicly and address concerns in negative reviews with solutions. Active response signals to potential users that you care about customer experience.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Integration Quality sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Integration Quality - Technical Excellence</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Integration quality makes or breaks marketplace success</h3>
+            <p>You can have perfect listing copy and many installs, but if integration is buggy or delivers poor experience, you will get negative reviews and uninstalls. Technical excellence is non-negotiable. Users expect integrations to work flawlessly because they are connecting trusted platform with new tool.</p>
+
+            <h3>Integration quality checklist</h3>
+            <ul>
+              <li><strong>Robust error handling</strong> - Anticipate and gracefully handle API errors, rate limits, and data sync failures. Never show raw error messages to users</li>
+              <li><strong>Clear permission scopes</strong> - Only request OAuth permissions you actually need. Excessive permission requests scare users and reduce install rates</li>
+              <li><strong>Fast performance</strong> - Integration actions should feel instant. Slow API calls frustrate users and create perception of poor quality</li>
+              <li><strong>Data sync reliability</strong> - If integration syncs data between systems, ensure accuracy and consistency. Data mismatch issues destroy trust instantly</li>
+              <li><strong>Helpful documentation</strong> - Provide clear setup guide and troubleshooting docs. Users should be able to resolve common issues without contacting support</li>
+            </ul>
+
+            <h3>Common integration pitfalls</h3>
+            <table>
+              <tr><th>Pitfall</th><th>User Impact</th><th>Prevention</th></tr>
+              <tr>
+                <td>Requesting unnecessary permissions</td>
+                <td>Users distrust integration and abandon during OAuth flow</td>
+                <td>Audit required scopes carefully. Only request minimum permissions needed for core functionality</td>
+              </tr>
+              <tr>
+                <td>Poor error messages</td>
+                <td>Users get stuck when things fail and do not know how to fix it</td>
+                <td>Write user-friendly error messages with specific next steps. Test error scenarios thoroughly</td>
+              </tr>
+              <tr>
+                <td>Breaking changes without warning</td>
+                <td>Integration stops working suddenly, creating support burden and negative reviews</td>
+                <td>Monitor platform API changelog. Test integration before platform updates go live. Communicate changes proactively</td>
+              </tr>
+              <tr>
+                <td>Inconsistent data formatting</td>
+                <td>Data appears differently in integrated platform than in your product, causing confusion</td>
+                <td>Standardise data formats and naming conventions. Document any necessary transformations clearly</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Quality assurance:</strong> Conduct thorough testing across different account types and edge cases before submitting for marketplace review. One buggy interaction can tank your rating. Invest time upfront to ensure integration is rock-solid.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Listing without integration depth</h4>
+          <div class="why">Superficial integration that barely uses platform capabilities. Users install, realise it adds little value, and uninstall with poor review.</div>
+          <div class="fix">Build integration that delivers genuine value users cannot get without connecting both systems. Go beyond basic API calls to create meaningful workflows.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Ignoring marketplace SEO</h4>
+          <div class="why">Generic listing title and description that do not include search keywords. Listing never appears in relevant searches so discovery is minimal.</div>
+          <div class="fix">Research how target users search for solutions in marketplace. Optimise title and description with those exact keywords while maintaining readability.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Poor quality screenshots</h4>
+          <div class="why">Blurry, confusing, or overly technical screenshots that do not show value clearly. Users cannot visualise benefit so they do not install.</div>
+          <div class="fix">Create high-resolution, annotated screenshots showing integration in action. Focus on user outcomes not technical architecture. Test with non-technical viewers.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. No review generation strategy</h4>
+          <div class="why">Launching listing then passively hoping users leave reviews. Months later, still have zero or few reviews, making listing appear unpopular or untrustworthy.</div>
+          <div class="fix">Proactively request reviews from existing happy customers immediately after launch. Build in-app prompts asking satisfied users to review on marketplace.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Set and forget approach</h4>
+          <div class="why">Creating listing once then never updating it. As platform evolves and competitors improve, your listing becomes stale and less competitive.</div>
+          <div class="fix">Regularly update listing with new screenshots, refined copy, and feature highlights. Monitor marketplace analytics and competitor listings to stay competitive.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Requesting excessive permissions</h4>
+          <div class="why">OAuth flow asks for more permissions than necessary. Security-conscious users abandon installation immediately, reducing conversion rate.</div>
+          <div class="fix">Request only minimum permissions required for core functionality. Clearly explain why each permission is needed during OAuth flow.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 9.4 — Free Personalised Video Audit | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 9.4 - Creative / Guerrilla</div>
+  <h1>Free Personalised Video Audit</h1>
+  <p class="desc">Record a 5-10 minute Loom auditing a prospect's website, sales process, or marketing. Provide specific, actionable improvements. Even non-buyers refer others, building long-term pipeline and positioning you as a trusted expert.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Free</span>
+    <span class="tag tag-icp">ICP: Founders, Sales Leaders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Free value given publicly builds authority faster than any sales pitch. A 10-minute video audit provides more value than most paid consultations. Recipients feel obligated to reciprocate (take a meeting, refer a friend, or become a customer down the road). Even those who don't buy immediately remember you as the expert who helped them for free.
+      </div>
+      <h3>The psychology behind video audits</h3>
+      <ul>
+        <li><strong>Reciprocity in action</strong> - When you give specific, valuable advice for free, recipients feel psychological debt. Most will at least reply to thank you, opening the conversation</li>
+        <li><strong>Expert positioning</strong> - Critiquing their work (constructively) positions you as the authority. You're not a vendor begging for their time - you're an expert offering insights</li>
+        <li><strong>Low-pressure value</strong> - No ask, no CTA, just pure value. This disarms skepticism entirely. They can accept the advice without feeling sold to</li>
+        <li><strong>Viral potential</strong> - Recipients often share the audit internally or with peers: "Check out this free audit someone did for us." This extends your reach organically</li>
+      </ul>
+      <h3>Why video specifically</h3>
+      <p>Written audits are valuable but impersonal. Video creates a human connection. They see your face, hear your voice, watch you analyse their work in real-time. This builds trust faster than any text-based outreach. Plus, video is easier to consume - they can watch while commuting or multitasking.</p>
+      <p><strong>The format advantage:</strong> Unlike generic content marketing (blog posts, webinars), this is one-to-one personalised value. It's scalable consulting. You invest 30-40 min per audit and generate goodwill that can convert months later.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-email">R</div><div class="wf-label">Research Business</div><div class="wf-action">Website/process</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-video">R</div><div class="wf-label">Record Audit</div><div class="wf-action">5-10 min screen-share</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-email">H</div><div class="wf-label">Highlight Wins</div><div class="wf-action">3-5 improvements</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">S</div><div class="wf-label">Send via Email/LI</div><div class="wf-action">No-strings-attached</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">F</div><div class="wf-label">Follow Up</div><div class="wf-action">Offer to discuss</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Research Prospect's Business</td>
+          <td>Spend 10-15 min exploring their website, sales process, marketing materials, or whatever you're auditing. Look for obvious gaps, missed opportunities, or quick wins you can point out</td>
+          <td>10-15 min</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Record Screen-Share Audit (5-10 min)</td>
+          <td>Use Loom to record yourself walking through their website or process. Point out 3-5 specific improvements. Balance criticism with praise (sandwich method: praise, critique, praise). Keep conversational, not scripted</td>
+          <td>15-20 min (including retakes)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Highlight 3-5 Specific Improvements</td>
+          <td>Focus on actionable, specific changes they can implement immediately. Not vague advice like "improve your messaging" but concrete: "Your hero headline is confusing. Try X instead because Y"</td>
+          <td>Built into recording</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Send via Email or LinkedIn</td>
+          <td>Message: "Hi Sarah, I checked out Acme's website and put together a quick audit with some ideas for improvement. No strings attached, just thought you might find it useful. Video here: [link]." Keep it casual and no-pressure</td>
+          <td>5 min</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Follow Up for Discussion</td>
+          <td>If they reply positively, offer to discuss in more detail: "Happy to jump on a call to walk through implementation if helpful." If no reply after 5-7 days, send gentle follow-up: "Did you get a chance to check out the audit? Curious what you thought."</td>
+          <td>5-10 min per follow-up</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Frame audits as helping them compete, not pitching your product. Example: "Your competitor X is doing Y really well. Here's how you could match or beat them." This reframes you as a strategic partner, not a vendor.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Loom</strong></td>
+          <td>Free (25 videos), $12/mo Pro</td>
+          <td>Recording and sharing audits</td>
+          <td>Dead simple interface. Instant shareable links. View analytics (who watched, how long). Trim videos after recording. Custom video thumbnails. Works on all platforms</td>
+          <td>Free plan caps at 25 videos total (must delete old ones). 5 min max on free tier. Pro plan needed for 10+ min videos and unlimited library</td>
+        </tr>
+        <tr>
+          <td><strong>Vidyard</strong></td>
+          <td>Free (basic), $19/mo Pro</td>
+          <td>Advanced analytics and CRM integration</td>
+          <td>Detailed viewer data (which sections rewatched, drop-off points). Video CTAs (add calendar link overlay). Salesforce/HubSpot integration for tracking in CRM</td>
+          <td>Steeper learning curve than Loom. Analytics can be overkill for simple audits. Free tier more limited than Loom</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Use <strong>Loom Free</strong> to start (25 videos is enough to test this tactic with 20-25 prospects). If you scale beyond 25 audits per month or need longer than 5 min, upgrade to <strong>Loom Pro</strong> ($12/mo). Only use Vidyard if you need deep CRM integration or advanced analytics.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Audit Scope sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Audit Scope (Website, Sales Process, Marketing, LinkedIn Profile)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What to audit based on ICP</h3>
+            <table>
+              <tr><th>ICP / Role</th><th>What to Audit</th><th>Why It's Relevant</th></tr>
+              <tr>
+                <td>Founders / CEOs</td>
+                <td>Company website, positioning, messaging</td>
+                <td>Founders care about brand and how they're perceived. Website audit shows you understand their market</td>
+              </tr>
+              <tr>
+                <td>Sales Leaders / VPs Sales</td>
+                <td>Outbound email sequences, sales process, CRM setup</td>
+                <td>Sales leaders appreciate tactical feedback on what's working/broken in their GTM motion</td>
+              </tr>
+              <tr>
+                <td>Marketing Leaders / CMOs</td>
+                <td>Website conversion paths, lead gen funnels, content strategy</td>
+                <td>Marketers value data-driven feedback on funnel performance and conversion optimisation</td>
+              </tr>
+              <tr>
+                <td>Individual contributors (SDRs, AEs)</td>
+                <td>LinkedIn profile, personal brand, outbound messaging</td>
+                <td>ICs are building their careers. Helping them improve their personal brand creates loyalty</td>
+              </tr>
+            </table>
+
+            <h3>Audit format options</h3>
+            <ul>
+              <li><strong>Website teardown</strong> - Walk through their homepage, product pages, pricing. Point out messaging gaps, unclear CTAs, conversion friction. Show examples of competitors doing it better</li>
+              <li><strong>Sales process audit</strong> - If you can access their outbound emails (via reply.io, LinkedIn, etc.), critique their messaging, cadence, personalisation. Offer concrete rewrites</li>
+              <li><strong>LinkedIn profile review</strong> - For individual prospects, audit their LinkedIn: headline, about section, featured content. Suggest improvements for visibility and credibility</li>
+              <li><strong>Competitor comparison</strong> - Compare their approach to 2-3 competitors. Show what competitors are doing better and how to catch up or differentiate</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> Audit whatever is publicly visible and directly relevant to their role. Don't audit things you can't see (internal processes) or things they don't control (company strategy if you're talking to an IC).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Balance Praise and Critique sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Balance Praise and Critique (Sandwich Method, Be Constructive)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why balance matters</h3>
+            <p>Pure criticism feels like an attack, even if well-intentioned. Recipients get defensive and dismiss your feedback. Pure praise feels empty and unhelpful. The sandwich method (praise, critique, praise) makes feedback easier to receive and more likely to be acted on.</p>
+
+            <h3>Audit structure template</h3>
+            <table>
+              <tr><th>Section</th><th>What to Say</th><th>Example</th></tr>
+              <tr>
+                <td>Opening (30 sec)</td>
+                <td>Intro and overall positive impression</td>
+                <td>"Hi Sarah, I checked out Acme's website. First off, your design is clean and the messaging is clearer than most companies at your stage. Nice work."</td>
+              </tr>
+              <tr>
+                <td>Praise (1-2 min)</td>
+                <td>Highlight 2-3 things they're doing well</td>
+                <td>"Love that you lead with customer outcomes in the hero section. Your case studies are detailed and credible. Your pricing page is transparent, which builds trust."</td>
+              </tr>
+              <tr>
+                <td>Critique (3-5 min)</td>
+                <td>Point out 3-5 specific improvements</td>
+                <td>"That said, I noticed a few opportunities. Your headline doesn't explain what you do - I had to scroll to figure it out. Your CTAs are weak - 'Learn More' vs 'See How It Works.' Your demo page has no social proof."</td>
+              </tr>
+              <tr>
+                <td>Solutions (2-3 min)</td>
+                <td>Offer concrete fixes for each critique</td>
+                <td>"Here's what I'd try: Rewrite headline to 'Help SaaS teams close deals faster with automated workflows.' Change CTA to 'See a 2-min demo.' Add customer logos above the demo form."</td>
+              </tr>
+              <tr>
+                <td>Close (30 sec)</td>
+                <td>End on encouragement and soft offer</td>
+                <td>"Overall, you're ahead of most companies I see at your stage. These tweaks would make a solid site even stronger. Happy to discuss implementation if useful. No pressure."</td>
+              </tr>
+            </table>
+
+            <h3>Tone best practices</h3>
+            <ul>
+              <li><strong>Collaborative, not condescending</strong> - Use "we" language: "We could try X" not "You should do X." Feels like you're on their team</li>
+              <li><strong>Specificity beats generality</strong> - Don't say "messaging needs work." Say "Your headline doesn't communicate value. Try leading with the outcome: 'Close deals 30% faster'"</li>
+              <li><strong>Acknowledge constraints</strong> - "I know you're early stage and resources are tight. Here's what I'd prioritise..." Shows empathy, not judgment</li>
+              <li><strong>Frame as opportunities, not failures</strong> - "Here's an opportunity to improve X" sounds better than "You're doing X wrong"</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> If you can't find 2-3 genuine things to praise, don't do the audit. Forced praise sounds fake and undermines your credibility. Only audit companies/people where you can be authentically positive about some aspects.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Keep It Under 10 Min sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Keep It Under 10 Min (Respect Their Time)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why length matters</h3>
+            <p>Busy executives will watch a 5-7 min video. They will not watch a 20 min video. You're asking for their time with unsolicited feedback. Respect that by being concise. Longer audits also take you more time, reducing how many you can do.</p>
+
+            <h3>How to stay under 10 min</h3>
+            <ul>
+              <li><strong>Limit to 3-5 points</strong> - Pick the highest-impact improvements only. Save the rest for a follow-up call if they're interested</li>
+              <li><strong>No rambling</strong> - Script your main points beforehand (even if you don't read from script). Know what you'll say about each point before hitting record</li>
+              <li><strong>Use timestamps in description</strong> - Add video chapter timestamps in the description: "0:00 - Intro, 0:30 - What's working, 2:00 - Homepage feedback, 4:30 - CTA improvements, 7:00 - Wrap-up." Lets them skip to relevant sections</li>
+              <li><strong>Edit ruthlessly</strong> - Loom lets you trim. Cut dead air, false starts, and tangents. A tight 7 min video beats a rambling 10 min video</li>
+            </ul>
+
+            <h3>Ideal video length by audit type</h3>
+            <table>
+              <tr><th>Audit Type</th><th>Ideal Length</th><th>Rationale</th></tr>
+              <tr><td>Website teardown</td><td>7-10 min</td><td>Enough time to cover homepage, product page, pricing, and CTAs</td></tr>
+              <tr><td>Sales email sequence</td><td>5-7 min</td><td>Review 3-4 emails in the sequence, offer rewrites</td></tr>
+              <tr><td>LinkedIn profile review</td><td>5-6 min</td><td>Headline, about, featured sections. Quick and actionable</td></tr>
+              <tr><td>Competitor comparison</td><td>8-10 min</td><td>Show 2-3 competitors, point out differentiators and gaps</td></tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> If you can't finish the audit in 10 min, you're trying to cover too much. Cut scope. Better to give 3 high-impact insights in 7 min than 10 mediocre insights in 20 min.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Hard Sell sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>No Hard Sell (Pure Value, Soft Offer to Discuss)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why no-sell matters</h3>
+            <p>The moment you pitch your product in the audit, you destroy all goodwill. The recipient realises it was a sales tactic disguised as help. They feel manipulated and ignore future outreach. Keep the audit 100% about them, 0% about you.</p>
+
+            <h3>What NOT to say</h3>
+            <ul>
+              <li><strong>Bad:</strong> "Your website could use better analytics. That's exactly what we solve at Acme. Let me show you how we'd fix this."</li>
+              <li><strong>Bad:</strong> "I noticed your outbound emails aren't personalised. Our tool automates personalisation at scale. Want a demo?"</li>
+              <li><strong>Bad:</strong> "These are common mistakes we see in companies before they use our platform. We'd love to show you what's possible."</li>
+            </ul>
+
+            <h3>What TO say instead</h3>
+            <ul>
+              <li><strong>Good:</strong> "Your website analytics setup could be stronger. Tools like Google Analytics 4 or Mixpanel would give you better visibility into user behavior."</li>
+              <li><strong>Good:</strong> "Your emails would convert better with more personalisation. Clay or Instantly can help automate that if you don't want to do it manually."</li>
+              <li><strong>Good:</strong> "These are fixable issues. Happy to discuss implementation approaches if you want to chat. No pressure either way."</li>
+            </ul>
+
+            <h3>The soft CTA structure</h3>
+            <p><strong>At end of video:</strong> "That's it. Hope this is helpful. If you want to discuss any of these in more detail, I'm happy to jump on a quick call. Totally optional. Either way, good luck with the improvements."</p>
+            <p><strong>In email:</strong> "No strings attached. If you find it useful and want to discuss implementation, my calendar link is below. If not, no worries - just thought you might appreciate the feedback."</p>
+
+            <div class="highlight">
+              <strong>Long-term play:</strong> Even if they don't buy now, they'll remember you as the person who helped them for free. When they're ready to buy (or when a friend asks for a recommendation), you're top of mind. This is a referral and brand-building engine, not immediate pipeline.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Too long (over 10 min, loses attention)</h4>
+          <div class="why">You record a 25 min deep-dive audit. Prospect opens it, sees the length, and never watches. Even if they start, they bail after 5 min.</div>
+          <div class="fix">Cap at 10 min maximum. Pick 3-5 highest-impact points only. Script main points beforehand to stay on track. Trim dead air and tangents in editing. Shorter and focused beats comprehensive and boring.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Only criticism, no solutions</h4>
+          <div class="why">You point out 10 things they're doing wrong but offer no actionable fixes. Feels like you're tearing them down, not helping them improve.</div>
+          <div class="fix">For every critique, offer a specific solution. Don't say "your headline is weak." Say "your headline is weak - try leading with the outcome: 'Close deals 30% faster.'" Always pair problem with fix.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Not specific enough (vague feedback)</h4>
+          <div class="why">You give generic advice: "Improve your messaging" or "Work on conversion optimisation." They have no idea what to actually do differently.</div>
+          <div class="fix">Be brutally specific. Point to exact elements on screen. Offer word-for-word rewrites. Show competitor examples. Make feedback so actionable they could implement it in 30 min after watching.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Using a generic audit template (same feedback for everyone)</h4>
+          <div class="why">You have a checklist you run through for every company. Prospects can tell it's templated and feels impersonal, defeating the purpose.</div>
+          <div class="fix">Research each prospect for 10-15 min before recording. Reference specific elements unique to their business. Mention their competitors by name. Show you actually studied their situation, not copy-pasted feedback.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Not offering to discuss findings</h4>
+          <div class="why">You send the audit with no follow-up mechanism. Prospect watches, appreciates it, but has no way to engage further. Opportunity lost.</div>
+          <div class="fix">End video with soft CTA: "Happy to discuss these in more detail if useful. Calendar link below." Follow up 5-7 days later if no response: "Did you get a chance to watch? Curious what you thought."</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Expecting immediate sale (forgetting this is long-term brand building)</h4>
+          <div class="why">You send 10 audits and expect 10 meetings immediately. When only 2 people reply, you declare the tactic doesn't work and give up.</div>
+          <div class="fix">This is a long-term play. Many recipients won't buy now but will refer you later or become customers in 6-12 months. Track referrals and delayed conversions, not just immediate meetings. Even non-buyers build your brand when they share your audit with peers.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

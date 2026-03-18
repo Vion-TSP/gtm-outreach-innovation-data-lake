@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 5.4 — Conference Piggyback Events | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 5.4 - Event-Based Plays</div>
+  <h1>Conference Piggyback Events</h1>
+  <p class="desc">Host side events during major industry conferences to capture attendees already in town. Create intimate breakfast, lunch, or evening gatherings that offer more value than conference content. Leverage existing travel investment while avoiding massive conference sponsorship costs.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Medium</span>
+    <span class="tag tag-icp">ICP: All personas</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Industry conferences concentrate your target buyers in one location but official conference content is often disappointing and expensive sponsorships deliver poor ROI. Side events capture attendees when they are already in town, in learning mode, and looking for valuable conversations beyond crowded expo halls. You get conference access without conference costs.
+      </div>
+      <h3>The psychology behind conference piggybacks</h3>
+      <ul>
+        <li><strong>Sunk cost leverage</strong> - Attendees already invested in flights and hotels. Adding breakfast or dinner requires minimal additional commitment. They are present and available</li>
+        <li><strong>Conference fatigue relief</strong> - After hours of expo hall noise and vendor pitches, intimate side event feels like oasis. Quality over quantity positioning</li>
+        <li><strong>FOMO and exclusivity</strong> - Limited-capacity side event feels more valuable than open-access conference session. Invitation signals status and importance</li>
+        <li><strong>Network efficiency</strong> - Conference attracts right people but networking in crowds is inefficient. Your event creates structured connection opportunity they crave</li>
+      </ul>
+      <h3>Why piggyback specifically</h3>
+      <p>Running standalone event requires convincing people to travel. Piggyback eliminates that barrier completely. Conference marketing machine has already done work of assembling your target audience in one place. You simply provide better experience at fraction of cost.</p>
+      <p><strong>The compounding effect:</strong> Regular piggyback presence at key conferences builds recognition. "Oh yes, they always host that breakfast at this conference" becomes brand association. You own a moment in conference calendar without owning the conference.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">C</div><div class="wf-label">Pick Conference</div><div class="wf-action">Target audience</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">B</div><div class="wf-label">Book Venue</div><div class="wf-action">Near conference</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">P</div><div class="wf-label">Plan Format</div><div class="wf-action">Breakfast/dinner</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Invite</div><div class="wf-action">Conference attendees</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">H</div><div class="wf-label">Host Event</div><div class="wf-action">Value delivery</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">F</div><div class="wf-label">Follow Up</div><div class="wf-action">1-on-1 meetings</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Select Target Conference</td>
+          <td>Choose industry event where significant concentration of target buyers will attend. Check attendee profiles and speaker list to confirm relevance. Look for conferences where you can identify attendees in advance via registration lists or LinkedIn activity</td>
+          <td>2 hours research</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Book Venue Near Conference</td>
+          <td>Secure restaurant or event space within walking distance of conference venue. Book 2-3 months in advance for popular conferences. Ensure space is appropriate for intended format - breakfast, lunch, or evening reception</td>
+          <td>2-3 hours venue search and booking</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Design Event Format</td>
+          <td>Plan structure that delivers clear value. Options include expert panel, peer roundtable, workshop, or networking reception. Avoid generic cocktail party - create reason to attend beyond free drinks. Build in networking time</td>
+          <td>3-4 hours planning</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Targeted Invitation Campaign</td>
+          <td>Identify conference attendees via LinkedIn hashtags, attendee lists if available, or past attendee data. Send personal invites 4-6 weeks before conference. Follow up 2 weeks before and again 3 days before. Emphasise convenience and exclusivity</td>
+          <td>6-8 hours outreach</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Execute the Event</td>
+          <td>Arrive early for setup. Greet attendees personally. Facilitate introductions between participants. Deliver promised content or discussion. Keep energy high. Take photos for social and future marketing. No hard pitching</td>
+          <td>3-4 hours including setup</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Strategic Follow-Up</td>
+          <td>Send thank you within 24 hours with photos and any promised resources. Offer to schedule follow-up conversation or meet again at conference if they are staying. Connect attendees to each other where relevant. Sales follow-up comes later</td>
+          <td>3-4 hours personalised follow-up</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Host breakfast or lunch rather than evening event if possible. Morning energy is higher, less competition from other side events, and attendees appreciate being fueled for conference day ahead. Evening events compete with dozens of vendor parties.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Luma</strong></td>
+          <td>Free</td>
+          <td>Event pages and registration</td>
+          <td>Beautiful event pages that elevate perceived value. Easy RSVP tracking. Calendar integration. Automated reminder emails. Waitlist management. Social sharing features to amplify reach</td>
+          <td>Limited branding customisation in free tier. Cannot heavily customise email templates. Better for registration than actual event management</td>
+        </tr>
+        <tr>
+          <td><strong>Eventbrite</strong></td>
+          <td>Free-2.5%</td>
+          <td>Ticketing and attendee management</td>
+          <td>Robust registration system. Check-in app for door management. Attendee data export. Integrates with CRM systems. Can charge for tickets if cost recovery needed. Professional reporting</td>
+          <td>Transactional feel compared to Luma. Attendees must create Eventbrite account. Takes percentage of paid tickets. UI less elegant</td>
+        </tr>
+        <tr>
+          <td><strong>LinkedIn Sales Navigator</strong></td>
+          <td>£65/mo</td>
+          <td>Finding conference attendees</td>
+          <td>Search for people posting about or attending specific conferences via hashtags and keywords. Advanced filters by role and company. Save lists for targeted outreach. Track engagement with invites</td>
+          <td>Not everyone posts about conference attendance. Cannot directly access official attendee lists. Requires manual research and list building</td>
+        </tr>
+        <tr>
+          <td><strong>OpenTable or Resy</strong></td>
+          <td>Free</td>
+          <td>Restaurant bookings</td>
+          <td>Easy private dining room reservations. Menu pre-selection. Dietary restriction management. Modification and cancellation flexibility. Confirmation and reminder system built in</td>
+          <td>Limited to restaurants on platform. Not all venues support private events. Better for smaller groups. May need direct venue contact for large groups</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Use <strong>Luma</strong> (free) for event page and registration, <strong>LinkedIn Sales Navigator</strong> (£65/mo) for attendee identification, and direct venue contact for booking. Simple and professional without unnecessary complexity.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Conference Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Conference Selection - Choose Strategically</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Not all conferences are created equal</h3>
+            <p>Piggyback strategy only works if conference attracts genuine concentration of target buyers. Vendor-heavy conferences with few practitioners waste your investment. Do research before committing.</p>
+
+            <h3>Selection criteria</h3>
+            <ul>
+              <li><strong>Attendee composition</strong> - What percentage are potential buyers vs vendors and press? Look for practitioner-heavy events not vendor expos. Check past attendee lists or speaker rosters</li>
+              <li><strong>Decision-maker presence</strong> - Will people with budget authority attend or mostly junior staff? C-suite and VP-heavy conferences justify investment in side event</li>
+              <li><strong>Geographic accessibility</strong> - Is conference in city where you have team presence or customers you can invite? Local element adds value and reduces your costs</li>
+              <li><strong>Timing in buying cycle</strong> - Events in Q4 when budgets are set are less valuable than Q1-Q2 when buyers are actively evaluating. Consider fiscal year timing</li>
+            </ul>
+
+            <h3>Conference types and fit</h3>
+            <table>
+              <tr><th>Conference Type</th><th>Piggyback Fit</th><th>Why</th></tr>
+              <tr>
+                <td>Vertical industry event</td>
+                <td>Excellent</td>
+                <td>Concentrated target audience. Easy to identify attendees. Your side event provides cross-company peer learning they cannot get on expo floor</td>
+              </tr>
+              <tr>
+                <td>Functional role summit</td>
+                <td>Very good</td>
+                <td>Sales leaders summit or CFO forum attracts exact personas. Homogenous audience makes content relevant to everyone. High decision-maker concentration</td>
+              </tr>
+              <tr>
+                <td>Mega vendor event</td>
+                <td>Mixed</td>
+                <td>Huge attendance but diffuse audience. Hard to stand out among hundreds of side events. Can work if you tightly filter invites to specific subset</td>
+              </tr>
+              <tr>
+                <td>Academic or research conference</td>
+                <td>Poor</td>
+                <td>Attendees rarely have buying authority. More interested in theory than practice. Side event unlikely to generate pipeline</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Cost-benefit calculation:</strong> Budget £2000-5000 for venue, food, and logistics. If conference has 50+ qualified prospects attending, cost per attendee at your event drops to £100-250. Far cheaper than booth sponsorship or paid speaking slot.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Venue and Logistics sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Venue and Logistics - Proximity and Quality</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Location is critical</h3>
+            <p>Attendees will not trek across city for your event. Walking distance from conference venue or hotel cluster is non-negotiable. Anything requiring taxi or long walk kills attendance.</p>
+
+            <h3>Venue requirements</h3>
+            <ul>
+              <li><strong>Within 10-min walk</strong> - Ideally same building or adjacent. Maximum 10-min walk from main conference venue or convention center. Check actual walking route not just map distance</li>
+              <li><strong>Private or semi-private space</strong> - Separate room or sectioned area. Needs to feel distinct from public dining. Creates intimacy and enables networking</li>
+              <li><strong>Appropriate capacity</strong> - Space should feel full not empty. If expecting 20 people, book for 25 not 50. Packed room has better energy than sparse one</li>
+              <li><strong>Tech infrastructure</strong> - If doing presentation or panel, ensure AV works. Test beforehand. Have backup plan. Many restaurants have terrible wifi and no screens</li>
+            </ul>
+
+            <h3>Timing considerations</h3>
+            <table>
+              <tr><th>Time Slot</th><th>Pros</th><th>Cons</th></tr>
+              <tr>
+                <td>Breakfast (7-8:30am)</td>
+                <td>Less competition from other events. Attendees appreciate being fed before conference. High energy. Can attend and still make 9am sessions</td>
+                <td>Early start after potential late networking night. Some no-shows. Shorter format limits depth</td>
+              </tr>
+              <tr>
+                <td>Lunch (12-1:30pm)</td>
+                <td>Middle of day when people need break. Good energy. Conference lunch is usually bad so you are upgrade. Easy to attend</td>
+                <td>Competes with official conference programming. People feel guilty missing sessions. Rushing to get back limits conversation depth</td>
+              </tr>
+              <tr>
+                <td>Evening reception (6-8pm)</td>
+                <td>Relaxed atmosphere. Can run longer format. Natural networking time. No conflict with conference sessions</td>
+                <td>Heavy competition from vendor parties. Attendee fatigue. Some flying out that evening. Can feel like generic cocktail party</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Booking timeline:</strong> Reserve venue 2-3 months before major conferences as good spaces near venue book quickly. Smaller conferences allow 4-6 week lead time. Always have cancellation terms clarified in case conference itself gets cancelled.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Invitation Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Invitation Strategy - Target the Right Attendees</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Finding conference attendees</h3>
+            <p>Official attendee lists are rarely available. You must identify prospects who plan to attend through research and social signals. Start this work 6-8 weeks before conference.</p>
+
+            <h3>Attendee identification methods</h3>
+            <ul>
+              <li><strong>LinkedIn hashtag search</strong> - Search conference hashtag and conference name. Look for posts saying "Looking forward to ConferenceName" or "See you at ConferenceName". Build list of people announcing attendance</li>
+              <li><strong>Speaker and panelist lists</strong> - Conference websites list speakers. Their companies often send teams. Connect with speakers and ask if colleagues attending. Speakers appreciate side event invites</li>
+              <li><strong>Your existing database</strong> - Query CRM for contacts at companies in relevant industries or roles. Send targeted email: "Will you be at ConferenceName? We are hosting breakfast."</li>
+              <li><strong>Past attendee data</strong> - If conference is annual, people who attended last year likely attending again. Check conference social media for last year photos and tags</li>
+            </ul>
+
+            <h3>Invitation messaging</h3>
+            <table>
+              <tr><th>Element</th><th>What to Include</th><th>Why It Matters</th></tr>
+              <tr>
+                <td>Subject line</td>
+                <td>Mention conference name and breakfast/dinner</td>
+                <td>"Breakfast during ConferenceName - join us?" immediately signals relevance. They know you know they are attending</td>
+              </tr>
+              <tr>
+                <td>Value proposition</td>
+                <td>Peer conversation or expert panel, not networking</td>
+                <td>Generic networking event is noise. Promise specific value like "discussion on implementing AI in sales workflows" attracts right people</td>
+              </tr>
+              <tr>
+                <td>Convenience angle</td>
+                <td>Location proximity and timing logic</td>
+                <td>"Walking distance from convention center" and "Before sessions start" removes friction. Show you thought about their schedule</td>
+              </tr>
+              <tr>
+                <td>Social proof</td>
+                <td>Who else is coming - roles not names</td>
+                <td>"Sales leaders from fintech and SaaS companies" signals peer group. Creates FOMO. People want to network with peers</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Invitation cadence:</strong> First invite 4-6 weeks out. Reminder 2 weeks before conference. Final reminder 3 days before with "limited spots" message. Day-before reminder with logistics. Expect 40-50% no-show rate even with confirmed RSVPs - over-invite accordingly.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event Execution sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Event Execution - Deliver Memorable Experience</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Day-of logistics</h3>
+            <p>Your side event competes with everything else happening at conference. Execution must be flawless because attendees are judging whether it was worth leaving conference floor or skipping session.</p>
+
+            <h3>Setup checklist</h3>
+            <ul>
+              <li><strong>Arrive 30 min early</strong> - Test AV if using. Confirm food and drink. Set up name tags or place cards. Ensure signage is visible if needed. Brief venue staff on flow</li>
+              <li><strong>Personal greeting</strong> - You or team member should personally greet every attendee at door. Make them feel welcomed and expected. Facilitate introductions immediately</li>
+              <li><strong>Name tags with company</strong> - Make networking easy. Include name and company. Avoid job titles which can create hierarchy. Simple and clear</li>
+              <li><strong>Managed agenda</strong> - Start exactly on time even if people still arriving. Respect early arrivers. End on time or early. Never run over - people have conference commitments</li>
+            </ul>
+
+            <h3>Content formats that work</h3>
+            <table>
+              <tr><th>Format</th><th>Best For</th><th>Execution Tips</th></tr>
+              <tr>
+                <td>Peer roundtable</td>
+                <td>Groups of 15-25</td>
+                <td>Facilitate structured discussion around specific challenge. Everyone contributes. No presentations. Pure peer learning</td>
+              </tr>
+              <tr>
+                <td>Expert panel</td>
+                <td>Groups of 25-50</td>
+                <td>2-3 practitioners share approaches to common problem. Q&A focused. Keep panelists brief - 5 min each max. Audience wants discussion not speeches</td>
+              </tr>
+              <tr>
+                <td>Workshop or masterclass</td>
+                <td>Groups of 15-30</td>
+                <td>Teach tactical skill. Provide templates or frameworks they can use immediately. Interactive not lecture. High perceived value</td>
+              </tr>
+              <tr>
+                <td>Pure networking</td>
+                <td>Groups of 20-40</td>
+                <td>Only works if attendees are pre-qualified peers. Structured activities like speed networking prevent clustering. Needs facilitation</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>The no-pitch rule:</strong> Attendees are in conference mode and hyper-sensitive to vendor pitches. Keep your company talk to 2-min intro max. Focus entire event on delivering value. Your restraint builds more credibility than any pitch. Sales comes later in follow-up.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Venue too far from conference</h4>
+          <div class="why">Attendees will not travel 20 minutes for your event when conference is full of options. Distance kills attendance no matter how good your content. They choose proximity over quality.</div>
+          <div class="fix">Book venue within 10-minute walk maximum. Ideally same building or adjacent. Check actual walking route including any construction or obstacles. Proximity is non-negotiable for success.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Generic networking reception with no value</h4>
+          <div class="why">Another vendor cocktail party is noise. Attendees go to be polite then leave quickly. No differentiation means no memorable impact and no follow-up opportunities.</div>
+          <div class="fix">Create specific value proposition - expert panel, peer roundtable, workshop. Give them reason to attend beyond free drinks. Structured content creates talking points and relationship hooks for follow-up.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Pitching your product during event</h4>
+          <div class="why">Attendees feel bait-and-switched. They came for promised peer learning and got sales presentation. Trust destroyed. They avoid your booth for rest of conference.</div>
+          <div class="fix">Save all selling for post-event follow-up. Keep company intro to 2 minutes maximum. Entire event should deliver value without asking for anything. Your restraint differentiates you from every other vendor.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. No-show contingency plan</h4>
+          <div class="why">Conference environments have high no-show rates. If you invite exact number you need, you end up with half-empty room and awkward energy. Looks like failure.</div>
+          <div class="fix">Over-invite by 50-60%. If expecting 20 attendees, invite 30-35 with confirmed RSVPs. Some will no-show. Better to be at capacity than sparse. Can always add chairs.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Booking too late</h4>
+          <div class="why">Good venues near major conferences book 2-3 months in advance. Last-minute booking forces suboptimal location or time slot. Reduces attendance and impact.</div>
+          <div class="fix">Reserve venue as soon as you decide to piggyback conference - ideally 3 months ahead for major events. Build venue booking into annual conference planning calendar. Early booking gets best options.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Weak follow-up after event</h4>
+          <div class="why">Event creates warm connections but momentum dies if you do not follow up quickly. Attendees meet dozens of vendors during conference. You become forgettable without reinforcement.</div>
+          <div class="fix">Send personalised thank you within 24 hours with photos and promised resources. Reference specific conversation points. Offer to continue discussion or meet again at conference. Strike while memory is fresh.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

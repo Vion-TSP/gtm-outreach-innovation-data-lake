@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 9.1 — Handwritten Notes at Scale | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 9.1 - Creative / Guerrilla</div>
+  <h1>Handwritten Notes at Scale</h1>
+  <p class="desc">Use robotic-pen services to send personalised handwritten notes that stand out in a digital-first world. Physical mail cuts through inbox noise and drives strong close rates with C-suite and founder ICPs.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low</span>
+    <span class="tag tag-cost">Cost: Low-Medium</span>
+    <span class="tag tag-icp">ICP: C-suite, Founders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> C-suite executives receive hundreds of emails per day and zero handwritten notes per month. A physical, handwritten card creates a pattern interrupt that forces attention. Even though it's robotic pen technology, the tactile experience triggers reciprocity psychology in ways digital never can.
+      </div>
+      <h3>The psychology behind handwritten notes</h3>
+      <ul>
+        <li><strong>Pattern interrupt</strong> - Physical mail is so rare in B2B that it stands out immediately. Executives open handwritten envelopes at near 100% rates vs 20-30% email open rates</li>
+        <li><strong>Effort signal</strong> - A handwritten note signals you invested time and thought, even if robotic. This creates obligation to reciprocate (reply or take meeting)</li>
+        <li><strong>Novelty factor</strong> - Most prospects have never received outbound mail from vendors. The novelty alone makes them remember you</li>
+        <li><strong>Personal connection</strong> - Handwriting feels intimate and personal in a way typed text never does. It bypasses professional armour</li>
+      </ul>
+      <h3>Why robotic pen services matter</h3>
+      <p>True handwriting doesn't scale past 5-10 notes per week. Robotic pen services use real pens controlled by robotics to write your message in realistic handwriting styles. The result passes the eye test and maintains the psychological impact while scaling to hundreds of notes per month.</p>
+      <p><strong>The format advantage:</strong> Unlike gifts or packages (which can be rejected by gatekeepers or feel too salesy), a simple handwritten note on quality cardstock feels thoughtful and non-threatening. It's personal without being pushy.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-email">T</div><div class="wf-label">Build Target List</div><div class="wf-action">25-50 high-value prospects</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">W</div><div class="wf-label">Write Templates</div><div class="wf-action">3-4 message variants</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-email">P</div><div class="wf-label">Personalise Each</div><div class="wf-action">1-2 custom sentences</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-phone">S</div><div class="wf-label">Send via Service</div><div class="wf-action">Scribeless/Handwrytten</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">F</div><div class="wf-label">Follow Up Email</div><div class="wf-action">3-5 days later</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Build Target List</td>
+          <td>Identify 25-50 high-value prospects (C-suite, founders). Research their office addresses (use LinkedIn, company websites, or data enrichment tools). Keep batches small for quality control</td>
+          <td>30-45 min per batch of 25</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Write Note Templates</td>
+          <td>Create 3-4 message templates focusing on pain points or relevant insights. Keep messages under 100 words. Template structure: personal greeting, insight/value, soft CTA, signature</td>
+          <td>20-30 min to write templates</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Personalise Each Note</td>
+          <td>Add 1-2 custom sentences per prospect referencing recent company news, mutual connections, or specific pain points. Personalisation is what converts</td>
+          <td>3-5 min per note</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Send via Robotic Pen Service</td>
+          <td>Upload personalised messages to Scribeless, Handwrytten, Postal, or Bond. Select handwriting style, card design, and envelope. Service prints, writes, and mails automatically</td>
+          <td>15-20 min to upload batch</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Follow Up by Email 3-5 Days Later</td>
+          <td>Send email referencing the note: "I sent you a note last week about X. Wanted to follow up digitally in case it's easier to respond here." Include calendar link</td>
+          <td>10 min to send batch emails</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Include your LinkedIn profile URL or a QR code linking to a personalised landing page on the note. This gives recipients an immediate digital action to take while the note is in their hand, increasing response rates.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Scribeless</strong></td>
+          <td>Variable (usage-based)</td>
+          <td>Scaling handwritten notes with Clay integration</td>
+          <td>Integrates directly with Clay for automated workflows. Upload CSV, auto-generate personalised notes, send at scale. Real pen, real ink</td>
+          <td>Requires Clay subscription for full automation. Pricing not transparent (contact sales)</td>
+        </tr>
+        <tr>
+          <td><strong>Handwrytten</strong></td>
+          <td>$3.25/card</td>
+          <td>Budget-conscious teams, testing the channel</td>
+          <td>Simple interface, reliable delivery, multiple handwriting styles. Flat per-card pricing makes budgeting easy. API available for integration</td>
+          <td>Less sophisticated personalisation options vs competitors. Handwriting can look slightly robotic on close inspection</td>
+        </tr>
+        <tr>
+          <td><strong>Postal</strong></td>
+          <td>$$$</td>
+          <td>Enterprise ABM campaigns, gift + note combos</td>
+          <td>Full direct mail platform (notes, gifts, packages). CRM integrations (Salesforce, HubSpot). Campaign analytics and ROI tracking</td>
+          <td>Expensive (enterprise pricing). Overkill if you only need handwritten notes. Requires training to use full platform</td>
+        </tr>
+        <tr>
+          <td><strong>Bond</strong></td>
+          <td>Variable</td>
+          <td>High-volume campaigns, advanced personalisation</td>
+          <td>AI-powered personalisation at scale. Robotic handwriting indistinguishable from human. Supports international sending</td>
+          <td>Higher price point. Minimum spend requirements for some features. Learning curve for advanced features</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Handwrytten</strong> ($3.25/card) to test the channel with 25-50 notes. Once validated, upgrade to <strong>Scribeless + Clay</strong> for automated workflows that pull prospect data, personalise messages, and trigger sends based on intent signals.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Message Structure sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Message Structure (Short, Personal, Non-Salesy)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The ideal note structure</h3>
+            <p>Handwritten notes must be brief (under 100 words) because longer messages look robotic and feel impersonal. Structure: personal greeting, insight or value, soft CTA, signature.</p>
+
+            <h3>Good vs bad examples</h3>
+            <table>
+              <tr><th>Bad (Too Salesy)</th><th>Good (Value-First)</th></tr>
+              <tr>
+                <td>Hi Sarah, I work at Acme and we help companies like yours automate workflows. I'd love to schedule 15 minutes to show you our platform. Let me know when you're free.</td>
+                <td>Hi Sarah, I noticed Datadog just raised Series C. Congrats. Scaling GTM post-raise is tough. I wrote a guide on avoiding common mistakes. Sending it separately. Happy to chat if useful.</td>
+              </tr>
+            </table>
+
+            <h3>Tone and language tips</h3>
+            <ul>
+              <li><strong>Write like a human</strong> - Use contractions (I'd, you're, we've). Avoid corporate jargon. Sound like you're writing to a colleague, not a prospect</li>
+              <li><strong>Lead with them, not you</strong> - Start with something about them (recent news, insight about their company), not about your product</li>
+              <li><strong>No hard CTA</strong> - Don't ask for a meeting in the note. Soft CTAs work better: "Happy to share more if this is relevant" or "Let me know if you'd like the full report"</li>
+              <li><strong>Signature matters</strong> - Sign with first name only, not title. Add a PS if you want to stand out further</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> If your note could be sent as a cold email and sound normal, it's too formal. Handwritten notes should feel more personal and conversational than any email you'd send.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personalisation Points sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Personalisation Points (Company News, Mutual Connections, Pain Points)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why generic notes fail</h3>
+            <p>If your note could be sent to 100 people with no changes, it won't convert. Executives can spot templated outreach instantly. Personalisation is non-negotiable for handwritten notes to work.</p>
+
+            <h3>High-impact personalisation sources</h3>
+            <ul>
+              <li><strong>Recent company news</strong> - Funding rounds, product launches, executive hires, office expansions. Reference these in opening sentence: "Saw you raised Series B last month. Congrats!"</li>
+              <li><strong>Mutual connections</strong> - LinkedIn shows shared connections. Mention them: "I work with James at Datadog and he mentioned you're scaling GTM." Always verify the connection is real and relevant</li>
+              <li><strong>Content they've shared</strong> - If they post on LinkedIn, reference a recent post: "Loved your take on AI in sales. Totally agree on X."</li>
+              <li><strong>Specific pain points</strong> - Use job postings, tech stack, or industry trends to infer challenges: "Noticed you're hiring SDRs. Scaling outbound is tough right now with deliverability changes."</li>
+            </ul>
+
+            <h3>Personalisation research checklist</h3>
+            <table>
+              <tr><th>Source</th><th>What to Look For</th><th>Time per Prospect</th></tr>
+              <tr><td>LinkedIn profile</td><td>Recent posts, shared connections, job changes</td><td>2 min</td></tr>
+              <tr><td>Company website</td><td>News/blog section, recent announcements</td><td>1 min</td></tr>
+              <tr><td>Crunchbase</td><td>Funding history, investor list, employee count trends</td><td>1 min</td></tr>
+              <tr><td>Job postings</td><td>Open roles indicating growth areas or pain points</td><td>1 min</td></tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Efficiency tip:</strong> Use Clay to pull personalisation data automatically (recent funding, tech stack, job openings, LinkedIn activity). Feed this data into Scribeless to auto-generate personalised opening sentences. Saves 3-4 min per note.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timing and Batching sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Timing and Batching (Small Batches, Track Delivery, Follow Up Digitally)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why small batches matter</h3>
+            <p>Sending 200 notes at once is a mistake. You can't track what's working, quality suffers, and follow-up becomes overwhelming. Start with batches of 25-50 to test messaging, track results, and iterate.</p>
+
+            <h3>Batch size recommendations</h3>
+            <table>
+              <tr><th>Team Size</th><th>Batch Size</th><th>Frequency</th><th>Rationale</th></tr>
+              <tr>
+                <td>Solo SDR or founder</td>
+                <td>10-15 notes</td>
+                <td>Weekly</td>
+                <td>Allows deep personalisation and manageable follow-up</td>
+              </tr>
+              <tr>
+                <td>Small team (2-3 SDRs)</td>
+                <td>25-30 notes</td>
+                <td>Weekly</td>
+                <td>Enough volume to test messaging, still trackable</td>
+              </tr>
+              <tr>
+                <td>Larger team (5+ SDRs)</td>
+                <td>50-75 notes</td>
+                <td>Bi-weekly</td>
+                <td>Divides across team members, maintains quality</td>
+              </tr>
+            </table>
+
+            <h3>Delivery tracking and follow-up timeline</h3>
+            <ul>
+              <li><strong>Day 0</strong> - Send batch of notes via service</li>
+              <li><strong>Day 3-5</strong> - Notes delivered (most services take 3-5 business days). Send follow-up email referencing the note</li>
+              <li><strong>Day 7-10</strong> - If no response to email, send LinkedIn connection request with note reference</li>
+              <li><strong>Day 14</strong> - Final touchpoint: short email or LinkedIn message checking if they received the note</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Use tracking services (some platforms offer this) or include a unique URL/QR code on each note to see when recipients engage. This tells you when to follow up digitally for maximum impact.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Design and Quality sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Card Design and Quality (Professional, Not Gimmicky)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why card quality matters</h3>
+            <p>A cheap-looking card undermines your message. Thin cardstock, garish designs, or overly branded cards scream "mass mail" and get discarded. Premium cardstock and simple design signal thoughtfulness.</p>
+
+            <h3>Design best practices</h3>
+            <ul>
+              <li><strong>Cardstock weight</strong> - Use 110lb or heavier cardstock. Anything thinner feels cheap</li>
+              <li><strong>Colour choices</strong> - Stick to neutral tones (white, cream, light grey). Avoid bright colours or busy patterns</li>
+              <li><strong>Branding</strong> - Minimise logos. Small logo on back of card is fine. Front should be clean and unbranded</li>
+              <li><strong>Envelope style</strong> - Use quality envelopes that match card. Handwrite recipient address (robotic pen can do this too). No window envelopes</li>
+            </ul>
+
+            <h3>Good vs bad card designs</h3>
+            <table>
+              <tr><th>Bad Design Choices</th><th>Good Design Choices</th></tr>
+              <tr><td>Bright colours, busy patterns</td><td>Cream or white cardstock, minimal design</td></tr>
+              <tr><td>Large logo dominating front of card</td><td>Small logo on back, or no logo at all</td></tr>
+              <tr><td>Printed address on window envelope</td><td>Handwritten address on quality envelope</td></tr>
+              <tr><td>Thin cardstock that feels flimsy</td><td>110lb+ cardstock with premium feel</td></tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> Your card should look like something you'd send to a friend or colleague, not a marketing piece. When in doubt, go simpler and more elegant.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Generic message (no personalisation)</h4>
+          <div class="why">You send the same templated message to everyone. Recipients can tell it's mass outreach and discard it immediately.</div>
+          <div class="fix">Add 1-2 custom sentences per note based on company news, mutual connections, or specific pain points. Spend 3-5 min researching each prospect before writing.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Too salesy (pitching product in the note)</h4>
+          <div class="why">You use the note to pitch features or ask for a meeting. This feels transactional and defeats the personal touch.</div>
+          <div class="fix">Focus on providing value or insight, not selling. Soft CTAs only: "Happy to share more if relevant." Save the pitch for the follow-up email or call.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Bad handwriting font (looks obviously robotic)</h4>
+          <div class="why">You choose a handwriting style that's too perfect or too uniform. Recipients spot it as fake and the impact is lost.</div>
+          <div class="fix">Test multiple handwriting styles. Choose one that looks natural with slight imperfections. Scribeless and Bond have the most realistic options. Order samples before bulk sending.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. No follow-up (sending note and hoping for reply)</h4>
+          <div class="why">You send the note and wait passively. Most recipients don't respond to mail alone, even if they liked it.</div>
+          <div class="fix">Follow up 3-5 days later with an email referencing the note: "Sent you a note last week about X. Easier to respond here." Include calendar link. Multi-touch is essential.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Sending to wrong address (recipient works remotely or moved offices)</h4>
+          <div class="why">You send to company HQ but the executive works remotely or from a different office. Note never reaches them.</div>
+          <div class="fix">Verify addresses before sending. Use LinkedIn to check if they mention remote work. For high-value prospects, send a quick email first: "I have something to send you. Still at [address]?" Or use home addresses (available via data enrichment services) for C-suite.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Sending too many at once (can't track or follow up effectively)</h4>
+          <div class="why">You send 200 notes in one batch. Follow-up becomes overwhelming, you can't tell what's working, and quality suffers.</div>
+          <div class="fix">Start with batches of 25-50 notes maximum. Track delivery dates, follow up systematically, measure response rates. Iterate messaging before scaling up.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

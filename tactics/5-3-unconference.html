@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 5.3 — Unconference / Open Space | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 5.3 - Event-Based Plays</div>
+  <h1>Unconference / Open Space</h1>
+  <p class="desc">Host participant-driven events where attendees set the agenda on the day. Create flexible structure for self-organising discussion groups around emergent topics. Attendees vote with their feet, moving between conversations that interest them most, creating organic peer learning environment.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low-Medium</span>
+    <span class="tag tag-icp">ICP: Technical Buyers, Founders, Ops Leaders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Traditional conferences impose agenda from on high that rarely matches what attendees actually want to discuss. Unconferences flip the model - attendees propose topics they care about and self-organise into discussions. This creates genuine engagement because every conversation is guaranteed relevant to people in the room. When you facilitate emergent learning, you become enabler of valuable connections rather than controller of content.
+      </div>
+      <h3>The psychology behind unconferences</h3>
+      <ul>
+        <li><strong>Ownership and agency</strong> - When attendees set agenda, they invest more deeply. Their topics, their conversations, their outcomes. This creates psychological investment traditional events cannot match</li>
+        <li><strong>Law of two feet</strong> - Core rule of unconferences: if you are not learning or contributing, move to different conversation. This permission to leave removes social pressure to sit through boring sessions</li>
+        <li><strong>Emergent relevance</strong> - Agenda forms based on what people actually want to discuss in that moment, not what organiser predicted months ago. Real-time agenda means real-time relevance</li>
+        <li><strong>Peer credibility</strong> - No staged speakers on pedestals. Everyone is peer. Knowledge sharing is horizontal not hierarchical. Technical practitioners especially value learning from equals over vendor presentations</li>
+      </ul>
+      <h3>Why unconference format specifically</h3>
+      <p>Traditional conferences require massive upfront investment in speakers, content, and production. Unconferences work with minimal infrastructure because attendees bring the content. For B2B companies, this format attracts practitioners who want to solve problems collaboratively rather than passive consumers of vendor content.</p>
+      <p><strong>The compounding effect:</strong> Attendees leave unconference with network of peers who share their specific challenges. When they need help in future, they contact peers from unconference. When you facilitated those connections, you remain associated with that valuable network.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">T</div><div class="wf-label">Set Theme</div><div class="wf-action">Broad area</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">I</div><div class="wf-label">Invite</div><div class="wf-action">20-50 people</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">P</div><div class="wf-label">Platform Setup</div><div class="wf-action">Virtual breakouts</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">A</div><div class="wf-label">Agenda Build</div><div class="wf-action">Attendees propose</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">F</div><div class="wf-label">Facilitate</div><div class="wf-action">Self-organising</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">S</div><div class="wf-label">Share Outputs</div><div class="wf-action">Synthesis</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Define Broad Theme</td>
+          <td>Set general theme that attracts target audience but leaves room for specific topics to emerge. "AI implementation in B2B sales" or "Revenue operations at scale". Broad enough to generate variety, specific enough to attract right people</td>
+          <td>1 hour theme selection</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Invite Target Participants</td>
+          <td>Recruit 20-50 participants with mix of practitioners who will actively engage. Emphasise participant-driven format. Explain unconference model clearly - some will love it, others will hate uncertainty. Self-selection is good</td>
+          <td>3-4 hours outreach</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Set Up Virtual Platform</td>
+          <td>Configure Zoom or similar with multiple breakout rooms. Prepare shared doc for agenda building. Test tech thoroughly. Simple infrastructure but must work flawlessly since format depends on people moving between rooms</td>
+          <td>1-2 hours platform prep</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Facilitate Agenda Creation</td>
+          <td>Start event with explanation of format and principles. Invite attendees to propose discussion topics. Collect proposals in shared doc. Group similar topics. Schedule into time slots. Entire process takes 20-30 min at start</td>
+          <td>30 min live facilitation</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Run Self-Organising Sessions</td>
+          <td>Attendees choose which discussions to join. Session proposers facilitate their own topics. You float between rooms ensuring energy stays high. People move between sessions following law of two feet. Minimal intervention needed</td>
+          <td>2-3 hours of sessions</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Harvest and Share Insights</td>
+          <td>Gather notes from each discussion group. Synthesise key themes and insights. Share back with all attendees within 48 hours. This creates lasting artifact from ephemeral conversations and reinforces value delivered</td>
+          <td>2-3 hours synthesis</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Assign note-taker role to willing volunteer in each breakout. They capture key points in shared doc. This creates documentation without recording pressure and gives you raw material for post-event synthesis.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Slido</strong></td>
+          <td>Free-$99/mo</td>
+          <td>Live topic voting and agenda building</td>
+          <td>Attendees submit and vote on topics in real-time. Creates democratic agenda formation. Integrates with Zoom and other platforms. Instant visual feedback on what people want to discuss</td>
+          <td>Free tier limits active polls. Requires separate video platform. Best for agenda creation portion not actual discussions</td>
+        </tr>
+        <tr>
+          <td><strong>Zoom</strong></td>
+          <td>£12/mo</td>
+          <td>Video platform with breakout rooms</td>
+          <td>Multiple breakout rooms for parallel sessions. Easy room switching for law of two feet. Recording option per room. Reliable and universally known. Handles 50+ people well</td>
+          <td>Manual breakout room assignment can be clunky. Limited real-time visibility into which rooms are full. Some participants struggle with room navigation</td>
+        </tr>
+        <tr>
+          <td><strong>Miro</strong></td>
+          <td>Free-$10/mo</td>
+          <td>Visual collaboration and note capture</td>
+          <td>Infinite canvas for agenda building and collaborative note-taking. Templates for unconference formats. Real-time collaboration. Visual makes agenda formation engaging. Persistent artifact after event</td>
+          <td>Learning curve for unfamiliar users. Can feel overwhelming. Some people prefer simpler doc-based tools. Requires good facilitation to avoid chaos</td>
+        </tr>
+        <tr>
+          <td><strong>Google Doc</strong></td>
+          <td>Free</td>
+          <td>Simple shared note-taking</td>
+          <td>Everyone knows how to use it. Real-time collaborative editing. Low friction. Create agenda doc and session note docs. Simple and reliable. No training needed</td>
+          <td>Not purpose-built for this use case. Can get messy with 50 people editing. Lacks structure and visual appeal. Good enough but not delightful</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Use <strong>Slido</strong> (free tier) for agenda creation, <strong>Zoom</strong> (£12/mo) for video, and <strong>Google Doc</strong> (free) for session notes. Simple, reliable, and requires minimal participant training. Reserve Miro for teams comfortable with visual tools.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Opening and Principles sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Opening and Principles - Set the Right Tone</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Explaining the unconference model</h3>
+            <p>Most attendees have never experienced unconference format. First 15 minutes are critical for setting expectations and getting buy-in. Clear explanation prevents confusion and enables participation.</p>
+
+            <h3>Core principles to communicate</h3>
+            <ul>
+              <li><strong>Whoever comes are the right people</strong> - Small group deep discussion beats large group shallow listening. Do not wait for more people or wish for different people. Right people are the ones who showed up</li>
+              <li><strong>Whatever happens is the only thing that could have</strong> - Release attachment to predetermined outcomes. Trust emergent process. Best conversations cannot be scripted in advance</li>
+              <li><strong>Whenever it starts is the right time</strong> - Creativity and learning happen when they happen, not on schedule. Do not waste energy waiting for perfect moment</li>
+              <li><strong>When it is over, it is over</strong> - If discussion reaches natural conclusion in 20 min instead of 45, finish early. Do not artificially extend. People appreciate efficiency</li>
+              <li><strong>Law of two feet</strong> - If you are not learning or contributing, move to different session. No obligation to stay. This rule is essential for energy management</li>
+            </ul>
+
+            <h3>Opening sequence</h3>
+            <table>
+              <tr><th>Time</th><th>Activity</th><th>Purpose</th></tr>
+              <tr>
+                <td>0-5 min</td>
+                <td>Welcome and context</td>
+                <td>Why we are here. What makes unconference different. What to expect today. Build excitement for format</td>
+              </tr>
+              <tr>
+                <td>5-10 min</td>
+                <td>Explain principles and process</td>
+                <td>Go through core principles above. Explain agenda-building process. Clarify mechanics of session participation. Answer questions</td>
+              </tr>
+              <tr>
+                <td>10-30 min</td>
+                <td>Collect and organise topics</td>
+                <td>Attendees propose discussion topics via Slido or shared doc. Group similar proposals. Vote on priorities if needed. Build time grid</td>
+              </tr>
+              <tr>
+                <td>30-35 min</td>
+                <td>Review agenda and logistics</td>
+                <td>Show final agenda. Explain breakout room mechanics. Confirm note-taking approach. Launch first session round</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Managing uncertainty anxiety:</strong> Some participants feel uncomfortable without predetermined agenda. Acknowledge this explicitly: "Uncertainty is intentional. Best discussions emerge from real-time needs. Trust the process - it works." Give them permission to embrace ambiguity.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Topic Proposal Process sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Topic Proposal Process - Democratic Agenda Formation</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>How to collect topics</h3>
+            <p>Make topic submission easy and low-friction. Remove barriers to participation. You want flood of proposals not trickle. Quantity generates options, voting creates prioritisation.</p>
+
+            <h3>Topic submission methods</h3>
+            <ul>
+              <li><strong>Slido Q&A mode</strong> - Attendees submit topics as questions. Others upvote topics they want to discuss. Democratic sorting. Visual feedback creates momentum</li>
+              <li><strong>Shared Google Doc</strong> - Create simple bulleted list. Everyone adds topics. Lower tech barrier than Slido but less visual. Good for smaller groups</li>
+              <li><strong>Miro board</strong> - Virtual sticky notes on board. Visual and collaborative. Can drag to group similar topics. More engaging but requires comfort with tool</li>
+              <li><strong>Live verbal collection</strong> - Call on people to propose topics aloud. You capture on screen. More personal but slower. Best for groups under 20</li>
+            </ul>
+
+            <h3>Organising submitted topics</h3>
+            <table>
+              <tr><th>Challenge</th><th>Solution</th><th>Example</th></tr>
+              <tr>
+                <td>Too many similar proposals</td>
+                <td>Cluster and combine</td>
+                <td>Five people proposed AI tool topics - combine into "Evaluating and implementing AI tools in workflows"</td>
+              </tr>
+              <tr>
+                <td>Topics too broad</td>
+                <td>Ask proposer to narrow</td>
+                <td>"Sales enablement" becomes "Creating playbooks AEs actually use for technical products"</td>
+              </tr>
+              <tr>
+                <td>More topics than time slots</td>
+                <td>Vote to prioritise</td>
+                <td>Use Slido upvotes or quick poll. Top voted topics get slots. Rest go to parking lot for optional extra time</td>
+              </tr>
+              <tr>
+                <td>Topics not relevant to group</td>
+                <td>Gentle redirect</td>
+                <td>"That is interesting but might be too specific for this group. Happy to connect you with Sarah 1-on-1 after if relevant to both."</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Seeding the agenda:</strong> If topic submission is slow, have 2-3 backup topics ready to propose yourself. Once first few topics are on board, others feel permission to contribute. Do not leave awkward silence during collection phase.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session Facilitation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Session Facilitation - Light Touch Guidance</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Your role as organiser</h3>
+            <p>You are not session leader or content expert. You are space-holder and facilitator of process. Create conditions for good conversation and get out of the way. Trust participants to facilitate their own sessions.</p>
+
+            <h3>What you do during sessions</h3>
+            <ul>
+              <li><strong>Float between breakout rooms</strong> - Pop into each room briefly to check energy. Stay if intervention needed, leave if flowing well. Presence shows you care but do not hover</li>
+              <li><strong>Support struggling facilitators</strong> - If session proposer looks lost, offer quick guidance: "Try going around for quick takes from everyone" or "What is one specific question we can dig into?" Then leave again</li>
+              <li><strong>Watch timing and transitions</strong> - Give 5-min warnings before sessions end. Bring everyone back to main room between rounds. Keep momentum high with clear transitions</li>
+              <li><strong>Encourage room-switching</strong> - Remind people of law of two feet. "Do not stay in room that is not serving you. Check out other discussions." Give permission to move</li>
+            </ul>
+
+            <h3>What participants do in sessions</h3>
+            <table>
+              <tr><th>Role</th><th>Responsibility</th><th>Support Needed</th></tr>
+              <tr>
+                <td>Topic proposer</td>
+                <td>Set context and facilitate discussion. Not lecture or present. Ask questions and guide conversation</td>
+                <td>Brief pre-event message with facilitation tips. Emphasise discussion over presentation</td>
+              </tr>
+              <tr>
+                <td>Note-taker</td>
+                <td>Capture key points in shared doc. Themes, insights, questions, action items. Not transcript</td>
+                <td>Provide note template. Clarify level of detail expected. Thank them publicly for volunteering</td>
+              </tr>
+              <tr>
+                <td>Participants</td>
+                <td>Contribute actively. Ask questions. Share experiences. Move to different session if current one not valuable</td>
+                <td>Reinforce law of two feet. Model active participation yourself when in rooms. Praise good questions</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Handling empty rooms:</strong> If session gets zero or one attendee, do not panic. Proposer can join different session or have deep 1-on-1 if one person shows. Empty session is data - topic was not as relevant as expected. No shame in it.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post-Event Synthesis sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Post-Event Synthesis - Creating Lasting Value</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why synthesis matters</h3>
+            <p>Unconference creates burst of valuable conversation but ephemeral nature means insights get lost. Your synthesis captures and amplifies value. This is where you earn long-term credibility - taking messy discussions and finding signal.</p>
+
+            <h3>What to include in synthesis</h3>
+            <ul>
+              <li><strong>Themes across sessions</strong> - What common threads emerged? What surprised you? What tensions or debates surfaced repeatedly? Show you were paying attention to patterns</li>
+              <li><strong>Key insights per topic</strong> - Brief summary of each discussion topic. Main takeaways. Interesting approaches people shared. Do not attribute to individuals unless they gave permission</li>
+              <li><strong>Unanswered questions</strong> - Capture questions that came up but were not resolved. This creates springboard for future conversations or content. Shows intellectual honesty</li>
+              <li><strong>Resources and tools mentioned</strong> - If people recommended specific tools, frameworks, or articles, compile them. Useful reference for attendees and shows you listened</li>
+            </ul>
+
+            <h3>Synthesis timeline and format</h3>
+            <table>
+              <tr><th>Timing</th><th>Deliverable</th><th>Purpose</th></tr>
+              <tr>
+                <td>Within 24 hours</td>
+                <td>Thank you email with link to session notes</td>
+                <td>Immediate follow-up while energy is fresh. Provide raw notes so participants can review what was captured</td>
+              </tr>
+              <tr>
+                <td>Within 48 hours</td>
+                <td>Synthesis document with themes and insights</td>
+                <td>Your value-add as organiser. Show you extracted signal from noise. Create shareable artifact participants can reference and forward</td>
+              </tr>
+              <tr>
+                <td>Within 1 week</td>
+                <td>Optional blog post or video recap</td>
+                <td>Public-facing content that attracts future participants. Demonstrates thought leadership. Creates SEO asset. Only if you have bandwidth</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Amplification strategy:</strong> Ask attendees to share synthesis on LinkedIn with their take on most valuable insight. User-generated social proof. Tag participants who contributed key ideas (with permission). Builds visibility for future events.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Over-controlling the agenda</h4>
+          <div class="why">Defeating the purpose of unconference by pre-determining topics or steering away from emergent themes. Attendees feel manipulated and participation drops because you have removed their agency.</div>
+          <div class="fix">Trust the process. Let attendees genuinely set agenda even if topics diverge from what you expected. Your job is facilitation not control. Embrace unexpected directions - often most valuable.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Not explaining format clearly enough</h4>
+          <div class="why">Attendees arrive expecting traditional event structure. Confusion and frustration when reality does not match expectations. People disengage because they do not understand what they are supposed to do.</div>
+          <div class="fix">Over-communicate format in advance and again at start. Explicitly contrast with traditional events. Explain principles and mechanics thoroughly. Give examples. Answer questions before launching.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Too few or too many participants</h4>
+          <div class="why">Under 15 people and not enough diversity for multiple sessions. Over 50 and logistics become overwhelming. Sweet spot missed means format cannot work as designed.</div>
+          <div class="fix">Target 20-35 participants for first unconference. This supports 3-4 parallel sessions with meaningful groups. Can scale up with experience but start smaller. Quality over quantity.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Clunky tech causing friction</h4>
+          <div class="why">If moving between breakout rooms is confusing or Slido is not working, participants get frustrated and disengage. Technical friction kills energy that format depends on.</div>
+          <div class="fix">Test all tech thoroughly before event. Have backup plans. Keep tech stack simple - Zoom plus Google Doc is sufficient. Brief participants on mechanics before launching first round. Have tech support ready.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No note capture means lost insights</h4>
+          <div class="why">Amazing conversations happen but nothing documented. Ephemeral value only. Cannot create synthesis or share insights afterward. Opportunity for lasting impact wasted.</div>
+          <div class="fix">Assign volunteer note-takers to each session. Provide note template. Collect all session notes into shared folder. Use this raw material for your synthesis. Document process makes value visible and shareable.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Forgetting to reinforce law of two feet</h4>
+          <div class="why">People sit in dying conversations out of politeness. Energy drains from event. Sessions with few engaged participants limp along unproductively.</div>
+          <div class="fix">Explicitly give permission to move multiple times during event. "If this session is not serving you, check out another room. No offense taken." Model this yourself by moving between rooms.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

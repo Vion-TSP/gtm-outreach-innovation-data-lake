@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 5.2 — Virtual Roundtable | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 5.2 - Event-Based Plays</div>
+  <h1>Virtual Roundtable</h1>
+  <p class="desc">Host 60-90 minute facilitated peer discussion sessions with 8-15 executives under Chatham House rules. Create structured conversation around specific challenge or opportunity where attendees learn from each other's approaches and experiences without attribution or pitching.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low-Medium</span>
+    <span class="tag tag-icp">ICP: C-suite, VP-level</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Senior leaders struggle to find peer groups where they can discuss real challenges candidly. Virtual roundtables offer the peer learning value of an executive dinner with dramatically lower barriers - no travel, shorter time commitment, and Chatham House rules enable radical candor. Position yourself as trusted convener and you become part of their trusted circle.
+      </div>
+      <h3>The psychology behind virtual roundtables</h3>
+      <ul>
+        <li><strong>Chatham House rules unlock honesty</strong> - Knowing insights can be shared but never attributed creates safety to discuss real challenges including mistakes and failures. This level of candor rarely happens in public forums</li>
+        <li><strong>Structured peer learning</strong> - Facilitated format ensures everyone contributes and conversation stays productive. Not a webinar with Q&A but true peer exchange with expert moderation</li>
+        <li><strong>Low commitment equals high attendance</strong> - 60-90 minutes from their desk is far easier commitment than half-day conference or evening dinner. Removes travel friction while preserving intimacy</li>
+        <li><strong>Valuable network access</strong> - Attendees gain connections to peers facing similar challenges. Virtual format means geographic diversity - connect UK exec with US exec with Australian exec all in one session</li>
+      </ul>
+      <h3>Why virtual specifically</h3>
+      <p>Virtual format democratises access. An executive in Scotland can join roundtable with London-based peers without train journey. Parent with childcare constraints can participate from home. Junior staff can observe and learn without intimidation of room presence.</p>
+      <p><strong>The compounding effect:</strong> Virtual roundtables can become recurring series. First session builds foundation, subsequent sessions deepen relationships. Attendees start referencing each other between sessions. You become hub of valuable professional network.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">T</div><div class="wf-label">Choose Topic</div><div class="wf-action">Specific challenge</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">I</div><div class="wf-label">Invite</div><div class="wf-action">8-15 executives</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">P</div><div class="wf-label">Prep Guide</div><div class="wf-action">Discussion flow</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">H</div><div class="wf-label">Host Session</div><div class="wf-action">Facilitate 60-90 min</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">S</div><div class="wf-label">Share Summary</div><div class="wf-action">Key insights</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">F</div><div class="wf-label">Follow Up</div><div class="wf-action">1-on-1 conversations</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Select Specific Topic</td>
+          <td>Choose narrow, meaty topic relevant to target personas. Not "sales enablement" but "equipping AE teams to sell new AI products when they lack technical background". Specificity attracts right attendees</td>
+          <td>30 min research and validation</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Invite Target Participants</td>
+          <td>Personally invite 20-25 people expecting 8-15 to attend. Mix prospects and customers. Emphasise peer learning format, Chatham House rules, and no pitch policy. Include sample discussion questions in invite</td>
+          <td>2-3 hours personalised outreach</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Prepare Discussion Guide</td>
+          <td>Outline session flow with opening question, 3-4 main discussion topics, and specific prompts for drawing out insights. Prepare brief context-setting intro but keep your talking to 10% of session</td>
+          <td>1-2 hours prep</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Host the Roundtable</td>
+          <td>Start punctually with quick intros. Set ground rules including Chatham House. Facilitate discussion ensuring balanced participation. Use breakout rooms for smaller group depth if needed. Keep energy high and on-topic</td>
+          <td>60-90 min session time</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Share Insight Summary</td>
+          <td>Within 48 hours, send all attendees summary of key themes and takeaways discussed. Do not attribute insights to individuals. Include any resources mentioned. Thank them for contributing</td>
+          <td>1 hour summary writing</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Personalised Follow-Up</td>
+          <td>Reach out individually to prospects referencing their specific contributions or questions. Offer to continue conversation, share additional resources, or make relevant introductions. Wait at least a few days before sales conversations</td>
+          <td>2-3 hours 1-on-1 follow-up</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Record the session (with permission) and have it transcribed. Mine the transcript for quotable insights to use in future content. This creates compounding value from single roundtable investment.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Zoom</strong></td>
+          <td>£12/mo</td>
+          <td>Simple reliable video conferencing</td>
+          <td>Universal familiarity means no tech friction. Breakout rooms for smaller discussions. Recording and transcription. Waiting room for controlled entry. Reliable at scale</td>
+          <td>Basic engagement features. Limited branding. Zoom fatigue is real. No built-in registration or follow-up automation</td>
+        </tr>
+        <tr>
+          <td><strong>Goldcast</strong></td>
+          <td>$$</td>
+          <td>Branded event experience with engagement</td>
+          <td>Professional branded event pages. Built-in registration and email sequences. Engagement tools like polls and Q&A. Post-event analytics showing who engaged with what</td>
+          <td>Higher cost. Overkill for small roundtables. Participants need to learn new interface. Best for larger scale or recurring series</td>
+        </tr>
+        <tr>
+          <td><strong>Airmeet</strong></td>
+          <td>$99/mo</td>
+          <td>Interactive event platform with networking</td>
+          <td>Built-in networking features including speed networking and virtual tables. Registration and email automation. Engagement analytics. Feels more interactive than basic Zoom</td>
+          <td>Learning curve for attendees and hosts. Can feel gimmicky for small executive roundtables. Better for 20+ person events</td>
+        </tr>
+        <tr>
+          <td><strong>Luma</strong></td>
+          <td>Free</td>
+          <td>Beautiful event pages and registration</td>
+          <td>Gorgeous invite pages that elevate perceived value. Easy RSVP and calendar integration. Automated reminders. Can integrate with Zoom for video layer</td>
+          <td>No video conferencing built in. Requires separate tool for actual event. Limited customisation in free tier</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Use <strong>Zoom</strong> (£12/mo) for video plus <strong>Luma</strong> (free) for registration and invites. Simple, reliable, and professional. Upgrade to Goldcast only if running monthly series at scale.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Topic Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Topic Selection - Specific Beats Broad</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why specificity matters</h3>
+            <p>Broad topics attract everyone but engage no one. "Sales leadership" could mean anything. "Building sales playbooks that new AEs actually follow" speaks to specific pain and attracts people dealing with that exact challenge.</p>
+
+            <h3>Topic selection criteria</h3>
+            <ul>
+              <li><strong>Narrow enough to be actionable</strong> - Attendees should leave with specific ideas they can implement, not vague inspiration. Test: can you create 3-4 specific discussion questions from the topic?</li>
+              <li><strong>Common but unsolved problem</strong> - If there is definitive answer everyone knows, no need for roundtable. Best topics are where smart people try different approaches and compare notes</li>
+              <li><strong>Relevant to your solution without requiring it</strong> - Topic should relate to what you sell but conversation should not need your product. You want to seem knowledgeable not necessary</li>
+              <li><strong>Timely and current</strong> - Tie to recent developments or emerging challenges. "Adapting sales comp plans in hybrid work era" beats generic "sales compensation design"</li>
+            </ul>
+
+            <h3>Topic ideas by persona</h3>
+            <table>
+              <tr><th>Target Persona</th><th>Strong Topic Example</th><th>Why It Works</th></tr>
+              <tr>
+                <td>Sales Leaders</td>
+                <td>Transitioning AE teams from transactional to consultative selling</td>
+                <td>Specific transformation many are attempting. Multiple valid approaches. Clear pain point</td>
+              </tr>
+              <tr>
+                <td>Marketing Leaders</td>
+                <td>Building attribution models that sales actually trusts</td>
+                <td>Cross-functional tension everyone faces. Technical enough to be interesting, political enough to need peer advice</td>
+              </tr>
+              <tr>
+                <td>Rev Ops Leaders</td>
+                <td>Tech stack consolidation - what to keep vs cut in efficiency era</td>
+                <td>Timely challenge. Tactical decisions with strategic implications. Everyone has war stories</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Validation test:</strong> Before committing to topic, message 3-5 people in target audience asking "Would you attend 60-min peer discussion on X topic?" If less than 2 say yes immediately, pick different topic.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Participant Management sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Participant Management - Size and Mix Matter</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Optimal size</h3>
+            <p>8-15 participants is sweet spot. Fewer than 8 and conversation feels sparse if someone drops last minute. More than 15 and quiet people disappear. Aim for 10-12 confirmed registrations expecting 8-10 to actually attend.</p>
+
+            <h3>Invitation strategy</h3>
+            <ul>
+              <li><strong>Over-invite strategically</strong> - Send 25-30 invites to get 12-15 registrations. No-show rate typically 20-30% even with confirmations. Build waitlist for future sessions</li>
+              <li><strong>Personal outreach beats mass email</strong> - First 10 invites should be personal LinkedIn messages or emails. Once you have core committed, can expand to broader invite</li>
+              <li><strong>Name-drop confirmed attendees</strong> - After first few commit, mention to others "James from Acme and Sarah from another fintech have confirmed" to build FOMO</li>
+              <li><strong>Set clear expectations upfront</strong> - Explain Chatham House rules, expected participation level, and no-pitch policy in invite. Self-selection reduces problem attendees</li>
+            </ul>
+
+            <h3>Participant mix considerations</h3>
+            <table>
+              <tr><th>Dimension</th><th>Best Practice</th><th>Why</th></tr>
+              <tr>
+                <td>Prospect vs Customer ratio</td>
+                <td>70% prospects, 30% happy customers</td>
+                <td>Customers provide authentic perspective without feeling like sales plants. Majority should still be target prospects</td>
+              </tr>
+              <tr>
+                <td>Company stage</td>
+                <td>Mix similar stages - all early stage or all scale-ups</td>
+                <td>Series A founder and public company exec face different challenges. Conversation fragments if stages too diverse</td>
+              </tr>
+              <tr>
+                <td>Industry diversity</td>
+                <td>Balance familiarity and fresh perspective</td>
+                <td>All same industry risks echo chamber. Too diverse risks loss of relevance. 60% similar, 40% adjacent works well</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Emergency backup plan:</strong> If registrations drop below 6 people two days before event, consider rescheduling. Better to move date than host sparse roundtable that disappoints attendees. Blame "scheduling conflicts" not low registration.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Facilitation Techniques sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Facilitation Techniques - Drive Engagement Not Monologues</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Opening the session strong</h3>
+            <p>First 5 minutes set tone for entire roundtable. Establish energy, safety, and expectations immediately. Boring intro kills momentum you will never recover.</p>
+
+            <h3>Strong opening sequence</h3>
+            <ul>
+              <li><strong>Start exactly on time</strong> - Waiting for stragglers punishes people who arrived on time. Start at stated time, latecomers catch up</li>
+              <li><strong>Set ground rules clearly</strong> - Explain Chatham House rules explicitly: "Share insights freely but never attribute quotes to individuals or companies". Emphasise cameras on for engagement</li>
+              <li><strong>Quick round of intros</strong> - Name, role, company, and answer one opening question related to topic. Keep to 30 seconds each. This gives everyone voice early</li>
+              <li><strong>Dive into content fast</strong> - After 5-7 minutes of setup, launch into first real discussion question. Do not spend 20 minutes on logistics and intros</li>
+            </ul>
+
+            <h3>Facilitation moves during session</h3>
+            <table>
+              <tr><th>Challenge</th><th>Facilitation Response</th><th>Example Language</th></tr>
+              <tr>
+                <td>Someone dominating</td>
+                <td>Politely redirect to others</td>
+                <td>"James, really valuable point. Before we go further, Sarah, how does your team handle this differently?"</td>
+              </tr>
+              <tr>
+                <td>Conversation going off-topic</td>
+                <td>Acknowledge and redirect</td>
+                <td>"Interesting tangent - let's park that and come back if time. On the original question about X..."</td>
+              </tr>
+              <tr>
+                <td>Awkward silence after question</td>
+                <td>Call on someone specific</td>
+                <td>"Sarah, I know you have dealt with this challenge. What approach did your team take?"</td>
+              </tr>
+              <tr>
+                <td>Too much agreement</td>
+                <td>Surface dissent</td>
+                <td>"We are hearing common themes. Anyone taking contrarian approach or seeing different results?"</td>
+              </tr>
+            </table>
+
+            <h3>Breakout room strategy</h3>
+            <p>For 60-min roundtable, stay in main room. For 90-min session, consider 10-min breakout discussion in pairs or trios on specific question, then reconvene to share insights. Breakouts energise by changing format and ensuring quiet people contribute.</p>
+
+            <div class="highlight">
+              <strong>Energy management:</strong> Virtual attention spans are shorter than in-person. Every 20 minutes, shift format slightly - use poll, change discussion question angle, go to breakouts. Variety maintains engagement.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Follow-Up and Conversion sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Follow-Up and Conversion - From Attendee to Opportunity</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Immediate post-event follow-up</h3>
+            <p>Strike while memory is fresh. Attendees should receive something valuable within 48 hours that reinforces the quality of what they just experienced.</p>
+
+            <h3>48-hour follow-up checklist</h3>
+            <ul>
+              <li><strong>Summary of key insights</strong> - Synthesise 3-5 main themes discussed without attributing to specific people. Shows you were listening and provides shareable takeaway</li>
+              <li><strong>Resources mentioned</strong> - Compile any articles, tools, or frameworks referenced during discussion. Add your own related content if genuinely relevant</li>
+              <li><strong>Offer to connect participants</strong> - If two attendees had obvious synergy, offer to intro them. Facilitating valuable connections builds social capital</li>
+              <li><strong>Feedback request</strong> - Ask what worked and what could improve. Shows you care about quality. Insights help improve next roundtable</li>
+            </ul>
+
+            <h3>Converting engagement to pipeline</h3>
+            <table>
+              <tr><th>Timing</th><th>Outreach Approach</th><th>Context</th></tr>
+              <tr>
+                <td>3-5 days after</td>
+                <td>Personalised value offer</td>
+                <td>Reference their specific comments: "You mentioned struggling with X. We have helped similar companies with that. Would brief analysis be useful?"</td>
+              </tr>
+              <tr>
+                <td>1-2 weeks after</td>
+                <td>Relevant content share</td>
+                <td>Send case study or content piece directly addressing challenge they raised. Not sales pitch, just value-add with soft CTA</td>
+              </tr>
+              <tr>
+                <td>3-4 weeks after</td>
+                <td>Next roundtable invite</td>
+                <td>If running series, invite to next session. Recurring attendance builds relationship depth. Easier path than cold sales ask</td>
+              </tr>
+            </table>
+
+            <h3>When to hand to sales</h3>
+            <p>If prospect responds positively to follow-up, explicitly asks questions about your solution, or requests introduction to someone who can help them, hand-off to sales team with context. Warm intros convert far better than cold prospecting.</p>
+
+            <div class="highlight">
+              <strong>Long game mindset:</strong> Not every attendee converts immediately. Some take 6-12 months. Keep them on nurture track with invites to future roundtables, relevant content, and occasional check-ins. Compound relationship-building over time.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Turning roundtable into product demo</h4>
+          <div class="why">Attendees feel bait-and-switched when peer discussion becomes thinly veiled sales pitch. Trust evaporates immediately and they mentally check out even if they stay on call.</div>
+          <div class="fix">Strictly separate content from selling. Save all product discussion for follow-up conversations days later. Your restraint builds more credibility than any pitch. If attendees ask about your product, answer briefly and redirect to peer conversation.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Choosing too broad a topic</h4>
+          <div class="why">Generic topics like "sales enablement" or "customer success strategy" attract mixed audience with different needs. Conversation stays superficial because examples are not relevant to everyone.</div>
+          <div class="fix">Pick specific narrow topic that attracts right subset of audience. "Onboarding enterprise AEs in technical products" beats "sales enablement". Specificity drives relevance and depth.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Letting one person dominate conversation</h4>
+          <div class="why">Dominant talker makes it their personal soapbox. Other attendees tune out because they are not getting peer learning promised. Value proposition collapses.</div>
+          <div class="fix">Actively facilitate and redirect. "James, great point. Before we continue, let's hear from others who have not spoken yet." Direct questions to specific quiet people. Your job is to orchestrate balanced discussion.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Poor time management and running over</h4>
+          <div class="why">Running past stated end time disrespects attendees' schedules. People have hard stops and will drop off. Final 15 minutes of discussion wasted on dwindling audience.</div>
+          <div class="fix">Start exactly on time and end exactly on time. Build 5-min buffer in your plan. Give 10-min warning before end. Better to finish 2 min early leaving people wanting more than drag 15 min over.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No follow-up or generic mass follow-up</h4>
+          <div class="why">Attendees gave you 90 minutes and engaged authentically. Generic "thanks for attending" email wastes opportunity. Or worse, no follow-up means they forget you immediately.</div>
+          <div class="fix">Personalised follow-up within 48 hours referencing their specific contributions. Share promised resources. Offer to continue conversation on topics they raised. Show you were paying attention to them specifically.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Not enforcing cameras-on policy</h4>
+          <div class="why">Cameras-off reduces engagement dramatically. Cannot read body language. People multitask. Conversation loses energy and intimacy. Feels like bad webinar not peer roundtable.</div>
+          <div class="fix">Set expectation of cameras on in invite and again at start. If someone cannot, acknowledge briefly and move on. Model engagement yourself - be visible and present. Energy is contagious on video.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

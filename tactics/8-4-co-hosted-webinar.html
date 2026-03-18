@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 8.4 — Co-Hosted Webinar Series | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 8.4 - Partnerships & Ecosystem</div>
+  <h1>Co-Hosted Webinar Series</h1>
+  <p class="desc">Partner with complementary companies to co-host webinars combining both audiences. Split promotion efforts, share speaking time, and double your reach by accessing partner's contact base while offering more comprehensive content than either company could deliver alone.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low-Medium</span>
+    <span class="tag tag-icp">ICP: All Decision Makers</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Hosting webinars alone requires massive promotional effort to build attendance. Co-hosting splits that burden while doubling potential audience size. Partner promotes to their list, you promote to yours, and attendees get more valuable content from combined expertise. Everyone wins.
+      </div>
+      <h3>The psychology behind co-hosted content</h3>
+      <ul>
+        <li><strong>Authority multiplication</strong> - Two companies presenting together signal more credibility than one. Attendees perceive content as more objective and comprehensive when multiple experts contribute</li>
+        <li><strong>Audience trust transfer</strong> - Partner's audience trusts them but may not know you. By appearing together, their trust transfers to you. You become credible by association before saying a word</li>
+        <li><strong>Reduced self-promotion perception</strong> - Solo vendor webinars feel like sales pitches. Co-hosted sessions with complementary partners feel more educational because no single company dominates. Attendees lower their guard</li>
+        <li><strong>FOMO amplification</strong> - When two companies co-promote an event, it creates perception of importance. People think "If these two companies are collaborating, this must be significant content I should not miss"</li>
+      </ul>
+      <h3>Why webinars specifically</h3>
+      <p>Webinars remain one of few formats where prospects give you 45-60 minutes of undivided attention. Unlike content they skim or videos they watch passively, webinar attendees are present, engaged, and open to learning. Co-hosting multiplies this opportunity by exposing you to entirely new audience who showed up because they trust your partner.</p>
+      <p><strong>The compounding effect:</strong> Each successful webinar strengthens partner relationship and builds your reputation with their audience. Attendees who find value will seek out your content independently. Over a series of webinars, you build awareness and credibility that compounds into pipeline months later.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Identify</div><div class="wf-action">Partners</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">P</div><div class="wf-label">Pitch</div><div class="wf-action">Webinar concept</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">D</div><div class="wf-label">Develop</div><div class="wf-action">Joint content</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">P</div><div class="wf-label">Promote</div><div class="wf-action">Both audiences</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">D</div><div class="wf-label">Deliver</div><div class="wf-action">Live webinar</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">F</div><div class="wf-label">Follow Up</div><div class="wf-action">Both lead lists</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify Potential Partners</td>
+          <td>Research companies serving same ICP with complementary offerings. Look for those with similar audience size and engagement levels. Create target list of 5-10 potential partners ranked by strategic fit</td>
+          <td>2-3 hours research</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Pitch Webinar Concept</td>
+          <td>Reach out to partner marketing leads with specific webinar topic that benefits both audiences. Explain how collaboration doubles reach and reduces individual promotion burden. Propose rough format and timeline</td>
+          <td>30 min per partner outreach</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Develop Joint Content</td>
+          <td>Collaborate on webinar outline, slide deck, and speaker notes. Divide speaking time roughly equally. Ensure content flows naturally between speakers and showcases both companies' expertise without being overly promotional</td>
+          <td>3-5 hours content development</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Promote to Both Audiences</td>
+          <td>Each company promotes webinar through their channels including email lists, social media, website, and paid ads if budget allows. Create shared promotional assets both companies can use. Coordinate timing of promotional pushes</td>
+          <td>2-3 hours creating assets plus ongoing promotion</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Deliver Live Webinar</td>
+          <td>Host live session with speakers from both companies. Include Q&A segment for attendee engagement. Record session for on-demand viewing. Ensure smooth technical execution with run-through beforehand</td>
+          <td>1 hour webinar plus 30 min tech rehearsal</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Follow Up with Attendees</td>
+          <td>Both companies follow up with attendees and registrants who did not attend. Share recording, slides, and relevant next steps. Qualify leads based on engagement during webinar such as questions asked or time attended</td>
+          <td>1-2 hours follow-up coordination</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Structure as quarterly webinar series rather than one-off event. Committing to multiple webinars with same partner lets you refine promotion strategy, build audience anticipation, and deepen partnership over time. Easier to build momentum than starting from scratch each time.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Zoom Webinar</strong></td>
+          <td>$79/mo for 500 attendees</td>
+          <td>Most webinars with standard feature needs</td>
+          <td>Reliable video quality, up to 10,000 attendees on higher plans, built-in registration, polls and Q&A, automatic recording. Most attendees familiar with Zoom interface. Integrates with marketing automation</td>
+          <td>Basic branding customisation. Limited engagement features compared to specialist webinar platforms. Registration page design is functional but not beautiful</td>
+        </tr>
+        <tr>
+          <td><strong>Goldcast</strong></td>
+          <td>$$$</td>
+          <td>Companies investing heavily in webinar programmes</td>
+          <td>Purpose-built for B2B webinars and virtual events. Advanced engagement features including breakout rooms, networking, and interactive content. Beautiful branded experience. Deep analytics on attendee behaviour</td>
+          <td>Expensive for occasional webinars. Requires budget commitment. Steeper learning curve for organisers. Best suited for companies running many webinars monthly</td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot Meetings + Zoom</strong></td>
+          <td>Free (if already on HubSpot)</td>
+          <td>Companies on HubSpot wanting integrated lead capture</td>
+          <td>Webinar registrations flow directly into HubSpot CRM. Automatic contact creation and list segmentation. Lead scoring based on webinar attendance. Follow-up workflows triggered automatically</td>
+          <td>Still requires separate Zoom account for actual webinar hosting. Integration is convenient but not purpose-built for webinars. Limited webinar-specific analytics</td>
+        </tr>
+        <tr>
+          <td><strong>Demio</strong></td>
+          <td>$59/mo for 50 attendees</td>
+          <td>Small teams hosting regular webinars affordably</td>
+          <td>Built specifically for marketing webinars. Clean interface, automated on-demand webinars, customisable registration pages, engagement tools like handouts and polls. No download required for attendees</td>
+          <td>Lower attendee caps on affordable plans. Less familiar brand than Zoom, which can reduce trust and attendance. Limited enterprise features</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Zoom Webinar</strong> (79 per month for 500 attendees) for reliability and broad attendee familiarity. Integrate with <strong>HubSpot</strong> if you use it for CRM. Only upgrade to <strong>Goldcast</strong> if running webinar programmes with 5 plus events per quarter and needing advanced engagement analytics.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Partner Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Partner Selection - Complementary Not Competitive</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Choose partners strategically</h3>
+            <p>The right co-host partner serves same ICP but solves different problem. You want complementary expertise that creates more valuable content together than either could deliver alone. Wrong partner dilutes your message or creates uncomfortable competitive dynamics during presentation.</p>
+
+            <h3>Ideal partner characteristics</h3>
+            <ul>
+              <li><strong>Same ICP, different solution</strong> - Marketing automation company plus analytics platform serving same marketing leaders. Both relevant, no direct competition</li>
+              <li><strong>Sequential workflow relationship</strong> - Your solution addresses challenge that comes before or after partner's solution in typical workflow. Natural content flow</li>
+              <li><strong>Similar audience size</strong> - Partner with roughly equal email list size or social following. Imbalanced partnerships feel unfair when one contributes much larger audience</li>
+              <li><strong>Aligned brand positioning</strong> - If you position as premium solution, partner with other premium brands. Mismatched positioning confuses audience and dilutes brand</li>
+            </ul>
+
+            <h3>Partnership fit assessment</h3>
+            <table>
+              <tr><th>Evaluation Criteria</th><th>Green Flag</th><th>Red Flag</th></tr>
+              <tr>
+                <td>ICP overlap</td>
+                <td>Target same job titles, company sizes, and industries</td>
+                <td>Completely different buyer personas with minimal overlap</td>
+              </tr>
+              <tr>
+                <td>Solution relationship</td>
+                <td>Complementary or sequential in customer journey</td>
+                <td>Direct competitors solving exact same problem</td>
+              </tr>
+              <tr>
+                <td>Audience size</td>
+                <td>Within 2x of each other in email subscribers or social following</td>
+                <td>One partner has 10x larger audience creating imbalanced value exchange</td>
+              </tr>
+              <tr>
+                <td>Content quality</td>
+                <td>Partner produces high-quality educational content regularly</td>
+                <td>Partner only creates promotional content or rarely publishes</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Vetting approach:</strong> Before formal partnership discussion, attend partner's existing webinars or review their content. Assess presentation quality, audience engagement, and whether their style aligns with yours. Chemistry between speakers matters for webinar success.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Topic Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Topic Selection - Value Over Promotion</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Choose topics both companies can address</h3>
+            <p>Best co-hosted webinar topics let each company contribute unique expertise while building toward cohesive narrative. Avoid topics where one company dominates and the other feels tacked on. Content should flow naturally between speakers, with each adding distinct value.</p>
+
+            <h3>Topic brainstorming framework</h3>
+            <ul>
+              <li><strong>Pain point both companies address differently</strong> - "How to reduce customer churn" where one speaks to onboarding, other to ongoing engagement</li>
+              <li><strong>End-to-end workflow you both enable</strong> - "From lead to loyal customer" covering acquisition through retention with natural handoff between partners</li>
+              <li><strong>Industry challenge requiring multiple solutions</strong> - "Scaling sales operations" where one covers tech stack, other covers process and enablement</li>
+              <li><strong>Trend or change affecting shared ICP</strong> - "Preparing for cookie-less marketing" with each company explaining implications for their domain</li>
+            </ul>
+
+            <h3>Content structure templates</h3>
+            <table>
+              <tr><th>Structure</th><th>Use Case</th><th>Time Split</th></tr>
+              <tr>
+                <td>Sequential workflow</td>
+                <td>When partner solutions connect in customer journey</td>
+                <td>Company A presents first half of workflow, Company B presents second half</td>
+              </tr>
+              <tr>
+                <td>Alternating expertise</td>
+                <td>When both address same challenge from different angles</td>
+                <td>Alternate 10-minute segments between speakers, concluding with joint discussion</td>
+              </tr>
+              <tr>
+                <td>Interview format</td>
+                <td>When one partner is less comfortable presenting</td>
+                <td>One host interviews expert from partner company, more conversational feel</td>
+              </tr>
+              <tr>
+                <td>Panel discussion</td>
+                <td>When adding third partner or customer voice</td>
+                <td>Moderator guides discussion among 3-4 participants including partners</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Promotional balance:</strong> Agree upfront on promotional limits. Common rule: no more than 5 minutes of direct product pitch per company in 45-minute webinar. Focus on education and save sales messaging for follow-up communications.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Promotion Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Promotion Strategy - Coordinate Outreach</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Maximise reach through coordinated promotion</h3>
+            <p>Value of co-hosting comes from accessing partner's audience. Effective promotion requires coordination on timing, messaging, and channels. Create shared promotional assets both teams can use while allowing each to customise for their brand voice and audience.</p>
+
+            <h3>Promotional timeline</h3>
+            <ul>
+              <li><strong>4 weeks before: Save the date</strong> - Both companies announce upcoming webinar on social media and in newsletters. Light touch with topic teaser and registration link</li>
+              <li><strong>3 weeks before: Value preview</strong> - Share content previews such as key insights attendees will learn. First email campaign to relevant list segments</li>
+              <li><strong>2 weeks before: Speaker spotlight</strong> - Highlight speakers from both companies and their expertise. Second email to non-registrants</li>
+              <li><strong>1 week before: Final push</strong> - Urgency messaging about limited seats or registration deadline. Third email plus social media reminders</li>
+              <li><strong>Day before: Reminder</strong> - Email confirmed registrants with joining details and what to prepare</li>
+              <li><strong>Day of: Last chance</strong> - Morning-of email with one-click join link</li>
+            </ul>
+
+            <h3>Channel mix by partner</h3>
+            <table>
+              <tr><th>Channel</th><th>Company A Owns</th><th>Company B Owns</th><th>Shared</th></tr>
+              <tr>
+                <td>Email campaigns</td>
+                <td>Send to Company A email list with their branding</td>
+                <td>Send to Company B email list with their branding</td>
+                <td>Shared copy template both customise</td>
+              </tr>
+              <tr>
+                <td>Social media</td>
+                <td>Post from Company A accounts with co-host tag</td>
+                <td>Post from Company B accounts with co-host tag</td>
+                <td>Shared visual assets and key messages</td>
+              </tr>
+              <tr>
+                <td>Website placement</td>
+                <td>Feature on Company A website and blog</td>
+                <td>Feature on Company B website and blog</td>
+                <td>Common registration page both link to</td>
+              </tr>
+              <tr>
+                <td>Paid ads</td>
+                <td>Optional: Company A runs LinkedIn ads to their target audience</td>
+                <td>Optional: Company B runs LinkedIn ads to their target audience</td>
+                <td>Agree on budget split if running joint ad campaign</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Registration ownership:</strong> Decide early whether both companies get registrant contact details or each only gets leads from their promotion. Most partnerships share full registration list, allowing both to follow up with entire audience.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Follow-Up Execution sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Follow-Up Execution - Convert Attendees to Pipeline</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Turn webinar engagement into qualified conversations</h3>
+            <p>Webinar is beginning of relationship, not end goal. Highest-value attendees need personalised follow-up within 24 hours while interest is fresh. Coordinate with partner on follow-up approach to avoid overwhelming attendees with duplicate outreach.</p>
+
+            <h3>Attendee segmentation for follow-up</h3>
+            <ul>
+              <li><strong>Engaged attendees who asked questions</strong> - Highest intent. Sales team should reach out personally within 24 hours referencing their specific question</li>
+              <li><strong>Attendees who stayed for full session</strong> - Medium-high intent. Marketing follow-up with recording plus relevant resource. Sales can follow up if they match ICP</li>
+              <li><strong>Attendees who left early</strong> - Lower intent but still interested enough to register. Marketing follow-up with recording and invitation to next webinar</li>
+              <li><strong>Registrants who did not attend</strong> - Send recording with subject line acknowledging they missed live session. Invite to on-demand viewing</li>
+            </ul>
+
+            <h3>Follow-up coordination between partners</h3>
+            <table>
+              <tr><th>Scenario</th><th>Coordination Approach</th><th>Owner</th></tr>
+              <tr>
+                <td>Attendee is existing customer of Partner A</td>
+                <td>Partner A follows up, mentions Partner B solution if relevant to customer needs</td>
+                <td>Partner A leads</td>
+              </tr>
+              <tr>
+                <td>Attendee is existing customer of Partner B</td>
+                <td>Partner B follows up, mentions Partner A solution if relevant to customer needs</td>
+                <td>Partner B leads</td>
+              </tr>
+              <tr>
+                <td>Attendee is prospect for both companies</td>
+                <td>Each company follows up separately but coordinates timing to space out 48 hours apart</td>
+                <td>Both follow up</td>
+              </tr>
+              <tr>
+                <td>Attendee asked question specific to one company</td>
+                <td>That company responds personally to question within 24 hours</td>
+                <td>Relevant company leads</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Recording strategy:</strong> Both companies should host recording on their websites with gated download. This generates additional leads post-event from organic search and social shares. Promote recording for at least 4-6 weeks after live event to maximise value.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Choosing competitive partner</h4>
+          <div class="why">Partnering with company that directly competes creates awkward dynamics. Content feels forced as each tries to position themselves as superior solution.</div>
+          <div class="fix">Select complementary partners solving different problems for same ICP. Ensure natural content flow without competitive tension. Test with small collaboration before committing to webinar series.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Imbalanced promotion effort</h4>
+          <div class="why">One partner promotes heavily while other does minimal outreach. Promoter feels taken advantage of, non-promoter sees poor attendance from their network. Partnership sours.</div>
+          <div class="fix">Set clear promotional expectations upfront including email sends, social posts, and ad budget if applicable. Track promotion efforts from both sides. Address imbalances early.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Too sales-focused content</h4>
+          <div class="why">Webinar becomes dual product pitch rather than educational content. Attendees feel bait-and-switched and leave poor reviews or unsubscribe.</div>
+          <div class="fix">Agree on promotional limits upfront such as 5 minutes product mention maximum per company. Focus content on education, tactical insights, and best practices. Save sales messaging for follow-up.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Poor speaker chemistry</h4>
+          <div class="why">Speakers from both companies have not met before webinar. Presentation feels disjointed with awkward transitions and conflicting styles.</div>
+          <div class="fix">Schedule rehearsal call where speakers run through full content together. Adjust flow based on natural conversation. Identify transition points. Build rapport before going live.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No follow-up plan</h4>
+          <div class="why">Both companies assume partner will handle follow-up. Attendees receive no communication post-event. Recording is not promoted. Leads go cold.</div>
+          <div class="fix">Define follow-up ownership before webinar. Document who follows up with which attendee segments and when. Create shared timeline. Both companies should nurture leads from event.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. One-off event with no strategy</h4>
+          <div class="why">Investing significant time in single webinar then never collaborating again. Relationship momentum is lost. Audience building starts from zero for next event.</div>
+          <div class="fix">Structure as quarterly or monthly series with same partner. Build anticipation for next session during current webinar. Compound audience growth and partnership value over time.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>
