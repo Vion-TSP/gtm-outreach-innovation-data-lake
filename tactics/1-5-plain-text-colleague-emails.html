@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 1.5 — Plain Text Colleague-Style Emails | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 1.5 - Reactive Outbound</div>
+  <h1>Plain Text Colleague-Style Emails</h1>
+  <p class="desc">Strip all HTML formatting, logos, and fancy signatures. Write like an internal colleague reaching out with a quick question. Bypasses Gmail Promotions filters and reads as genuine, conversational outreach. Under 5 sentences always.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#58a6ff;background:#58a6ff22">
+      <div class="hero-ch-icon" style="background:#58a6ff">E</div>
+      <div class="hero-ch-name">Email</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low</span>
+    <span class="tag tag-cost">Cost: Free</span>
+    <span class="tag tag-icp">ICP: All ICPs, Technical Buyers</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Gmail Promotions filters and spam detection algorithms look for marketing signals: HTML formatting, tracking pixels, logos, multiple links, marketing copy patterns. Plain text emails with no formatting signals pass through as personal correspondence. They land in Primary inbox, not Promotions.
+      </div>
+      <h3>The psychology behind plain text colleague-style emails</h3>
+      <ul>
+        <li><strong>Pattern interruption</strong> - Decision-makers receive 50-100 marketing emails per day with designed templates. A plain text email stands out by blending in as genuine correspondence</li>
+        <li><strong>Trust through informality</strong> - Fancy signatures and company branding trigger sales defence mechanisms. Plain text signals peer-to-peer communication, not vendor pitch</li>
+        <li><strong>Cognitive ease</strong> - No visual clutter. No images loading. Just text. Easier to process, faster to read, lower friction to respond</li>
+        <li><strong>The colleague test</strong> - Would a real colleague at your company write this exact email? If yes, it passes the authenticity test. If no, it gets flagged as sales outreach</li>
+      </ul>
+      <h3>Why this bypasses spam filters</h3>
+      <p>Gmail Promotions filtering and spam detection systems analyse multiple signals: sender reputation, HTML complexity, link density, tracking pixels, image-to-text ratio, marketing language patterns. Plain text emails eliminate most of these signals. No HTML means no tracking pixels. No images means no image-to-text ratio analysis. Short copy with contractions and casual tone doesn't match marketing copy patterns.</p>
+      <p><strong>Technical note:</strong> Even sending from email marketing platforms like Instantly or Lemlist, plain text emails have 60-80% Primary inbox placement vs 10-20% for designed emails. The delivery mechanism matters less than the content format.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-email">W</div><div class="wf-label">Write Like a Colleague</div><div class="wf-action">Casual tone</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">S</div><div class="wf-label">Strip All Formatting</div><div class="wf-action">No HTML, images</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-email">K</div><div class="wf-label">Keep Under 5 Sentences</div><div class="wf-action">Brevity wins</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">P</div><div class="wf-label">Send from Personal Address</div><div class="wf-action">Your name domain</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">F</div><div class="wf-label">Sign with First Name Only</div><div class="wf-action">No title, logo</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Write like a colleague</td>
+          <td>Draft as if you're emailing an internal colleague about a quick question. Use contractions. Short sentences. Casual tone. No marketing language</td>
+          <td>5-10 min per email</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Strip all formatting</td>
+          <td>Remove all HTML, images, logos, colours, fonts, text formatting. Plain text only. No tracking pixels. No embedded images</td>
+          <td>1 min (automated in most tools)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Keep under 5 sentences</td>
+          <td>Absolute maximum 5 sentences. Ideally 3-4. Real colleagues don't write essay emails for quick questions. Brevity signals respect for time</td>
+          <td>Enforced during writing</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Send from personal address</td>
+          <td>Use firstname@company.com or your personal Gmail. Avoid marketing@, info@, hello@ addresses. Personal addresses have better sender reputation</td>
+          <td>Setup once</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Sign with first name only</td>
+          <td>End with your first name only. No job title, no company name, no logo signature block. Just your name. Optionally add mobile number on second line</td>
+          <td>Template once, reuse</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> The subject line matters as much as the body. Use 2-4 lowercase words: "quick question", "following up", "saw your post", "thought of you". No punctuation. No capitals. Reads as internal email, not marketing blast.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Instantly</strong></td>
+          <td>$37/mo</td>
+          <td>Scaling plain text cold email with deliverability focus</td>
+          <td>Unlimited email accounts, built-in warmup, plain text templates, detailed deliverability analytics</td>
+          <td>Must manually disable tracking pixels and remove default footer branding</td>
+        </tr>
+        <tr>
+          <td><strong>Gmail</strong></td>
+          <td>Free</td>
+          <td>Manual one-to-one outreach</td>
+          <td>Native plain text mode. No tracking by default. Best sender reputation for personal addresses</td>
+          <td>Not scalable beyond 50-100 emails/day. No analytics, no automation</td>
+        </tr>
+        <tr>
+          <td><strong>Mailshake</strong></td>
+          <td>$58/mo</td>
+          <td>Teams needing plain text + light CRM integration</td>
+          <td>Plain text mode, social touches via LinkedIn, Salesforce and HubSpot sync</td>
+          <td>More expensive than Instantly. Tracking pixel defaults on (must disable)</td>
+        </tr>
+        <tr>
+          <td><strong>Lemlist</strong></td>
+          <td>$59/mo</td>
+          <td>Plain text + light personalisation (first name, company)</td>
+          <td>Plain text templates with variable insertion, email warmup, A/B testing</td>
+          <td>Lemwarm footer added by default (signals bulk email). Must remove manually</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Use <strong>Gmail</strong> for your top 50 target accounts (manual, fully authentic). Use <strong>Instantly</strong> ($37/mo) for volume plain text campaigns (200+ prospects/month). The tool choice matters less than the technique: remove all formatting, write conversationally, keep it short.
+      </div>
+
+      <h3>Important: tool configuration for plain text</h3>
+      <p>Most email tools default to tracking pixels, branded footers, and HTML templates. You must explicitly configure plain text mode:</p>
+      <ul>
+        <li><strong>Instantly:</strong> Settings → Campaign Settings → Disable "Track opens" and "Track clicks". Remove "Sent via Instantly" footer in signature editor</li>
+        <li><strong>Lemlist:</strong> Campaign Settings → Turn off "Email tracking". Remove "Lemwarm" or "Sent via Lemlist" footer text</li>
+        <li><strong>Mailshake:</strong> Campaign Settings → Disable "Track email opens". Use plain text email editor, not rich text</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- The Colleague Test sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>The Colleague Test (Would a Real Colleague Write This?)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <p>Before sending any plain text email, apply the colleague test: if a real colleague at your company sent you this exact email, would it feel normal or would it feel like a sales pitch?</p>
+
+            <h3>What passes the colleague test</h3>
+            <ul>
+              <li>Casual tone with contractions: "I'm", "you're", "we've", "can't"</li>
+              <li>Short sentences. 10-15 words max per sentence</li>
+              <li>Lowercase subject lines: "quick question", "following up"</li>
+              <li>No marketing jargon: no "solutions", "leverage", "synergy", "best-in-class"</li>
+              <li>Direct questions: "are you the right person?", "worth a quick chat?"</li>
+              <li>Signed with just first name, no title or company</li>
+            </ul>
+
+            <h3>What fails the colleague test</h3>
+            <ul>
+              <li>Formal language: "I am reaching out to discuss...", "I would like to explore..."</li>
+              <li>Company pitch: "We help companies like yours...", "Our platform enables..."</li>
+              <li>Long sentences with sub-clauses and formal punctuation</li>
+              <li>Marketing CTAs: "Schedule a demo", "Download our whitepaper"</li>
+              <li>Signature blocks with logo, title, phone, LinkedIn, company address</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Test:</strong> Show the email to a colleague and ask: "Does this read as if I'm emailing someone I already know?" If they say no, rewrite it.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formatting Rules sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Formatting Rules (What to Remove)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Remove all of the following</h3>
+            <ul>
+              <li><strong>No images:</strong> No company logo, no headshot, no embedded graphics, no GIFs</li>
+              <li><strong>No links in first email:</strong> No calendar links, no website links, no case study links. Exception: if they explicitly requested a link</li>
+              <li><strong>No logo signatures:</strong> No company logo in signature block. No branded email signature graphics</li>
+              <li><strong>No HTML formatting:</strong> No bold, italics, colours, font changes, bullet points rendered as HTML</li>
+              <li><strong>No tracking pixels:</strong> Disable open tracking and click tracking in your email tool settings</li>
+              <li><strong>No marketing footers:</strong> Remove "Sent via [Tool Name]", "Unsubscribe", "This email was sent to..."</li>
+            </ul>
+
+            <h3>What you can keep</h3>
+            <ul>
+              <li>Plain text line breaks for paragraph separation</li>
+              <li>Simple punctuation: periods, commas, question marks</li>
+              <li>Your first name as signature</li>
+              <li>Optionally: mobile phone number on second line (no label, just the number)</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Technical note:</strong> Even if using an email marketing tool, force plain text mode. Most tools have a "plain text" toggle or "remove HTML" option. Use it. If your tool doesn't support true plain text, consider switching tools or sending manually via Gmail.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tone and Language sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Tone and Language (Write Like a Human)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Short sentences rule</h3>
+            <p>Colleagues don't write essay paragraphs. They write 1-2 sentence emails. Break long sentences into multiple short ones. Aim for 10-15 words per sentence. Never exceed 20 words in a single sentence.</p>
+
+            <h3>Use contractions</h3>
+            <p>Don't write: "I am reaching out because I believe there is potential value."</p>
+            <p>Write: "I'm reaching out because I think there's value here."</p>
+            <p>Contractions signal informal, peer-to-peer communication. Formal language signals marketing.</p>
+
+            <h3>Conversational patterns</h3>
+            <table>
+              <tr><th>Formal (Marketing)</th><th>Conversational (Colleague)</th></tr>
+              <tr>
+                <td>I wanted to reach out to discuss...</td>
+                <td>Quick question for you</td>
+              </tr>
+              <tr>
+                <td>I believe there is an opportunity...</td>
+                <td>Thought this might be relevant</td>
+              </tr>
+              <tr>
+                <td>Would you be available for a call?</td>
+                <td>Worth a quick chat?</td>
+              </tr>
+              <tr>
+                <td>I look forward to hearing from you</td>
+                <td>Let me know</td>
+              </tr>
+              <tr>
+                <td>Our solution enables companies to...</td>
+                <td>We help with [specific problem]</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> If you wouldn't say it out loud to a colleague in the hallway, don't write it in the email.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject Line Patterns sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Subject Line Patterns (2-4 Words, Lowercase)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why lowercase subjects work</h3>
+            <p>Marketing emails use title case or sentence case with proper punctuation. Internal colleague emails often use lowercase, no punctuation. Gmail Promotions filters flag title case subjects combined with marketing sender patterns. Lowercase subjects bypass this filter.</p>
+
+            <h3>High-performing plain text subject patterns</h3>
+            <ul>
+              <li>"quick question" - Generic, non-threatening, low friction</li>
+              <li>"following up" - Implies prior context (even if there wasn't any)</li>
+              <li>"saw your post" - Social proof, personalisation signal</li>
+              <li>"thought of you" - Personal, warm, peer-to-peer</li>
+              <li>"idea for [Company]" - Specific, value-forward, relevant</li>
+              <li>"are you the right person" - Humble, helpful framing</li>
+            </ul>
+
+            <h3>What NOT to do</h3>
+            <ul>
+              <li class="con">Title case subjects: "Quick Question For You" - signals marketing</li>
+              <li class="con">Punctuation: "Quick question?" or "Following up!" - signals marketing</li>
+              <li class="con">Long subjects: "Quick question about improving your outbound sales process" - too long, too specific, too salesy</li>
+              <li class="con">Emojis: "Quick question 👋" - fine for some audiences, risky for B2B cold outreach</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>A/B test:</strong> Try sending the same email body with two subject variants: "Quick Question For Sarah" (title case) vs "quick question" (lowercase). The lowercase version typically gets 20-30% higher open rates in cold outreach.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- When Plain Text Beats Designed Emails sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>When Plain Text Beats Designed Emails</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Use plain text for</h3>
+            <table>
+              <tr><th>Scenario</th><th>Why Plain Text Wins</th></tr>
+              <tr>
+                <td>Cold outreach to technical buyers (CTOs, VPs Engineering, DevOps)</td>
+                <td>Technical audiences are allergic to marketing. Plain text signals peer-to-peer technical conversation, not vendor pitch</td>
+              </tr>
+              <tr>
+                <td>First touchpoint in a multi-touch sequence</td>
+                <td>Break through as authentic personal outreach. Follow-ups can introduce more structure, links, case studies</td>
+              </tr>
+              <tr>
+                <td>Re-engagement or breakup emails</td>
+                <td>Last-ditch effort to revive dead leads. Designed emails already failed. Plain text signals genuine care, not automated sequence</td>
+              </tr>
+              <tr>
+                <td>High-value target accounts (enterprise, C-suite)</td>
+                <td>Decision-makers have executive assistants filtering obvious sales emails. Plain text bypasses the gatekeeper filter</td>
+              </tr>
+              <tr>
+                <td>When your sender reputation is weak or domain is new</td>
+                <td>Designed emails from new domains trigger spam filters aggressively. Plain text gets benefit of doubt</td>
+              </tr>
+            </table>
+
+            <h3>Use designed emails for</h3>
+            <table>
+              <tr><th>Scenario</th><th>Why Designed Wins</th></tr>
+              <tr>
+                <td>Product demos or feature announcements</td>
+                <td>Visual content (screenshots, diagrams) requires design. Plain text can't show the product</td>
+              </tr>
+              <tr>
+                <td>Event invitations or webinars</td>
+                <td>Branding and visual hierarchy help with credibility and registration conversion</td>
+              </tr>
+              <tr>
+                <td>Nurture sequences for opted-in leads</td>
+                <td>They've already expressed interest. Design reinforces brand and professionalism</td>
+              </tr>
+              <tr>
+                <td>Customer onboarding or support emails</td>
+                <td>Step-by-step instructions benefit from formatting, images, links</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Hybrid approach:</strong> Send first email plain text to break through. If they engage, send follow-up with light design (simple logo, one link, one CTA). Earned the right to look professional after proving you're human first.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Adding tool footer branding</h4>
+          <div class="why">"Sent via Instantly" or "Powered by Lemlist" at the bottom instantly signals bulk email, not personal outreach. Kills credibility.</div>
+          <div class="fix">Go into tool settings and remove all footer branding. Most tools allow custom signature blocks. Leave it completely blank or just your first name.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Tracking pixels triggering spam filters</h4>
+          <div class="why">Most email tools add invisible tracking pixels by default to track opens. Gmail detects these and flags the email as marketing.</div>
+          <div class="fix">Disable open tracking and click tracking in campaign settings. Accept that you won't have open rate data. Focus on reply rate instead.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Writing too formally despite plain text format</h4>
+          <div class="why">No HTML doesn't matter if the language is still corporate-speak. "I am writing to inquire..." in plain text still reads as marketing.</div>
+          <div class="fix">Use contractions, short sentences, casual language. Read it aloud. Does it sound like how you'd talk to a colleague? If not, rewrite.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Including links in the first email</h4>
+          <div class="why">Links trigger spam filters, especially in cold emails from unknown senders. Even plain text emails with multiple links get flagged.</div>
+          <div class="fix">No links in the first email. Not even your calendar link. Save links for the reply or follow-up email after they've engaged.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Using a company signature block</h4>
+          <div class="why">Company name, job title, phone, email, LinkedIn, company address in signature = obvious sales email, even in plain text.</div>
+          <div class="fix">Sign with just your first name. Optionally add your mobile number on a second line (no label, just the number). Nothing else.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Subject line too long or too salesy</h4>
+          <div class="why">"I have an idea that could help Acme improve outbound sales by 40%" - length and specificity signal marketing blast.</div>
+          <div class="fix">2-4 lowercase words: "quick question", "following up", "thought of you". That's it. No punctuation. No capitals.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>7. Email body over 5 sentences</h4>
+          <div class="why">Real colleagues send 2-3 sentence emails. 7-10 sentence emails signal prepared sales pitch, even in plain text.</div>
+          <div class="fix">Absolute max 5 sentences. Ideally 3-4. If you can't explain the ask in 5 sentences, it's not clear enough. Simplify.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>8. Sending from generic company addresses</h4>
+          <div class="why">hello@, info@, sales@ addresses have poor sender reputation and high spam complaint rates. Get filtered aggressively.</div>
+          <div class="fix">Use personal address: firstname@company.com or your personal Gmail. Personal addresses have better deliverability and higher trust.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>
