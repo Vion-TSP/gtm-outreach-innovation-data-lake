@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 1.3 — Micro-Segmented Outreach | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 1.3 - Reactive Outbound</div>
+  <h1>Micro-Segmented Outreach (Lists Under 50)</h1>
+  <p class="desc">Build tiny lists of fewer than 50 prospects who share hyper-specific characteristics. Deep research each person, write segment-specific copy that feels 1-to-1, and achieve reply rates that make broad cold outreach look broken.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#58a6ff;background:#58a6ff22">
+      <div class="hero-ch-icon" style="background:#58a6ff">E</div>
+      <div class="hero-ch-name">Email (Primary)</div>
+    </div>
+    <span class="hero-ch-plus">+</span>
+    <div class="hero-ch" style="border-color:#0a66c2;background:#0a66c222">
+      <div class="hero-ch-icon" style="background:#0a66c2">Li</div>
+      <div class="hero-ch-name">LinkedIn</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low</span>
+    <span class="tag tag-icp">ICP: All ICPs</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Small lists enable extreme personalization. When you have 500 prospects, you can't deeply research each one. When you have 30, you can. Micro-segments (under 50 people) let you write copy so specific that it feels like a 1-to-1 email, not a blast. Quality beats quantity at this level.
+      </div>
+      <h3>The psychology behind micro-segmentation</h3>
+      <ul>
+        <li><strong>Shared context creates instant credibility</strong> - When your email references a specific combination of traits they share (e.g., "Series A fintech companies using Stripe who just hired a VP Sales"), they think: "This person gets my exact situation". Credibility is instant</li>
+        <li><strong>Scarcity implies exclusivity</strong> - A message written for 30 people feels more valuable than one written for 5000. "I'm reaching out to a handful of VPs in Series A fintechs" signals selectivity, not spam</li>
+        <li><strong>Hyper-relevance = low friction</strong> - When every sentence in your email applies directly to them, there's no cognitive load. They don't have to translate generic advice into their context. It just fits</li>
+        <li><strong>Research shows through</strong> - You can't fake deep knowledge at small scale. When you mention their tech stack, recent blog post, and hiring plan in one email, they know you invested time. Effort earns replies</li>
+      </ul>
+      <h3>Why size matters: under 50 is the magic number</h3>
+      <p>At 100+ prospects, you're forced to generalize. At 50 or below, you can invest 5-10 minutes researching each person without the process becoming unsustainable. That 5 minutes per person is the difference between "sort of relevant" and "wow, this person really understands me".</p>
+      <p><strong>The math:</strong> If you spend 5 min researching each of 30 people, that's 2.5 hours total. If that micro-segment converts at 3x the rate of a 500-person broad list, you book more meetings in less time with better qualification. Small beats big when execution quality matters.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-email">D</div><div class="wf-label">Define Micro-Segment</div><div class="wf-action">4+ shared traits</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">B</div><div class="wf-label">Build List</div><div class="wf-action">Clay (under 50)</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-email">R</div><div class="wf-label">Deep Research</div><div class="wf-action">5-10 min each</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">W</div><div class="wf-label">Write Copy</div><div class="wf-action">Segment-specific</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">S</div><div class="wf-label">Send</div><div class="wf-action">Instantly</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-email">T</div><div class="wf-label">Track & Iterate</div><div class="wf-action">Measure results</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Define your micro-segment</td>
+          <td>Choose 3-5 shared characteristics that create a hyper-specific group: industry + company stage + tech stack + recent trigger (e.g., Series A SaaS companies using HubSpot who just hired a Head of Sales)</td>
+          <td>10-15 min</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Build list in Clay (under 50)</td>
+          <td>Use Clay filters to narrow your TAM to the micro-segment. Start broad (e.g., all Series A SaaS), then layer filters (HubSpot users, recent Head of Sales hire) until you hit 20-50 prospects</td>
+          <td>20-30 min</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Deep research each person</td>
+          <td>Spend 5-10 min per prospect: LinkedIn profile, company website, recent blog posts, tech stack, job postings, funding news. Log 2-3 specific details per person (not generic notes)</td>
+          <td>2.5-5 hours (for 30 people)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Write segment-specific copy</td>
+          <td>Write ONE email template for the entire segment. Every sentence should apply to all 30 people. Reference shared traits explicitly. Then add 1-2 sentence personalized intros per person using research notes</td>
+          <td>30-45 min (template + personalization)</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Send via Instantly</td>
+          <td>Upload list to Instantly with email copy. Send in batches (10-15 per day max) to maintain high deliverability and avoid spam filters</td>
+          <td>10 min setup</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Track & iterate</td>
+          <td>Measure open rate, reply rate, meeting booked rate. If reply rate is below expectations, iterate on segment definition or copy. If high, replicate the approach with new micro-segments</td>
+          <td>Ongoing</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Don't build 10 micro-segments at once. Start with one (20-30 people), perfect the copy, measure results, then replicate. One high-performing micro-segment teaches you more than ten mediocre ones.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Clay</strong></td>
+          <td>$149-349/mo</td>
+          <td>Building micro-segment lists with advanced filters</td>
+          <td>Layer multiple filters (industry, size, tech stack, hiring signals, funding) to narrow TAM to under 50. Enrichment built-in</td>
+          <td>Learning curve. Requires understanding of how to layer filters effectively</td>
+        </tr>
+        <tr>
+          <td><strong>Instantly</strong></td>
+          <td>$37/mo</td>
+          <td>Sending small-batch emails with high deliverability</td>
+          <td>Unlimited email accounts, unlimited sends. Simple CSV upload. Great for batching sends (10-15 per day)</td>
+          <td>No advanced segmentation or filtering. You build lists elsewhere, Instantly just sends</td>
+        </tr>
+        <tr>
+          <td><strong>Apollo</strong></td>
+          <td>$59/mo</td>
+          <td>Finding contacts + basic segmentation</td>
+          <td>Large database (250M+ contacts). Good for initial filtering by title, industry, company size. Exports to CSV</td>
+          <td>Filters are less precise than Clay. Hard to combine multiple advanced criteria (tech stack + trigger events)</td>
+        </tr>
+        <tr>
+          <td><strong>LinkedIn Sales Navigator</strong></td>
+          <td>$99/mo</td>
+          <td>Manual research + finding decision-makers</td>
+          <td>Advanced LinkedIn search (title, company, seniority, geography). Good for validating micro-segments and finding specific people</td>
+          <td>No automated enrichment or export at scale. Manual work for each contact</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> <strong>Clay</strong> ($149-349/mo) for building micro-segment lists with advanced filtering, plus <strong>Instantly</strong> ($37/mo) for sending. Total: $186-386/mo. Add <strong>LinkedIn Sales Navigator</strong> ($99/mo) if you need to manually validate or find specific decision-makers before sending.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- What Makes a Micro-Segment sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>What Makes a Good Micro-Segment</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The 3-5 trait rule</h3>
+            <p>A micro-segment is defined by 3-5 shared characteristics that create a hyper-specific group. Too few traits (just industry) and you're still too broad. Too many traits (7+ filters) and your list shrinks to 3 people. The sweet spot is 3-5 traits that result in 20-50 prospects.</p>
+
+            <h3>High-performing trait combinations</h3>
+            <table>
+              <tr><th>Trait 1</th><th>Trait 2</th><th>Trait 3</th><th>Trait 4</th><th>Example Segment</th></tr>
+              <tr>
+                <td>Industry</td>
+                <td>Company stage</td>
+                <td>Tech stack</td>
+                <td>Recent trigger</td>
+                <td>Series A fintech companies using Salesforce who just hired a VP Sales</td>
+              </tr>
+              <tr>
+                <td>Industry</td>
+                <td>Company size</td>
+                <td>Tech adoption</td>
+                <td>Geography</td>
+                <td>50-200 employee SaaS companies in UK using HubSpot who adopted Gong in the last 6 months</td>
+              </tr>
+              <tr>
+                <td>Job title</td>
+                <td>Company stage</td>
+                <td>Funding status</td>
+                <td>Problem signal</td>
+                <td>Heads of Sales at post-Series B companies who raised in last 12 months and are hiring 3+ AEs</td>
+              </tr>
+              <tr>
+                <td>Industry</td>
+                <td>Tech stack</td>
+                <td>Company size</td>
+                <td>Content engagement</td>
+                <td>100-500 employee ecommerce companies using Shopify who engaged with ABM content in last 30 days</td>
+              </tr>
+            </table>
+
+            <h3>What NOT to do</h3>
+            <ul>
+              <li><strong>Don't segment on one trait only</strong> - "All VPs of Sales" is 50,000 people. That's not a micro-segment, it's a mass market</li>
+              <li><strong>Don't use vague traits</strong> - "Interested in growth" or "innovative companies" are subjective and impossible to filter accurately</li>
+              <li><strong>Don't mix unrelated traits</strong> - "Series A companies OR using Salesforce OR in fintech" creates a messy Venn diagram. Use AND logic, not OR</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Test question:</strong> If you can write an email where every single sentence applies to every single person on the list, your micro-segment is well-defined. If you have to add caveats or generic language, go narrower.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Optimal List Size sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Optimal List Size (20-50 People)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why 20-50 is the sweet spot</h3>
+            <p>Under 20 people, you're spending too much time per prospect for too little volume. Over 50 people, you start cutting corners on research and personalization quality drops. The 20-50 range lets you maintain high research quality while generating enough volume to make the effort worthwhile.</p>
+
+            <h3>List size by segment quality</h3>
+            <table>
+              <tr><th>List Size</th><th>Research Time Per Person</th><th>Total Research Time</th><th>When to Use</th></tr>
+              <tr>
+                <td>10-20 people</td>
+                <td>10-15 min</td>
+                <td>2-5 hours</td>
+                <td>Tier 1 accounts (enterprise, dream customers, high ACV). Deep research justifies low volume</td>
+              </tr>
+              <tr>
+                <td>20-35 people</td>
+                <td>5-10 min</td>
+                <td>2-6 hours</td>
+                <td>Ideal balance. High personalization, reasonable volume. Most micro-segments should target this range</td>
+              </tr>
+              <tr>
+                <td>35-50 people</td>
+                <td>3-5 min</td>
+                <td>2-4 hours</td>
+                <td>When the segment is very tightly defined (traits do most of the work). Light research to add individual touches</td>
+              </tr>
+              <tr>
+                <td>50-100 people</td>
+                <td>1-3 min</td>
+                <td>1-5 hours</td>
+                <td>Not a true micro-segment anymore. Only use if traits are so specific that minimal individual research is needed</td>
+              </tr>
+            </table>
+
+            <h3>When to split a segment</h3>
+            <p>If your initial filters return 80 people, don't just take the first 50. Split into two micro-segments by adding one more filter (e.g., geography or company size). Two 40-person segments with tighter targeting beat one 80-person segment with looser fit.</p>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Start with 25-30 people for your first micro-segment. This gives you room to exclude bad-fit prospects after research (maybe 5-10 drop out) while still having 20+ solid targets.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Writing Copy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Writing Copy That Feels 1-to-1</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The two-layer approach</h3>
+            <p>Micro-segment emails use two layers: (1) a segment-specific template that applies to everyone, and (2) a 1-2 sentence personalized intro per person using individual research. The template does the heavy lifting, the intro proves you researched them specifically.</p>
+
+            <h3>Layer 1: Segment-specific template</h3>
+            <p>Write ONE email that applies to every person in the segment. Reference shared traits explicitly so they recognize themselves immediately.</p>
+
+            <div class="email-block"><span class="label">Example (Series A fintech VPs using Salesforce)</span>Subject: Acme + Salesforce
+
+Hi Sarah,
+
+Reaching out to a handful of VPs at Series A fintech companies who recently adopted Salesforce.
+
+Most teams at your stage hit the same wall 90 days post-SFDC implementation: data quality degrades, reps stop logging activity, and forecasting becomes guesswork.
+
+We help Series A fintechs (like Acme, Stripe, Brex) keep Salesforce clean and actionable without hiring a full-time ops person. Happy to share how they set it up.
+
+Worth a quick chat?
+
+James</div>
+
+            <h3>Layer 2: Personalized intro (1-2 sentences)</h3>
+            <p>Add a short, research-based intro above the template. This proves you looked at them individually, not just blasted the segment.</p>
+
+            <div class="email-block"><span class="label">Example with personalized intro</span>Subject: Acme + Salesforce
+
+Hi Sarah,
+
+Saw you joined Acme 6 months ago and recently rolled out Salesforce to the sales team. Congrats on the momentum.
+
+Reaching out to a handful of VPs at Series A fintech companies who recently adopted Salesforce.
+
+Most teams at your stage hit the same wall 90 days post-SFDC implementation: data quality degrades, reps stop logging activity, and forecasting becomes guesswork.
+
+We help Series A fintechs (like Acme, Stripe, Brex) keep Salesforce clean and actionable without hiring a full-time ops person. Happy to share how they set it up.
+
+Worth a quick chat?
+
+James</div>
+
+            <h3>Why this works</h3>
+            <ul>
+              <li><strong>Segment template creates instant relevance</strong> - "Series A fintech VPs using Salesforce" - they read that and think: "This is for me"</li>
+              <li><strong>Personalized intro proves effort</strong> - "Saw you joined 6 months ago and rolled out Salesforce" - can't be automated, must have researched</li>
+              <li><strong>Efficiency at scale</strong> - Write the template once, spend 2-3 min per person on the intro. 30 emails in under 2 hours</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> If you can't write a segment-specific template that applies to everyone, your micro-segment isn't tight enough. Go back and add more filters.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- When to Split Further sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>When to Split a Segment Further</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Signs your segment is too broad</h3>
+            <p>Even at 30-40 people, a segment can be too broad if the shared traits don't create a tight enough cohort. Here are signs you need to split further:</p>
+
+            <ul>
+              <li><strong>Your template feels generic</strong> - If you're writing "companies like yours" instead of "Series A fintech companies using Salesforce", the segment lacks specificity</li>
+              <li><strong>You're adding too many conditional phrases</strong> - "If you're focused on X" or "depending on your priorities" - these signal the segment includes people with different needs</li>
+              <li><strong>Research reveals two distinct subgroups</strong> - Half the list is early-stage using basic tools, half is scaling fast with complex stacks. Split into two segments</li>
+              <li><strong>Reply rate is mediocre</strong> - If your first 10-15 sends get low engagement, the segment may be too broad or poorly defined. Tighten it</li>
+            </ul>
+
+            <h3>How to split effectively</h3>
+            <table>
+              <tr><th>Original Segment</th><th>Split Criteria</th><th>New Segments</th></tr>
+              <tr>
+                <td>50 VPs of Sales at Series A companies</td>
+                <td>Company size</td>
+                <td>Segment A: 10-50 employees (early-stage)<br>Segment B: 50-150 employees (scaling)</td>
+              </tr>
+              <tr>
+                <td>40 fintech companies using HubSpot</td>
+                <td>Use case</td>
+                <td>Segment A: B2B SaaS fintechs<br>Segment B: Consumer fintech apps</td>
+              </tr>
+              <tr>
+                <td>35 heads of marketing at ecommerce companies</td>
+                <td>Geography</td>
+                <td>Segment A: US-based<br>Segment B: UK/EU-based</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>When NOT to split:</strong> If splitting creates segments under 15 people, you've gone too narrow. At that point, just personalize each email fully rather than using a segment template.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracking Performance sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Tracking Per-Segment Performance</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why per-segment tracking matters</h3>
+            <p>Broad outreach metrics (average reply rate across all sends) hide what's working. One high-performing micro-segment and three mediocre ones average out to "okay". You miss the insight: double down on the winner, kill the losers.</p>
+
+            <h3>Metrics to track per segment</h3>
+            <table>
+              <tr><th>Metric</th><th>What It Tells You</th><th>Good Benchmark</th></tr>
+              <tr>
+                <td>Reply rate</td>
+                <td>Is the segment well-targeted and copy relevant?</td>
+                <td>Above 15% = great. 8-15% = good. Below 8% = iterate or kill</td>
+              </tr>
+              <tr>
+                <td>Positive reply rate</td>
+                <td>Are replies interested or just "not interested"?</td>
+                <td>Above 50% of replies should be positive or neutral (not hard no)</td>
+              </tr>
+              <tr>
+                <td>Meeting booked rate</td>
+                <td>Does engagement convert to pipeline?</td>
+                <td>Above 5% of total sends = excellent. 2-5% = good. Below 2% = rethink</td>
+              </tr>
+              <tr>
+                <td>Time to first reply</td>
+                <td>How quickly do they engage? (Fast = strong relevance)</td>
+                <td>Under 24 hours = strong signal. 24-48 hours = good. Over 72 hours = weak</td>
+              </tr>
+            </table>
+
+            <h3>Iterating based on results</h3>
+            <p>After sending to 20-30 people in a micro-segment, analyze results within 7 days. Use this decision tree:</p>
+            <ul>
+              <li><strong>High reply rate (above 12%)</strong> - Replicate the approach. Build 2-3 similar micro-segments with the same structure and copy style</li>
+              <li><strong>Medium reply rate (6-12%)</strong> - Iterate on copy. Tighten the segment slightly or rewrite the value prop. Test again with 20 more</li>
+              <li><strong>Low reply rate (below 6%)</strong> - Segment is poorly defined or value prop is off. Go back to definition phase. Don't keep sending</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Tag each micro-segment in your sending tool (Instantly, Outreach, etc.) with a unique identifier (e.g., "Seg-01-Series-A-Fintech-SFDC"). This makes it easy to filter and analyze performance per segment in your analytics dashboard.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Lists too large (over 100 people)</h4>
+          <div class="why">You call it a "micro-segment" but it's 200 people. Research quality drops, copy becomes generic, and you lose the core advantage: hyper-relevance.</div>
+          <div class="fix">Cap at 50 people max. If your filters return 100+, add another filter or split into two distinct micro-segments. Small is the entire point.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Surface-level segmentation (just industry)</h4>
+          <div class="why">Segment = "all VPs in SaaS". That's 20,000 people with wildly different needs. Not a micro-segment, just a basic filter.</div>
+          <div class="fix">Use 3-5 traits minimum: industry + company stage + tech stack + trigger event. Narrow until you hit 20-50 people with very similar profiles.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Not researching individuals</h4>
+          <div class="why">You build a tight micro-segment but skip individual research. Email feels segment-specific but not personal. Loses the "wow, they really looked at us" effect.</div>
+          <div class="fix">Spend 5-10 min per person. Log 2-3 specific details (LinkedIn activity, recent blog post, tech adoption, hiring). Add 1-2 sentence personalized intro per email.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Reusing copy across segments</h4>
+          <div class="why">You nail one micro-segment, then copy-paste the email to a different segment with minor tweaks. Recipients notice. Feels templated, not tailored.</div>
+          <div class="fix">Write fresh copy for each micro-segment. Reference the specific shared traits of THAT segment. Don't recycle. Each segment deserves its own template.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Not iterating based on results</h4>
+          <div class="why">You send to 30 people, get mediocre replies, then just move on to the next segment. Never learn what worked or didn't. Repeat the same mistakes.</div>
+          <div class="fix">Analyze results after every 20-30 sends. Track reply rate per segment. If below 8%, iterate on segment definition or copy before moving on. Double down on winners.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Mixing unrelated people into one segment</h4>
+          <div class="why">Your "micro-segment" includes 20 VPs of Sales and 10 Heads of Marketing because you needed to hit 30 people. Different roles = different needs = bad fit.</div>
+          <div class="fix">Keep segments homogenous. If you have 20 VPs and 10 Heads of Marketing, build TWO micro-segments. Don't force unrelated people into one list just to hit a number.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>7. Sending too fast (no batch pacing)</h4>
+          <div class="why">You send all 40 emails in one hour. Email providers flag you as a spammer. Deliverability tanks. Half the emails never reach the inbox.</div>
+          <div class="fix">Batch sends over 3-5 days (10-15 emails per day max). Space them out 30-60 min apart. Slower sending = better deliverability = more replies.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>8. No clear next steps after winning segment</h4>
+          <div class="why">You nail a micro-segment (18% reply rate, 4 meetings booked) but don't document what made it work or build similar segments. Lightning in a bottle, never repeated.</div>
+          <div class="fix">When a segment works, document the winning formula: traits used, copy structure, research depth. Replicate it with 2-3 similar segments. Turn wins into repeatable process.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

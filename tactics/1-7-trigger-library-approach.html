@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 1.7 — Trigger Library Approach | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+.ch-library{background:#3fb950}
+
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 1.7 - Reactive Outbound</div>
+  <h1>Trigger Library Approach</h1>
+  <p class="desc">Pre-written insight blocks tied to signals. Assemble email from blocks plus personalised opener. Speed plus quality at scale.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#58a6ff;background:#58a6ff22">
+      <div class="hero-ch-icon" style="background:#58a6ff">E</div>
+      <div class="hero-ch-name">Email (Primary)</div>
+    </div>
+    <span class="hero-ch-plus">+</span>
+    <div class="hero-ch" style="border-color:#3fb950;background:#3fb95022">
+      <div class="hero-ch-icon" style="background:#3fb950">L</div>
+      <div class="hero-ch-name">Library</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: High (setup), Low (ongoing)</span>
+    <span class="tag tag-cost">Cost: Low</span>
+    <span class="tag tag-icp">ICP: All ICPs</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Quality personalisation does not require starting from scratch every time. The most effective insights can be pre-written, categorised by trigger type, and assembled modularly with a custom opener. You get 80% of the quality in 20% of the time.
+      </div>
+      <h3>The problem with traditional prospecting</h3>
+      <ul>
+        <li><strong>Fully custom emails take too long</strong> - Writing a truly thoughtful, insight-driven email takes 15-25 minutes per prospect. At that pace, SDRs send 15-20 emails per day, not 80-100</li>
+        <li><strong>Fully templated emails convert poorly</strong> - Generic template blasts get ignored. Response rates hover around 1-2% because they lack relevance and feel mass-produced</li>
+        <li><strong>The false choice</strong> - Teams think they must choose between quality (slow, manual) or quantity (fast, templated). The trigger library gives you both</li>
+      </ul>
+      <h3>How the trigger library solves this</h3>
+      <p>The library contains pre-written insight blocks tied to specific signals or triggers. When an SDR spots a relevant signal, they select the matching insight block, write a 1-2 sentence personalised opener, and combine them into a natural-sounding email. The entire process takes 2-3 minutes per email.</p>
+      <p>The insight blocks are written once by your best writers, tested and refined over time, and reused across hundreds of prospects. The personalised opener ensures the email feels custom and shows you did the research.</p>
+      <h3>The psychology</h3>
+      <ul>
+        <li><strong>Modular quality scales</strong> - Pre-written insight blocks can be higher quality than ad-hoc writing because they are crafted carefully, tested, and refined. You get A-plus writing at scale</li>
+        <li><strong>Context triggers trust</strong> - The personalised opener anchors the email in real context (their funding round, job posting, product launch). This creates trust before the recipient even reads the insight</li>
+        <li><strong>Consistency across team</strong> - Junior SDRs can send emails that sound like they came from your best writer, because they are literally using your best writer's blocks</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-library">M</div><div class="wf-label">Map All Signals</div><div class="wf-action">Identify triggers</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-library">W</div><div class="wf-label">Write Insight Blocks</div><div class="wf-action">Create content library</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-library">C</div><div class="wf-label">Create CTA Variants</div><div class="wf-action">Build CTA library</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">S</div><div class="wf-label">SDR Spots Signal</div><div class="wf-action">Identify prospect trigger</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">S</div><div class="wf-label">Select Matching Blocks</div><div class="wf-action">Choose insight + CTA</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-email">W</div><div class="wf-label">Write Personalised Opener</div><div class="wf-action">1-2 custom sentences</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 7</div><div class="wf-node ch-email">A</div><div class="wf-label">Assemble & Send</div><div class="wf-action">Combine and send</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Map all signals</td>
+          <td>List every trigger your team uses for prospecting: funding rounds, job postings, product launches, tech stack changes, competitor mentions, hiring signals, expansion signals. Create categories</td>
+          <td>2-3 hours (one-time setup)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Write insight blocks</td>
+          <td>For each signal category, write 2-4 insight blocks. Each block is 2-3 sentences of valuable insight or perspective tied to that signal. Write them to sound natural when combined with an opener</td>
+          <td>4-6 hours (one-time setup)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Create CTA variants</td>
+          <td>Write 3-5 CTA blocks with varying levels of friction: high-friction (30-min demo), medium-friction (15-min call), low-friction (5-min intro), async (share resource). Match CTA to signal strength</td>
+          <td>1-2 hours (one-time setup)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>SDR spots signal</td>
+          <td>SDR identifies a prospect with a relevant trigger event. Example: Sarah at Acme just raised a Series B. Signal category: Post-funding</td>
+          <td>30 seconds (Clay automates this)</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Select matching blocks</td>
+          <td>SDR opens library, navigates to Post-funding category, selects an insight block that fits. Selects a matching CTA block (medium-friction, since funding signal is warm)</td>
+          <td>30 seconds</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Write personalised opener</td>
+          <td>SDR writes 1-2 sentences that anchor the email in real context: "Saw Acme closed your Series B last week - congrats. Post-raise teams typically face X challenge..." Now paste the insight block</td>
+          <td>60-90 seconds</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Assemble and send</td>
+          <td>SDR combines: Opener plus Insight Block plus CTA Block. Quick review for flow and naturalness. Send via Instantly or native Gmail. Total time: 2-3 minutes per email</td>
+          <td>30 seconds</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>How blocks combine:</strong> An assembled email might look like this:
+        <br><br>
+        <strong>Opener (custom):</strong> "Saw Acme closed your Series B last week - congrats, Sarah."
+        <br>
+        <strong>Insight Block (library):</strong> "Post-raise teams typically invest heavily in scaling outbound, but most hit a wall around 50-80 emails per day per rep. The bottleneck is not capacity, it is quality personalisation at volume."
+        <br>
+        <strong>CTA Block (library):</strong> "Would 15 minutes make sense to walk through what that looks like for teams at your stage?"
+        <br><br>
+        Result: Natural-sounding email that took 2-3 minutes to write.
+      </div>
+
+      <h3>Example: Signal to insight to CTA</h3>
+      <table>
+        <tr><th>Signal</th><th>Insight Block</th><th>CTA Block</th><th>Result</th></tr>
+        <tr>
+          <td>Funding Round</td>
+          <td>"Post-raise teams typically invest in scaling outbound, but most hit a wall around 50-80 emails per day per rep. The bottleneck is not capacity, it is quality personalisation at volume."</td>
+          <td>"Would 15 minutes make sense to walk through what that looks like?"</td>
+          <td>Natural-sounding email combining all three elements</td>
+        </tr>
+        <tr>
+          <td>Hiring for Sales Roles</td>
+          <td>"Hiring AEs is expensive and risky - average ramp time is 4-6 months and 40% wash out in the first year. The best teams derisk new hires by giving them a high-intent pipeline from day one, not cold territory."</td>
+          <td>"Worth a quick chat about how that works in practice?"</td>
+          <td>Relevant insight tied directly to their current priority</td>
+        </tr>
+        <tr>
+          <td>Product Launch</td>
+          <td>"Most product launches fail to hit adoption targets because the GTM motion is an afterthought. Teams that win treat launch as a GTM event, not a product event - build the pipeline before you ship."</td>
+          <td>"Happy to share a 2-page breakdown of what that looks like. Worth sending over?"</td>
+          <td>Low-friction async CTA for early-stage signal</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Purpose</th><th>Why It Matters</th></tr>
+        <tr>
+          <td><strong>Notion</strong></td>
+          <td>$10/mo</td>
+          <td>Store and organise the trigger library</td>
+          <td>Database view lets SDRs filter by signal type, industry, persona. Easy to update blocks in real-time. Built-in version control</td>
+        </tr>
+        <tr>
+          <td><strong>Clay</strong></td>
+          <td>$149-349/mo</td>
+          <td>Automate signal detection</td>
+          <td>Clay monitors for funding rounds, job postings, tech stack changes, and other triggers. Pushes signal data to Instantly or your CRM. SDRs do not manually hunt for signals</td>
+        </tr>
+        <tr>
+          <td><strong>Instantly</strong></td>
+          <td>$37/mo</td>
+          <td>Email sending and deliverability</td>
+          <td>Warm inboxes, rotating domains, deliverability monitoring. Integrates with Clay for automated signal-based sending. Track opens, clicks, replies</td>
+        </tr>
+        <tr>
+          <td><strong>Google Docs</strong></td>
+          <td>Free</td>
+          <td>Alternative to Notion for library storage</td>
+          <td>Simple table structure with signal categories and insight blocks. Works for small teams or those who prefer Google Workspace. Less flexible than Notion</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Use <strong>Notion</strong> ($10/mo) for the library - the database view and filtering are worth it. Use <strong>Clay</strong> ($149/mo minimum) to automate signal detection and enrichment. Use <strong>Instantly</strong> ($37/mo) for sending. Total cost: $196/mo for a fully automated trigger-library system. ROI: One closed deal pays for a year of tooling.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Building the Library sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Building the Library</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>How to structure the library</h3>
+            <p>The library is organised by signal type. Each signal has multiple insight blocks and CTA options. Structure it as: <strong>Signal → Insight Block → CTA</strong>.</p>
+            <p>Example categories:</p>
+            <ul>
+              <li><strong>Funding signals</strong> - Seed, Series A, Series B, growth rounds</li>
+              <li><strong>Hiring signals</strong> - Sales roles, marketing roles, engineering roles</li>
+              <li><strong>Product signals</strong> - Launches, feature releases, pricing changes</li>
+              <li><strong>Competitor signals</strong> - Switching from competitor, mentioning competitor pain</li>
+              <li><strong>Expansion signals</strong> - New office, new market entry, international expansion</li>
+              <li><strong>Tech stack signals</strong> - Adopting new tools, deprecating old tools</li>
+            </ul>
+
+            <h3>Categories of blocks</h3>
+            <p><strong>Industry insights</strong> - Broader trends or data points relevant to their space. Example: "SaaS companies that cross $10M ARR typically shift from founder-led sales to structured outbound. The transition is messy without a clear handoff process."</p>
+            <p><strong>Competitor angles</strong> - Insight tied to switching costs, common competitor pain points. Example: "Teams moving off Outreach often cite deliverability issues and lack of signal-based automation. The migration takes 2-4 weeks if done right."</p>
+            <p><strong>Trigger-specific</strong> - Insight directly tied to the signal they exhibited. Example: "Post-Series B teams usually double headcount in 12-18 months. The bottleneck is not hiring, it is onboarding and ramping new reps fast enough."</p>
+            <p><strong>Pain-point specific</strong> - Insight about a common pain point for their persona or industry. Example: "Most sales leaders spend 60% of their time on pipeline reviews and forecast calls. The best teams automate this with signal-based pipeline scoring."</p>
+
+            <h3>Writing blocks that sound natural when combined</h3>
+            <ul>
+              <li>Write insight blocks in second person ("you", "your team") so they flow naturally after a personalised opener</li>
+              <li>Avoid jargon or overly formal language - conversational tone wins</li>
+              <li>Keep blocks 2-3 sentences max - longer blocks feel like essays, not emails</li>
+              <li>End insight blocks with a natural transition point - do not end mid-thought</li>
+              <li>Test combinations - paste different openers with different blocks and read aloud to check flow</li>
+            </ul>
+
+            <h3>Version control</h3>
+            <p>Use Notion's version history or Google Docs' revision history to track changes. When you update a block, note the reason and date. Over time, you will refine blocks based on what works. Do not lose the old versions - sometimes they work better for certain ICPs.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- The Assembly Process sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>The Assembly Process</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>How an SDR uses the library in practice</h3>
+            <p>The daily workflow for an SDR using the trigger library:</p>
+            <ol>
+              <li><strong>Spot signal</strong> - Clay feed or manual research surfaces a prospect with a relevant trigger. Example: James at Acme just posted a job opening for 3 AEs</li>
+              <li><strong>Find matching blocks</strong> - SDR opens Notion library, navigates to Hiring Signals category, reviews the 3-4 insight blocks available, selects the one that fits best</li>
+              <li><strong>Write 1-2 personalised sentences as opener</strong> - SDR writes a custom intro anchored in the real signal: "Saw you are hiring 3 AEs at Acme - looks like you are scaling fast, James."</li>
+              <li><strong>Combine</strong> - Paste the insight block after the opener. Paste a matching CTA block at the end</li>
+              <li><strong>Review for flow</strong> - Read the assembled email aloud. Does it sound natural? Any awkward transitions? Edit if needed (usually takes 10-20 seconds)</li>
+              <li><strong>Send</strong> - Send via Instantly or Gmail. Log in CRM</li>
+            </ol>
+            <p><strong>Total time per email:</strong> 2-3 minutes. At this pace, an SDR can send 80-100 personalised emails per day without sacrificing quality.</p>
+
+            <h3>Example assembly</h3>
+            <div class="email-block">
+<span class="label">Full assembled email</span>
+Subject: Scaling the AE team at Acme
+
+James,
+
+Saw you are hiring 3 AEs at Acme - looks like you are scaling fast.
+
+Hiring AEs is expensive and risky - average ramp time is 4-6 months and 40% wash out in the first year. The best teams derisk new hires by giving them a high-intent pipeline from day one, not cold territory.
+
+Worth a quick chat about how that works in practice?
+
+Sarah
+            </div>
+            <p><strong>Breakdown:</strong></p>
+            <ul>
+              <li><strong>Opener (custom):</strong> "Saw you are hiring 3 AEs at Acme - looks like you are scaling fast, James."</li>
+              <li><strong>Insight block (library):</strong> "Hiring AEs is expensive and risky - average ramp time is 4-6 months and 40% wash out in the first year. The best teams derisk new hires by giving them a high-intent pipeline from day one, not cold territory."</li>
+              <li><strong>CTA block (library):</strong> "Worth a quick chat about how that works in practice?"</li>
+            </ul>
+            <p>Result: Sounds fully custom, took 2 minutes to write.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Maintaining the Library sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Maintaining the Library</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Weekly review of what is working</h3>
+            <p>Every Friday, review which insight blocks are driving responses and which are not. Pull reply rate data by block (tag each email with the block ID in your CRM or Instantly). Blocks with sub-2% reply rates need to be rewritten or retired.</p>
+
+            <h3>Retiring stale blocks</h3>
+            <p>Blocks go stale over time. Industry trends change, competitor landscapes shift, buyer priorities evolve. If a block has not been used in 60 days, archive it. If it is getting used but not performing, rewrite it. Do not let dead weight clutter the library - SDRs should only see blocks that work.</p>
+
+            <h3>Adding new blocks from successful emails</h3>
+            <p>When an SDR writes a fully custom email that gets a great response, extract the insight and turn it into a library block. This is how the library grows organically over time. Best practice: SDRs submit new block suggestions weekly, sales leadership reviews and approves.</p>
+
+            <h3>A/B testing blocks against each other</h3>
+            <p>For high-volume signals (funding rounds, hiring posts), write 2-3 insight blocks and rotate them. Track reply rates for each. After 50 sends per block, compare performance. Keep the winner, retire the losers. Continuous improvement.</p>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Treat the library as a living asset, not a static document. The best libraries evolve weekly based on real performance data. Stale libraries die because SDRs stop trusting them.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scaling Across Teams sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Scaling Across Teams</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Onboarding new SDRs with the library</h3>
+            <p>New hires ramp faster with a library. Instead of learning to write from scratch, they learn to assemble from tested blocks. Onboarding process:</p>
+            <ol>
+              <li>Day 1: Review the library structure, understand signal categories</li>
+              <li>Day 2: Shadow a senior SDR assembling emails using the library</li>
+              <li>Day 3: Assemble 10 practice emails, get feedback from manager</li>
+              <li>Day 4: Send first 20 emails using library, manager spot-checks</li>
+              <li>Week 2: SDR is fully autonomous, contributing new block suggestions</li>
+            </ol>
+            <p><strong>Result:</strong> New SDRs hit quota-level email volume and quality within 2 weeks, not 2 months.</p>
+
+            <h3>Quality control</h3>
+            <p>Weekly spot-checks on assembled emails. Managers review 5-10 sent emails per SDR per week. Look for: awkward transitions, blocks used incorrectly, weak personalised openers. Provide feedback in weekly 1-on-1s. Teams with tight QC loops see 20-30% higher reply rates than teams without.</p>
+
+            <h3>Shared vs personal blocks</h3>
+            <p>The main library is shared across the team - these are the tested, approved blocks everyone uses. But allow SDRs to maintain a personal library of blocks they have written that work for their specific ICP or style. Best practice: Personal blocks that perform well get promoted to the shared library after manager review.</p>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Run monthly library workshops. Entire SDR team reviews top-performing blocks, workshopping new ideas, and voting on what to add or retire. This keeps the team bought in and engaged with the library as a strategic asset, not just a tool.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Blocks that sound robotic when combined</h4>
+          <div class="why">Writing blocks in isolation without testing combinations leads to awkward transitions and stilted language. Recipient immediately senses it is templated.</div>
+          <div class="fix">Write blocks in second person, test combinations with different openers, read aloud before adding to library. If it sounds unnatural, rewrite.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Not updating stale blocks</h4>
+          <div class="why">Industry trends change. Competitor pain points shift. A block written 6 months ago may no longer resonate. Stale blocks kill reply rates and erode trust in the library.</div>
+          <div class="fix">Weekly review of block performance. Retire blocks with sub-2% reply rates. Rewrite blocks that reference outdated trends or data. Treat library as living asset.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. SDRs skipping the personalised opener</h4>
+          <div class="why">Some SDRs try to save time by using library blocks without writing a custom opener. Result: Email feels generic and templated, reply rate drops by half.</div>
+          <div class="fix">Make the personalised opener non-negotiable. Manager spot-checks emails weekly. Celebrate examples of great openers in team meetings. Opener is what makes the library work.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Library too complex (over 50 blocks)</h4>
+          <div class="why">A library with 80-100 blocks is impossible to navigate. SDRs waste time searching for the right block, or worse, stop using the library altogether.</div>
+          <div class="fix">Cap library at 30-40 blocks total. Ruthlessly retire underperformers. Use clear naming conventions and category filters. Simple beats comprehensive.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No quality review process</h4>
+          <div class="why">Without spot-checks, SDRs start using blocks incorrectly, combining blocks that do not flow, or writing weak openers. Quality degrades over time without oversight.</div>
+          <div class="fix">Weekly manager review of 5-10 sent emails per SDR. Provide specific feedback in 1-on-1s. Run monthly library workshops to review what is working and what is not.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Not tracking which block combos work best</h4>
+          <div class="why">Teams build the library but never analyse performance. You do not know which insight blocks drive replies and which fall flat. Missed opportunity for optimisation.</div>
+          <div class="fix">Tag each email with block IDs in CRM or Instantly. Pull reply rate data by block weekly. Double down on winners, retire losers. Data-driven library beats gut-driven library.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

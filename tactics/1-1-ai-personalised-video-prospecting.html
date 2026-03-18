@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 1.1 — AI-Personalised Video Prospecting | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 1.1 - Reactive Outbound</div>
+  <h1>AI-Personalised Video Prospecting</h1>
+  <p class="desc">Record one template video, use AI to dynamically insert prospect names, company info, and website screenshots. Scale personal video outreach without recording thousands of individual videos.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#bc8cff;background:#bc8cff22">
+      <div class="hero-ch-icon" style="background:#bc8cff">V</div>
+      <div class="hero-ch-name">Video (Primary)</div>
+    </div>
+    <span class="hero-ch-plus">+</span>
+    <div class="hero-ch" style="border-color:#58a6ff;background:#58a6ff22">
+      <div class="hero-ch-icon" style="background:#58a6ff">E</div>
+      <div class="hero-ch-name">Email</div>
+    </div>
+    <span class="hero-ch-plus">+</span>
+    <div class="hero-ch" style="border-color:#0a66c2;background:#0a66c222">
+      <div class="hero-ch-icon" style="background:#0a66c2">Li</div>
+      <div class="hero-ch-name">LinkedIn</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low-Medium</span>
+    <span class="tag tag-icp">ICP: Founders, Sales Leaders, C-suite</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Video humanises cold outreach instantly. Seeing a face and hearing a voice builds trust faster than any text-based message. AI-powered personalisation tools now enable you to send 500 personalised videos with the same effort it used to take to record 5.
+      </div>
+      <h3>The psychology behind video prospecting</h3>
+      <ul>
+        <li><strong>Pattern interruption</strong> - Video stands out in a sea of text emails. Most decision-makers receive zero video emails per week</li>
+        <li><strong>Trust acceleration</strong> - Face-to-face communication builds rapport 10x faster than written messages. Video approximates this effect at scale</li>
+        <li><strong>Cognitive ease</strong> - Watching a 60-second video requires less cognitive effort than reading 3 emails. Lower friction means higher engagement</li>
+        <li><strong>Proof of effort</strong> - Even AI-generated videos signal you invested more effort than a templated email. Effort = respect = response</li>
+      </ul>
+      <h3>Why AI-personalisation matters</h3>
+      <p>Without AI, personalised video doesn't scale. Recording 100 individual videos takes 8-10 hours. With AI tools, you record one template, upload a CSV of prospect data, and generate 100 personalised videos in 20 minutes. The AI dynamically inserts names, company logos, website screenshots, and even custom value propositions per prospect.</p>
+      <p><strong>The authenticity question:</strong> Does AI-generated video feel fake? Early tools did. Modern lip-sync and voice cloning tools (HeyGen, Tavus, Synthesia) are now indistinguishable from real video for 60-90 second clips. The key: use them for scale, but reserve fully manual video for your top 50 accounts.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-video">R</div><div class="wf-label">Research</div><div class="wf-action">Prospect data</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-video">V</div><div class="wf-label">Record</div><div class="wf-action">Template video</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">AI</div><div class="wf-label">Generate</div><div class="wf-action">Personalise at scale</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-video">T</div><div class="wf-label">Thumbnail</div><div class="wf-action">Custom image</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">E</div><div class="wf-label">Embed</div><div class="wf-action">Email send</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-video">T</div><div class="wf-label">Track</div><div class="wf-action">View analytics</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 7</div><div class="wf-node ch-email">F</div><div class="wf-label">Follow up</div><div class="wf-action">Email viewers</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Research prospects</td>
+          <td>Pull prospect list from CRM, LinkedIn, or Clay. Need: first name, company name, website URL, pain point or trigger event</td>
+          <td>10-20 min (automated via Clay)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Record template video</td>
+          <td>60-sec template with placeholder variables. Script structure: 5s intro, 15s hook with screen share, 25s value, 10s CTA. Record once</td>
+          <td>20-30 min (includes retakes)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Generate personalised videos</td>
+          <td>Upload template to AI tool (HeyGen, Tavus, Synthesia). Upload CSV with prospect data. AI generates 100-500 videos with dynamic inserts</td>
+          <td>10-15 min setup, 20-60 min processing</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Create custom thumbnails</td>
+          <td>Thumbnail determines whether they click play. Use whiteboard with their name, custom text overlay, or their company logo. Face visible, not just screen</td>
+          <td>5 min per thumbnail (batch via Canva)</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Embed video in email</td>
+          <td>Use video thumbnail as an image link in email body. Links to hosted video landing page. Most tools auto-generate embeddable HTML</td>
+          <td>5-10 min (template once, reuse)</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Track video views</td>
+          <td>All video tools provide view analytics: who watched, how much, when. Set up webhook alerts for viewers who watch 50%+ of video</td>
+          <td>Automated</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Follow up on viewers</td>
+          <td>Prioritise prospects who watched 50%+ of video. Call or email within 24h: "Saw you watched the video. Worth a quick chat?"</td>
+          <td>30-60 min/day</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> The thumbnail is 80% of the success. A generic thumbnail gets 10-15% play rates. A whiteboard with their name written on it gets 40-60% play rates. Invest time here.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Loom</strong></td>
+          <td>$12.50/mo</td>
+          <td>Manual video recording at scale</td>
+          <td>Simple screen + camera recording. Free tier available. Instant sharing links</td>
+          <td>No AI personalisation. Must manually record each video</td>
+        </tr>
+        <tr>
+          <td><strong>Vidyard</strong></td>
+          <td>$59/seat/mo</td>
+          <td>Sales teams with CRM integration needs</td>
+          <td>Deep HubSpot/Salesforce integration. Video analytics dashboard. A/B testing</td>
+          <td>Expensive for solo use. AI personalisation requires top-tier plan</td>
+        </tr>
+        <tr>
+          <td><strong>HeyGen</strong></td>
+          <td>$29/mo</td>
+          <td>AI-generated videos with lip-sync personalisation</td>
+          <td>Record once, generate unlimited personalised videos. Lip-sync inserts prospect name dynamically</td>
+          <td>AI-generated look may not suit all audiences. 60s limit on basic plan</td>
+        </tr>
+        <tr>
+          <td><strong>Sendspark</strong></td>
+          <td>$39/mo</td>
+          <td>Hybrid: manual + AI personalisation</td>
+          <td>Dynamic variables (name, company, website screenshot) inserted into manual videos. Simple UI</td>
+          <td>Variable insertion only (not full AI generation). Fewer integrations than Vidyard</td>
+        </tr>
+        <tr>
+          <td><strong>Synthesia</strong></td>
+          <td>$29/mo</td>
+          <td>AI avatar videos for global teams</td>
+          <td>AI avatars (no recording needed). 140+ languages. Text-to-video generation</td>
+          <td>Avatar style may feel impersonal. Best for product demos, not cold outreach</td>
+        </tr>
+        <tr>
+          <td><strong>Tavus</strong></td>
+          <td>Custom pricing</td>
+          <td>Enterprise-scale AI video personalisation</td>
+          <td>Hyper-realistic AI clones. Voice + face cloning. API for workflow automation</td>
+          <td>Expensive (starts $500+/mo). Overkill for small teams. Minimum commitments</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Loom</strong> (free/cheap) for top 50 accounts, fully manual. Layer in <strong>Sendspark</strong> ($39/mo) for variable-based personalisation at scale (names, companies, websites). Use <strong>HeyGen</strong> ($29/mo) for AI-generated videos when sending 200+ videos/month. Total cost: $68/mo for hybrid manual + AI approach.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Video Structure sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Video Structure (Under 60 Seconds)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <table>
+              <tr><th>Section</th><th>Duration</th><th>Content</th><th>Tips</th></tr>
+              <tr>
+                <td>Intro</td>
+                <td>5 sec</td>
+                <td>Your face + their name. "Hey Sarah, quick video for you."</td>
+                <td>Say their name immediately. Smile. Make eye contact with camera</td>
+              </tr>
+              <tr>
+                <td>Hook</td>
+                <td>15 sec</td>
+                <td>Something specific about their company. Screen-share their website or LinkedIn profile</td>
+                <td>Mention a real detail: recent funding, job posting, blog post, product feature. Proves you did homework</td>
+              </tr>
+              <tr>
+                <td>Value</td>
+                <td>25 sec</td>
+                <td>One key insight or what you'd do for them. Be specific, not generic. Reference similar company results</td>
+                <td>Don't pitch your product. Pitch an insight or outcome. "Companies like Datadog use this approach to solve X problem"</td>
+              </tr>
+              <tr>
+                <td>CTA</td>
+                <td>10 sec</td>
+                <td>"Would love 15 min to walk you through how we did this for Ramp. Calendar link below."</td>
+                <td>Low-friction CTA. 15 min, not 30. Offer specific time slots if possible</td>
+              </tr>
+            </table>
+            <p><strong>Total video length:</strong> 50-60 seconds. Do not exceed 90 seconds. Completion rates drop off a cliff after 60s.</p>
+            <div class="highlight">
+              <strong>Script tip:</strong> Write your script first. Read it aloud. Time it. If over 60s, cut everything that isn't essential. Shorter = higher completion rate.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thumbnails sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Thumbnails (The Make-or-Break Element)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why thumbnails matter more than the video itself</h3>
+            <p>A perfect video with a generic thumbnail gets 10-15% play rate. An average video with a personalised thumbnail gets 50-60% play rate. The thumbnail is the gatekeeper. If they don't click play, the video quality is irrelevant.</p>
+
+            <h3>High-converting thumbnail tactics</h3>
+            <ul>
+              <li><strong>Whiteboard with their name</strong> - Hold a whiteboard or notepad with their first name written in marker. Play rate: 50-70%. Time: 30 sec per thumbnail</li>
+              <li><strong>Face visible + custom text overlay</strong> - Your face in the thumbnail with text overlay: "Hey Sarah - 60 sec idea for Acme". Play rate: 40-55%. Time: 2 min per thumbnail (Canva batch creation)</li>
+              <li><strong>Screenshot of their website with annotation</strong> - Screen capture their website with a red circle or arrow pointing to something specific. Face picture-in-picture. Play rate: 35-50%. Time: 3 min per thumbnail</li>
+              <li><strong>Their company logo + your face</strong> - Split screen: their logo on left, your face on right. Play rate: 30-45%. Time: 1 min per thumbnail (template reuse)</li>
+            </ul>
+
+            <h3>What NOT to do</h3>
+            <ul>
+              <li class="con">Generic thumbnail with just your face and no personalisation - Play rate: 10-15%</li>
+              <li class="con">Text-heavy thumbnail with 3+ lines of copy - Unreadable on mobile. Play rate drops 20%</li>
+              <li class="con">No face visible (just a logo or screen recording) - Lacks human connection. Play rate: 8-12%</li>
+              <li class="con">Using the auto-generated thumbnail from video platform - Almost never optimal. Always custom create</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Time investment:</strong> Custom thumbnails take 1-3 min each. For 100 videos, that's 2-3 hours of work. Worth it. The thumbnail drives a 3-4x improvement in engagement, which translates directly to meetings booked.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI vs Manual sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>AI vs Manual (When to Use Each)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <table>
+              <tr><th>Scenario</th><th>Recommended Approach</th><th>Why</th></tr>
+              <tr>
+                <td>Top 50 target accounts (ABM, enterprise, C-suite)</td>
+                <td>Manual video (Loom, Vidyard)</td>
+                <td>Authenticity matters more than scale. Manual video converts 2-3x better for high-value targets</td>
+              </tr>
+              <tr>
+                <td>200+ mid-market prospects (Directors, VPs, Managers)</td>
+                <td>AI-generated (HeyGen, Tavus)</td>
+                <td>Scale wins. Manually recording 200 videos takes 15+ hours. AI does it in 30 min</td>
+              </tr>
+              <tr>
+                <td>Cold outreach to unknown prospects</td>
+                <td>AI-generated or hybrid (Sendspark)</td>
+                <td>Conversion rate is lower anyway. Use AI to test messaging at volume, then manually follow up on engagers</td>
+              </tr>
+              <tr>
+                <td>Warm leads or inbound prospects</td>
+                <td>Manual video</td>
+                <td>They've already shown interest. Manual video reinforces that you care. Higher effort = higher respect = higher conversion</td>
+              </tr>
+              <tr>
+                <td>Re-engagement / breakup sequences</td>
+                <td>Manual video</td>
+                <td>Last-ditch effort. Authenticity and sincerity matter most. AI feels like one more templated touch</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Hybrid approach:</strong> Use AI for volume (200+ prospects/month), but manually record videos for anyone who watches 50%+ of the AI video. That engagement signal justifies the manual effort.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Embedding sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Embedding Videos in Email</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why embedding matters</h3>
+            <p>Never send a raw video link. Clickthrough rates for raw links are 5-10%. A thumbnail image embedded in the email with a play button overlay gets 35-50% clickthrough. The visual cue (thumbnail + play button) signals "this is a video" and triggers curiosity.</p>
+
+            <h3>How to embed</h3>
+            <ol>
+              <li>Upload video to hosting platform (Loom, Vidyard, HeyGen, etc.)</li>
+              <li>Generate a custom thumbnail (see Thumbnails section above)</li>
+              <li>Use the platform's "embed in email" feature to generate HTML with thumbnail + play button overlay</li>
+              <li>Insert HTML into email body (most platforms integrate with Gmail, Outreach, Salesloft, HubSpot)</li>
+              <li>When recipient clicks thumbnail, they're taken to hosted video landing page (not played inline in email - most email clients block inline video)</li>
+            </ol>
+
+            <h3>Email copy structure</h3>
+            <p>The video doesn't replace the email copy. The copy drives them to watch the video.</p>
+            <table>
+              <tr><th>Element</th><th>Example</th></tr>
+              <tr>
+                <td>Subject line</td>
+                <td>"Sarah - 60 sec idea for Acme" or "quick video for you, Sarah"</td>
+              </tr>
+              <tr>
+                <td>Opening line</td>
+                <td>"Made a quick video walking through an idea for Acme. 60 seconds:"</td>
+              </tr>
+              <tr>
+                <td>Video thumbnail</td>
+                <td>(Embedded thumbnail image with play button)</td>
+              </tr>
+              <tr>
+                <td>Fallback link</td>
+                <td>"Can't see the video? Watch it here: link"</td>
+              </tr>
+              <tr>
+                <td>Close</td>
+                <td>"Worth a quick chat? Calendar link below."</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Send the video email between 8-10 AM in their timezone. Video emails sent in the morning get 40% higher view rates than afternoon sends. People have more attention bandwidth early in the day.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Video too long (over 90 seconds)</h4>
+          <div class="why">Completion rate drops from 60% at 60s to 25% at 2 min. Long videos signal you don't value their time.</div>
+          <div class="fix">Cap at 60 seconds. Script it. Time it. Cut ruthlessly. If you can't say it in 60s, it's not clear enough.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Generic script with no personalisation</h4>
+          <div class="why">"Hi, I'm James from Acme and we help companies like yours..." sounds like every other cold video. No hook.</div>
+          <div class="fix">Lead with something specific about them: "Saw you're hiring 2 AEs" or "Noticed your Series B announcement". Personalisation in the first 10 seconds or they stop watching.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Bad lighting or poor audio quality</h4>
+          <div class="why">Looks unprofessional. Signals low-quality product. Kills credibility instantly.</div>
+          <div class="fix">Natural light facing you (not behind). Use a ring light if indoors. Invest in a $50 USB microphone. Audio quality matters more than video quality.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. No clear CTA at the end</h4>
+          <div class="why">They watch the video, think "interesting", and then forget about it. No next step = no action.</div>
+          <div class="fix">End with one specific CTA: "Calendar link below to grab 15 min" or "Reply with a good time this week". One CTA only. Make it frictionless.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Sending video without tracking</h4>
+          <div class="why">You don't know who watched, how much they watched, or when. Can't prioritise follow-ups.</div>
+          <div class="fix">Use video tools with built-in analytics (Loom, Vidyard, HeyGen all have this). Set up webhook alerts for 50%+ view completion. Follow up within 24h on viewers.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. No follow-up on video viewers</h4>
+          <div class="why">Someone watched 80% of your video and you never followed up. That's a warm lead you ignored.</div>
+          <div class="fix">Create a daily task: check video analytics, pull list of 50%+ viewers, call or email within 24h: "Saw you watched the video - worth a quick chat?"</div>
+        </div>
+        <div class="mistake-card">
+          <h4>7. Using AI when manual is better</h4>
+          <div class="why">Sending an AI-generated video to your top 10 dream accounts signals laziness, not scale.</div>
+          <div class="fix">Manual video for top 50 accounts, AI for volume. When in doubt, go manual. The ROI on one enterprise deal justifies 10 hours of manual video recording.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>8. Generic thumbnail (or no custom thumbnail)</h4>
+          <div class="why">Generic thumbnails get 10-15% play rate. You spent 30 min on the video and 0 min on the thumbnail. Backwards.</div>
+          <div class="fix">Spend 2-3 min per custom thumbnail. Whiteboard with their name, or custom text overlay. The thumbnail drives the play rate, not the video quality.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

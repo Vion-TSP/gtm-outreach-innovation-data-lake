@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 1.2 — Signal-Based Cold Email Sequences | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 1.2 - Reactive Outbound</div>
+  <h1>Signal-Based Cold Email Sequences</h1>
+  <p class="desc">Monitor buying signals and trigger hyper-relevant outreach within 24 hours. When a prospect shows intent (funding, hiring, tech adoption, website visit), send targeted emails that reference the exact signal that triggered your outreach.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#58a6ff;background:#58a6ff22">
+      <div class="hero-ch-icon" style="background:#58a6ff">E</div>
+      <div class="hero-ch-name">Email (Primary)</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Medium</span>
+    <span class="tag tag-icp">ICP: All ICPs, VP+</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Cold email works best when it isn't cold. Buying signals reveal active intent. When you reach out within 24 hours of a signal firing (funding round, job posting, tech stack change), your message is contextually relevant and timely. You're solving a problem they're actively thinking about right now.
+      </div>
+      <h3>The psychology behind signal-based outreach</h3>
+      <ul>
+        <li><strong>Relevance = response</strong> - Generic cold emails get ignored. Signal-triggered emails reference something real: "Saw you just raised Series B" or "Noticed you're hiring 3 AEs". This proves you did research and creates instant credibility</li>
+        <li><strong>Timing is everything</strong> - The best time to pitch is when the pain is acute. A company that just hired a RevOps VP is actively thinking about their GTM tech stack. Reach out now, not in 3 months</li>
+        <li><strong>Lower defensive walls</strong> - When your email references a public signal (funding, hiring, tech adoption), it doesn't feel like cold outreach. It feels like you're paying attention and offering something useful at the right moment</li>
+        <li><strong>Intent data = buying window</strong> - Signals indicate active buying behavior. A company that just adopted Salesforce is likely evaluating other GTM tools. Strike while they're in "shopping mode"</li>
+      </ul>
+      <h3>Why automation is critical</h3>
+      <p>Manual signal monitoring doesn't scale. You can't watch 500 target accounts for funding announcements, job postings, tech changes, and website visits. By the time you notice a signal, it's stale. Signal-based email sequences automate detection and triggering so you reach out within 24 hours, every time.</p>
+      <p><strong>The speed advantage:</strong> Most reps take 3-7 days to notice and act on a signal. Your competitors are slow. If you can automate signal detection and outreach within 24 hours, you're the first (and often only) relevant message in their inbox.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-email">D</div><div class="wf-label">Define Signals</div><div class="wf-action">Choose triggers</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">M</div><div class="wf-label">Monitor</div><div class="wf-action">Clay tracks signals</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-email">S</div><div class="wf-label">Signal Fires</div><div class="wf-action">Trigger detected</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">E</div><div class="wf-label">Auto-Enrich</div><div class="wf-action">Pull contact data</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">G</div><div class="wf-label">Generate Email</div><div class="wf-action">AI writes copy</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-email">S</div><div class="wf-label">Send &lt;24h</div><div class="wf-action">Outreach</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 7</div><div class="wf-node ch-email">F</div><div class="wf-label">Follow-up</div><div class="wf-action">Sequence</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Define signals to monitor</td>
+          <td>Choose 3-5 buying signals relevant to your ICP: funding rounds, job postings (specific roles), tech stack changes, website visits, content engagement, leadership changes</td>
+          <td>30 min (one-time setup)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Set up monitoring in Clay</td>
+          <td>Build Clay table with target account list. Add enrichment columns for each signal type. Set up webhooks or integrations (Crunchbase, LinkedIn, BuiltWith, 6sense, G2, etc.)</td>
+          <td>1-2 hours (one-time setup)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Wait for signal to fire</td>
+          <td>Clay monitors signals in real-time. When a signal fires (e.g., Acme raises Series B), Clay logs it and triggers the workflow</td>
+          <td>Automated</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Auto-enrich contact data</td>
+          <td>When signal fires, Clay auto-enriches: find decision-maker contact (email + LinkedIn), pull company data, grab recent news or blog posts</td>
+          <td>Automated (2-3 min per lead)</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Generate personalized email</td>
+          <td>Use AI (Autobound, Clay AI, or custom GPT prompt) to generate email referencing the specific signal. Template structure: signal mention + insight + CTA</td>
+          <td>Automated (or 5 min manual review)</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Send email within 24 hours</td>
+          <td>Push enriched lead + email copy to Instantly or your email tool. Send immediately or batch sends at optimal times (8-10 AM in prospect's timezone)</td>
+          <td>Automated</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Follow-up sequence</td>
+          <td>If no reply, trigger 3-5 email follow-up sequence. Reference the signal in follow-ups: "Following up on my note about your Series B raise"</td>
+          <td>Automated (pre-written sequence)</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Speed wins. The first relevant email gets the reply. Set up Slack or SMS alerts when high-value signals fire (enterprise accounts, C-suite contacts) so you can manually review and send within 1 hour instead of 24.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Clay</strong></td>
+          <td>$149-349/mo</td>
+          <td>Signal monitoring + enrichment workflows</td>
+          <td>All-in-one signal detection, enrichment, and workflow automation. 100+ integrations (Crunchbase, BuiltWith, Clearbit, etc.)</td>
+          <td>Steep learning curve. Requires time to build workflows. Credit-based pricing can get expensive at scale</td>
+        </tr>
+        <tr>
+          <td><strong>Instantly</strong></td>
+          <td>$37/mo</td>
+          <td>Sending signal-triggered emails at scale</td>
+          <td>Unlimited email accounts, unlimited sends. Simple API for Clay integration. Warmup included</td>
+          <td>Basic analytics. No native signal detection (needs Clay or other data source)</td>
+        </tr>
+        <tr>
+          <td><strong>UserGems</strong></td>
+          <td>Custom pricing</td>
+          <td>Job change signals (champion tracking)</td>
+          <td>Tracks when contacts at your customers or past deals change jobs. Auto-alerts when they land at new companies. High intent signal</td>
+          <td>Expensive (starts $10k+/year). Only tracks job changes, not other signals</td>
+        </tr>
+        <tr>
+          <td><strong>CommonRoom</strong></td>
+          <td>Custom pricing</td>
+          <td>Product + community engagement signals</td>
+          <td>Monitors GitHub activity, Slack community engagement, product usage, docs visits. Great for PLG or developer tools</td>
+          <td>Only useful if you have a product or community to monitor. Not for early-stage or non-PLG</td>
+        </tr>
+        <tr>
+          <td><strong>Autobound</strong></td>
+          <td>$59/mo</td>
+          <td>AI email generation with signal context</td>
+          <td>Chrome extension pulls signal data and generates personalized email in one click. Integrates with LinkedIn, company websites, news</td>
+          <td>Manual (one-at-a-time). Doesn't scale to 100+ signals/day. Best for high-touch accounts</td>
+        </tr>
+        <tr>
+          <td><strong>6sense</strong></td>
+          <td>Custom pricing</td>
+          <td>Enterprise intent data + website visitor tracking</td>
+          <td>Tracks anonymous website visitors, intent signals across web, keyword searches. Enterprise-grade account scoring</td>
+          <td>Expensive (starts $30k+/year). Overkill for SMB. Long implementation time</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Clay</strong> ($149-349/mo) for signal monitoring and enrichment, plus <strong>Instantly</strong> ($37/mo) for sending. Total: $186-386/mo. This covers funding, hiring, tech stack changes, and basic intent signals. Add <strong>UserGems</strong> if you have strong customer relationships and want job change alerts.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Signal Types sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Signal Types (What to Monitor)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <table>
+              <tr><th>Signal Type</th><th>Intent Strength</th><th>How to Detect</th><th>Email Hook Example</th></tr>
+              <tr>
+                <td>Funding rounds</td>
+                <td>High</td>
+                <td>Crunchbase API, LinkedIn news mentions, press releases</td>
+                <td>"Congrats on the Series B, Sarah. Companies who raise at this stage typically prioritize their GTM tech stack. Here's how Acme can scale outbound without scaling headcount."</td>
+              </tr>
+              <tr>
+                <td>Job postings (specific roles)</td>
+                <td>Very High</td>
+                <td>LinkedIn job scraping, Greenhouse API, company careers page monitoring</td>
+                <td>"Saw you're hiring 3 AEs, Sarah. Most teams scaling reps this fast hit a data quality wall around rep 5. Here's how to avoid it."</td>
+              </tr>
+              <tr>
+                <td>Tech stack changes</td>
+                <td>High</td>
+                <td>BuiltWith, Datanyze, Wappalyzer, G2 Stack tracking</td>
+                <td>"Noticed Acme recently adopted Salesforce, Sarah. Teams who implement SFDC typically need enrichment + sequencing tools within 90 days. Worth a quick chat?"</td>
+              </tr>
+              <tr>
+                <td>Website visits (target accounts)</td>
+                <td>Medium</td>
+                <td>6sense, Clearbit Reveal, Koala, Factors.ai</td>
+                <td>"Someone from Acme visited our pricing page twice this week. Curious if you're evaluating GTM tools right now?"</td>
+              </tr>
+              <tr>
+                <td>Content engagement</td>
+                <td>Medium</td>
+                <td>LinkedIn post engagement, webinar attendance, ebook downloads, blog visits</td>
+                <td>"Saw you downloaded our ABM playbook, Sarah. Most leaders reading that are struggling with target account list quality. Is that a pain point for Acme?"</td>
+              </tr>
+              <tr>
+                <td>Leadership changes</td>
+                <td>High</td>
+                <td>LinkedIn title changes, press releases, company announcements</td>
+                <td>"Congrats on the VP Sales role, Sarah. First 90 days are critical. Here's how other new VPs at companies like Acme set up their outbound motion from day one."</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Signal priority:</strong> Not all signals are equal. Job postings and funding rounds are strongest (active buying mode). Website visits and content engagement are weaker (early research phase). Prioritize your Clay workflows accordingly.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Timing sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Email Timing (Within 24 Hours of Signal)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why 24 hours matters</h3>
+            <p>Signals have a half-life. A funding announcement is most relevant in the first 48 hours. After a week, everyone's reached out and the novelty is gone. Your email becomes just another "congrats on the funding" message buried in a pile of 50 others.</p>
+
+            <h3>Optimal send windows</h3>
+            <ul>
+              <li><strong>8-10 AM in prospect's timezone</strong> - Highest open rates. People check email first thing. Send during their morning routine</li>
+              <li><strong>Avoid Mondays before 10 AM</strong> - Inbox is flooded with weekend backlog. Your email gets buried</li>
+              <li><strong>Tuesday-Thursday are best</strong> - People are in work mode but not overwhelmed. Friday afternoons have lowest engagement</li>
+              <li><strong>Same-day for enterprise accounts</strong> - If a top 50 target account triggers a signal, send within 2-4 hours, not 24. Speed is competitive advantage</li>
+            </ul>
+
+            <h3>Batching vs real-time sends</h3>
+            <table>
+              <tr><th>Approach</th><th>When to Use</th><th>Pros</th><th>Cons</th></tr>
+              <tr>
+                <td>Real-time (send immediately)</td>
+                <td>High-value accounts, strong signals (funding, leadership change)</td>
+                <td>Fastest response time. First in their inbox</td>
+                <td>May send at odd hours (3 AM their timezone). Less control</td>
+              </tr>
+              <tr>
+                <td>Batched (queue for next optimal window)</td>
+                <td>Mid-market accounts, weaker signals (content engagement, web visits)</td>
+                <td>Sends at ideal time (8-10 AM). Better deliverability</td>
+                <td>Slight delay (up to 24h). Risk someone else gets there first</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Use real-time for top 50 accounts, batched sends for everyone else. Set up a "VIP signal" alert in Clay that pings you immediately when a high-value account triggers a signal, so you can manually review and send within 1 hour.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clay Enrichment Workflows sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Clay Enrichment Workflows (Data Hygiene)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What to enrich when a signal fires</h3>
+            <p>When a signal triggers, you need contact data, company data, and context to write a relevant email. Clay's waterfall enrichment lets you pull from multiple sources until you get valid data.</p>
+
+            <h3>Standard enrichment workflow</h3>
+            <ol>
+              <li><strong>Find decision-maker contact</strong> - Use Apollo, Hunter, DropContact, or RocketReach to find email + LinkedIn URL for the right person (title match: VP Sales, Head of Marketing, etc.)</li>
+              <li><strong>Verify email deliverability</strong> - Run email through validation (NeverBounce, ZeroBounce, or Clay's native validator) to avoid bounces</li>
+              <li><strong>Pull company firmographics</strong> - Enrich company size, industry, funding stage, tech stack, recent news from Clearbit, Crunchbase, BuiltWith</li>
+              <li><strong>Grab recent activity</strong> - Pull latest LinkedIn posts, company blog posts, or press mentions to add fresh context to your email</li>
+              <li><strong>Check for existing relationships</strong> - Query your CRM to see if anyone on your team knows someone at the company (warm intro opportunity)</li>
+            </ol>
+
+            <h3>Waterfall logic for contact finding</h3>
+            <p>Don't rely on one data source. Build a waterfall: try Apollo first, if no result, try Hunter, if no result, try RocketReach, etc. Clay automates this and stops at the first valid result, saving credits.</p>
+
+            <div class="highlight">
+              <strong>Credit management tip:</strong> Clay charges per enrichment. Use waterfalls strategically: start with cheapest sources (Apollo, Hunter), then escalate to premium (RocketReach, Lusha) only if needed. Set credit caps to avoid runaway costs.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject Lines sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Subject Lines (Reference the Signal)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why signal-specific subject lines work</h3>
+            <p>Generic subject lines ("Quick question" or "Idea for Acme") blend in with every other cold email. Signal-based subject lines stand out because they reference something specific and real. The recipient recognizes the context immediately.</p>
+
+            <h3>High-performing subject line formulas</h3>
+            <table>
+              <tr><th>Signal Type</th><th>Subject Line Example</th><th>Why It Works</th></tr>
+              <tr>
+                <td>Funding round</td>
+                <td>"Congrats on the Series B, Sarah" or "Re: Acme's Series B"</td>
+                <td>Personal + timely. They're proud of the funding. Acknowledging it creates goodwill</td>
+              </tr>
+              <tr>
+                <td>Job posting</td>
+                <td>"Saw you're hiring 3 AEs" or "Re: Acme's AE roles"</td>
+                <td>Shows you did research. Signals you're offering something relevant to their hiring plans</td>
+              </tr>
+              <tr>
+                <td>Tech adoption</td>
+                <td>"Acme + Salesforce" or "Re: your Salesforce rollout"</td>
+                <td>Hyper-specific. Only relevant if they just adopted SFDC. Implies you know their stack</td>
+              </tr>
+              <tr>
+                <td>Leadership change</td>
+                <td>"Congrats on VP Sales, Sarah" or "First 90 days as VP"</td>
+                <td>Acknowledges their new role. Positions you as helping them succeed in it</td>
+              </tr>
+              <tr>
+                <td>Content engagement</td>
+                <td>"Re: ABM playbook download" or "Saw you grabbed our guide"</td>
+                <td>They raised their hand. Not cold anymore. Feels like a natural follow-up</td>
+              </tr>
+            </table>
+
+            <h3>What to avoid</h3>
+            <ul>
+              <li><strong>Don't use "Congrats" unless it's genuine</strong> - If the signal isn't an achievement (e.g., website visit), don't fake enthusiasm. Just reference the signal neutrally</li>
+              <li><strong>Keep it short (under 50 characters)</strong> - Long subject lines get truncated on mobile. Lose the context, lose the open</li>
+              <li><strong>Avoid spammy trigger words</strong> - "Free", "Urgent", "Limited time", "Act now" all hurt deliverability. Keep it professional</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>A/B test tip:</strong> Test signal-specific subject lines vs. curiosity-based ("Quick idea for Acme"). Signal-specific typically wins for strong signals (funding, hiring). Curiosity wins for weak signals (web visit, content download).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Follow-up Cadence sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Follow-up Cadence (Keep Referencing the Signal)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why most follow-ups fail</h3>
+            <p>After sending a signal-triggered email, most reps switch to generic follow-ups: "Just checking in" or "Bumping this up". This wastes the signal. Every follow-up should continue referencing the original signal to maintain context and relevance.</p>
+
+            <h3>Recommended follow-up sequence</h3>
+            <table>
+              <tr><th>Email #</th><th>Timing</th><th>Angle</th><th>Example (Funding Signal)</th></tr>
+              <tr>
+                <td>1 (Initial)</td>
+                <td>Day 0</td>
+                <td>Acknowledge signal + offer value</td>
+                <td>"Congrats on the Series B, Sarah. Here's how companies at your stage typically scale outbound without scaling headcount."</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Day 3</td>
+                <td>Add social proof (case study)</td>
+                <td>"Following up on my note about your Series B. Acme reminds me of a company we worked with last year (similar stage, similar challenges). Here's what they did."</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Day 7</td>
+                <td>Insight or data point</td>
+                <td>"Sarah, quick follow-up. Most companies who raise at your stage hire 5-10 reps in the next 6 months. Here's the one thing they wish they'd set up before scaling."</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Day 14</td>
+                <td>Breakup or alternative CTA</td>
+                <td>"Last note, Sarah. If timing isn't right, totally understand. Would it make sense to revisit in Q3 when you're further into hiring?"</td>
+              </tr>
+            </table>
+
+            <h3>Key principles</h3>
+            <ul>
+              <li><strong>Always reference the original signal</strong> - Keep the context alive. Don't let it become a generic sequence after email 1</li>
+              <li><strong>Add new value each time</strong> - Don't just say "following up". Offer a new insight, case study, or data point</li>
+              <li><strong>Timing matters less than value</strong> - If you have something genuinely useful to add, send it. If not, stop the sequence early</li>
+              <li><strong>End with a breakup email</strong> - Close the loop. Offer to revisit later or ask if timing is just bad. Breakup emails often get replies</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> If they open multiple emails but don't reply, send a short video (Loom) as email 4 or 5. Reference the signal in the video: "Wanted to quickly walk you through how we've helped other Series B companies scale outbound." Video often breaks through when text doesn't.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Acting on stale signals (over 72 hours old)</h4>
+          <div class="why">Signals lose relevance fast. A funding announcement from 2 weeks ago is old news. Your email feels late and generic, like everyone else's.</div>
+          <div class="fix">Set up real-time or daily signal monitoring. Send within 24 hours for best results, 48-72 hours max. After that, the signal is stale.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Generic copy despite having signal data</h4>
+          <div class="why">You detect the signal but don't use it in the email. "Hi Sarah, we help companies scale outbound" - could've been sent to anyone. Wastes the signal.</div>
+          <div class="fix">First sentence must reference the signal: "Saw you raised Series B" or "Noticed you're hiring 3 AEs". Prove you're paying attention, not blasting.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Too many signals overwhelming SDRs</h4>
+          <div class="why">Monitoring 10 signal types across 1000 accounts generates 50-100 signals per day. SDRs can't keep up. Quality drops, emails become rushed.</div>
+          <div class="fix">Start with 2-3 high-intent signals (funding, hiring, tech adoption). Automate fully or limit to top 200 accounts. Add signals gradually as you build capacity.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Not enriching before sending</h4>
+          <div class="why">Signal fires, you send immediately with incomplete data: wrong contact, no verification, missing context. High bounce rate, low reply rate.</div>
+          <div class="fix">Build enrichment into your workflow: find contact, verify email, pull firmographics, grab recent news. Clay automates this. Don't skip it to save time.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Ignoring negative signals</h4>
+          <div class="why">Not all signals are positive. Layoffs, executive departures, funding struggles, tech stack removals - all indicate bad timing. Reaching out during these is tone-deaf.</div>
+          <div class="fix">Monitor negative signals too. When they fire, remove from active sequences or delay outreach 60-90 days. Timing is everything - bad timing kills good emails.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Following up with generic "just checking in"</h4>
+          <div class="why">You sent a great signal-triggered email 1, then follow-up emails ignore the signal entirely. "Bumping this up" or "Any thoughts?" - loses all context.</div>
+          <div class="fix">Every follow-up must reference the signal. "Following up on my note about your Series B" or "Circling back on the AE hiring plan". Keep the context alive.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>7. Over-relying on weak signals</h4>
+          <div class="why">Website visit from an anonymous user or one blog post read ≠ buying intent. Building entire sequences around weak signals creates noise, not pipeline.</div>
+          <div class="fix">Prioritize strong signals (funding, hiring, leadership change, tech adoption). Use weak signals (web visits, content engagement) as supporting data, not primary triggers.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>8. Not tracking signal-to-reply rates</h4>
+          <div class="why">You're sending signal-based emails but not measuring which signals drive replies. Funding? Hiring? Tech changes? No idea. Can't optimize what you don't measure.</div>
+          <div class="fix">Tag emails by signal type in your sending tool (Instantly, Outreach, Salesloft). Track reply rates by signal. Double down on high-performing signals, kill low performers.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

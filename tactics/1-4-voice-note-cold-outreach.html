@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 1.4 — Voice Note Cold Outreach | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 1.4 - Reactive Outbound</div>
+  <h1>Voice Note Cold Outreach</h1>
+  <p class="desc">Send 30-60 second voice notes via LinkedIn or email. The human voice builds trust and connection faster than text, cutting through the noise of written messages.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#0a66c2;background:#0a66c222">
+      <div class="hero-ch-icon" style="background:#0a66c2">Li</div>
+      <div class="hero-ch-name">LinkedIn (Primary)</div>
+    </div>
+    <span class="hero-ch-plus">+</span>
+    <div class="hero-ch" style="border-color:#58a6ff;background:#58a6ff22">
+      <div class="hero-ch-icon" style="background:#58a6ff">E</div>
+      <div class="hero-ch-name">Email</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Free-Low</span>
+    <span class="tag tag-icp">ICP: Founders, Sales Leaders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Voice carries emotion, energy, and authenticity that text cannot replicate. A 45-second voice note feels personal and human in a way that even the best-written cold email never will. It signals effort and breaks the pattern of templated outreach.
+      </div>
+      <h3>Why voice outperforms text</h3>
+      <ul>
+        <li><strong>Pattern interruption</strong> - Decision-makers receive hundreds of text-based LinkedIn DMs and emails per week. They receive fewer than 5 voice messages per month. Voice stands out immediately</li>
+        <li><strong>Emotional bandwidth</strong> - Tone of voice conveys warmth, confidence, and sincerity. You can sound excited about their company in a way that text cannot capture</li>
+        <li><strong>Efficiency signal</strong> - A 45-second voice note takes less time to listen to than reading a 200-word email. You are respecting their time by being concise</li>
+        <li><strong>Authenticity proof</strong> - Voice is harder to fake or template at scale. Receiving a voice note signals you cared enough to record something specifically for them</li>
+      </ul>
+      <h3>When voice notes work best</h3>
+      <p>Voice outreach is most effective for high-value targets where personalisation matters. It works especially well after a warm trigger event like a recent LinkedIn post, funding announcement, or job change. Voice also works as a follow-up after ignored emails - it re-opens the conversation with a fresh medium.</p>
+      <p><strong>The friction factor:</strong> Voice notes have slightly higher friction than text because the recipient must play audio. This means they work best when you have earned attention through research and relevance. Use voice for tier-1 prospects where you have a specific hook, not for spray-and-pray cold outreach.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">R</div><div class="wf-label">Research Prospect</div><div class="wf-action">Find hook</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-linkedin">A</div><div class="wf-label">Find Activity</div><div class="wf-action">Recent post/event</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-phone">V</div><div class="wf-label">Record Voice Note</div><div class="wf-action">30-60s</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Send via LinkedIn DM</div><div class="wf-action">Or email</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">F</div><div class="wf-label">Follow Up with Text</div><div class="wf-action">Next day</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-email">T</div><div class="wf-label">Track Engagement</div><div class="wf-action">Played/replied</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Research prospect</td>
+          <td>Find recent activity on LinkedIn: posts they wrote, comments they made, job changes, funding announcements. You need a specific hook to reference in the voice note</td>
+          <td>2-5 min per prospect</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Find their recent activity</td>
+          <td>Look for posts within the last 7 days, recent company news, or a problem they mentioned publicly. This becomes your opening line in the voice note</td>
+          <td>1-2 min per prospect</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Record voice note (30-60s)</td>
+          <td>Structure: 10s intro with their name and the hook, 20s value or insight, 10s CTA. Speak naturally. Smile while recording - it comes through in your tone</td>
+          <td>2-4 min (including retakes)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Send via LinkedIn DM</td>
+          <td>LinkedIn allows voice messages in DMs. Attach the voice note with a brief text message: "Sarah - left you a quick voice note, 45 seconds." Alternatively, upload to Loom and send the link via email</td>
+          <td>1 min per send</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Follow up with text message</td>
+          <td>Next day, send a short text follow-up: "Hey Sarah - did you get a chance to listen to the voice note? Happy to send a calendar link if it resonates." Text makes it easy to reply</td>
+          <td>30 sec per follow-up</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Track engagement</td>
+          <td>LinkedIn does not show voice note play analytics. For email-based voice notes, use Loom or Otter to track who listened. Prioritise follow-ups based on who played the full recording</td>
+          <td>Automated (if using tools)</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Mention their name and the specific hook in the first 10 seconds. If they do not hear something relevant immediately, they stop listening. "Hey Sarah, saw your post about scaling SDR teams - I had a quick thought on this" gets attention. "Hey, I'm James from Acme" does not.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn Voice Messages</strong></td>
+          <td>Free (Sales Navigator required for bulk DMs)</td>
+          <td>Direct LinkedIn outreach to 1st connections</td>
+          <td>Native voice recording in LinkedIn DMs. No external tool needed. Plays inline in the conversation</td>
+          <td>Limited to 1st connections only. No analytics on who listened. Cannot send to 2nd or 3rd degree connections without connecting first</td>
+        </tr>
+        <tr>
+          <td><strong>Loom</strong></td>
+          <td>$12.50/mo</td>
+          <td>Email-based voice notes with tracking</td>
+          <td>Record audio-only (no video). Trackable links show who listened and for how long. Integrates with Gmail</td>
+          <td>Requires recipient to click a link - not inline playback. Free tier limits videos to 5 minutes</td>
+        </tr>
+        <tr>
+          <td><strong>Otter.ai</strong></td>
+          <td>$16.99/mo</td>
+          <td>Voice notes with automatic transcription</td>
+          <td>Records voice, auto-transcribes, generates shareable link. Recipient can read or listen. Great for accessibility</td>
+          <td>Transcription accuracy varies with accents. Not designed for cold outreach - more for internal use</td>
+        </tr>
+        <tr>
+          <td><strong>Lavender (Voice feature)</strong></td>
+          <td>$29/mo</td>
+          <td>Voice notes embedded directly in emails</td>
+          <td>Embeds playable voice notes inline in Gmail. Tracks opens and plays. Integrates with Outreach and Salesloft</td>
+          <td>Expensive for solo users. Voice feature requires top-tier plan. Email clients may block inline audio</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>LinkedIn native voice messages</strong> (free) for all 1st-degree connections. Use <strong>Loom</strong> ($12.50/mo, audio-only mode) for email-based voice notes with tracking. Total cost: $12.50/mo or free if you only use LinkedIn.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- When voice beats text -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>When Voice Beats Text</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <table>
+              <tr><th>Scenario</th><th>Why Voice Wins</th><th>Text Alternative</th></tr>
+              <tr>
+                <td>High-value targets (founders, C-suite)</td>
+                <td>Voice signals higher effort and personalisation. These prospects receive hundreds of templated LinkedIn DMs - voice cuts through</td>
+                <td>Text works if hyper-personalised, but voice has a higher open rate</td>
+              </tr>
+              <tr>
+                <td>After ignored emails</td>
+                <td>Pattern interruption. They ignored 3 text-based emails. A voice note is a fresh medium that re-engages them</td>
+                <td>Sending another text email rarely works. Voice or video is your best re-engagement play</td>
+              </tr>
+              <tr>
+                <td>Post-connection on LinkedIn</td>
+                <td>Right after they accept your connection request, a voice note feels natural and conversational. Text DMs feel transactional</td>
+                <td>Text DMs work, but voice builds rapport faster. Most people send text, so voice differentiates</td>
+              </tr>
+              <tr>
+                <td>Emotional or complex topics</td>
+                <td>Voice conveys empathy and nuance better than text. If you are addressing a known pain point or recent challenge, voice sounds human</td>
+                <td>Text can sound robotic or insincere when discussing challenges. Voice feels more genuine</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> If the prospect is in your top 50 target accounts, use voice. If you are sending 200+ messages, text scales better. Voice is for quality over quantity.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recording tips -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Recording Tips (Sound Professional, Not Scripted)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Tone and delivery</h3>
+            <ul>
+              <li><strong>Smile while talking</strong> - It genuinely changes your tone. You sound warmer and more approachable. Record standing up for better energy</li>
+              <li><strong>Vary your pace</strong> - Speak slightly faster than normal conversation (1.1-1.2x speed). Slow speakers lose attention. Fast speakers sound energetic</li>
+              <li><strong>Use their name early and often</strong> - Say their name in the first 5 seconds and again in the CTA. "Hey Sarah" + "Sarah, would love to chat" = personalised</li>
+              <li><strong>Avoid filler words</strong> - "Um", "uh", "like" undermine credibility. Practice your script once before recording. Do not read from a script during the recording</li>
+            </ul>
+
+            <h3>Audio quality</h3>
+            <ul>
+              <li><strong>Quiet environment</strong> - No background noise (traffic, office chatter, keyboard typing). Use a closet or car if your workspace is noisy</li>
+              <li><strong>Phone vs microphone</strong> - Built-in phone audio is usually fine for voice notes under 60 seconds. If recording via Loom on a laptop, use headphones with a mic for better quality</li>
+              <li><strong>Test first</strong> - Record a 10-second test, play it back. Does it sound clear? Is the volume consistent? Fix before recording 50 voice notes</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Common mistake:</strong> Reading from a script word-for-word. It sounds robotic. Instead, outline 3 bullet points (hook, value, CTA) and speak naturally. Retake if needed, but do not script every word.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Script structure -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Script Structure (30-60 Seconds)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <table>
+              <tr><th>Section</th><th>Duration</th><th>Content</th><th>Example</th></tr>
+              <tr>
+                <td>Intro + Hook</td>
+                <td>10 sec</td>
+                <td>Their name + specific reason you are reaching out. Reference something recent and relevant</td>
+                <td>"Hey Sarah, I saw your post last week about scaling your SDR team from 5 to 15 reps - that caught my attention"</td>
+              </tr>
+              <tr>
+                <td>Value / Insight</td>
+                <td>20 sec</td>
+                <td>One specific insight, pattern, or idea relevant to their situation. Reference a similar company or outcome</td>
+                <td>"We helped a company in a similar stage - they were burning through SDRs with low conversion. We rebuilt their qualifying framework and their meeting set rate doubled in 6 weeks"</td>
+              </tr>
+              <tr>
+                <td>CTA</td>
+                <td>10 sec</td>
+                <td>Clear, low-friction call to action. Offer a short call or send a resource</td>
+                <td>"Happy to share what we did - would 15 min next week work? I will drop my calendar link in the message"</td>
+              </tr>
+            </table>
+
+            <h3>Tone guidelines</h3>
+            <ul>
+              <li><strong>Conversational, not salesy</strong> - Imagine you are leaving a voicemail for a friend. Casual but professional</li>
+              <li><strong>Confident but humble</strong> - "We have seen this work for similar teams" not "We are the best in the industry"</li>
+              <li><strong>End on a question</strong> - "Does that sound relevant?" or "Worth a quick chat?" invites a reply</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Length matters:</strong> 30-45 seconds is ideal. 60 seconds is the upper limit. Anything over 60 seconds and completion rate drops by 50%. Shorter is better.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Follow-up timing -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Follow-Up Timing and Strategy</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>When to follow up</h3>
+            <table>
+              <tr><th>Scenario</th><th>Follow-Up Timing</th><th>Message Type</th></tr>
+              <tr>
+                <td>No response after voice note</td>
+                <td>24-48 hours</td>
+                <td>Short text message: "Hey Sarah - did you get a chance to listen? Happy to send a calendar link if it resonates"</td>
+              </tr>
+              <tr>
+                <td>They listened (if tracked via Loom)</td>
+                <td>Same day or next morning</td>
+                <td>"Saw you checked out the voice note - worth a quick chat this week?"</td>
+              </tr>
+              <tr>
+                <td>No response after first follow-up</td>
+                <td>4-5 days later</td>
+                <td>Send a resource or article relevant to their challenge. Re-engage with value, not another ask</td>
+              </tr>
+              <tr>
+                <td>Still no response</td>
+                <td>7-10 days later</td>
+                <td>Final breakup message: "Guessing this is not a priority right now - let me know if you want to revisit in Q3"</td>
+              </tr>
+            </table>
+
+            <h3>Follow-up medium</h3>
+            <ul>
+              <li><strong>First follow-up:</strong> Text message (LinkedIn DM or email). Lower friction than another voice note</li>
+              <li><strong>Second follow-up:</strong> Share a resource (article, case study, video). Provide value without asking</li>
+              <li><strong>Final follow-up:</strong> Breakup email. Polite and non-pushy. Opens the door for them to re-engage later</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Do not send multiple voice notes in a row.</strong> One voice note is a pattern interrupt. Two back-to-back voice notes feels aggressive. Follow up with text after the first voice note.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LinkedIn voice message limits -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>LinkedIn Voice Message Limits and Workarounds</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>LinkedIn native voice message constraints</h3>
+            <ul>
+              <li><strong>1st connections only</strong> - You can only send voice messages to people you are already connected with. Cannot send to 2nd or 3rd degree connections</li>
+              <li><strong>No analytics</strong> - LinkedIn does not show whether they played the voice note, how much they listened, or when</li>
+              <li><strong>60 second limit</strong> - Voice messages are capped at 1 minute. Cannot exceed this</li>
+              <li><strong>No bulk sending</strong> - Must manually send each voice note. No automation via Sales Navigator or third-party tools</li>
+            </ul>
+
+            <h3>Workarounds for scale</h3>
+            <ul>
+              <li><strong>For 2nd/3rd degree connections:</strong> Send a connection request with a short note. Once accepted, send the voice note immediately</li>
+              <li><strong>For tracking:</strong> Use Loom or Otter to record the voice note, then send the trackable link via LinkedIn DM instead of using native voice</li>
+              <li><strong>For bulk outreach:</strong> Record voice notes in batches (10-20 at a time), save as files, then manually attach to DMs. Tedious but scalable</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Hybrid approach:</strong> Use LinkedIn native voice for your top 20 prospects (fully personalised, 1-on-1). Use Loom links via LinkedIn DM for the next 50-100 prospects (still personal but trackable).
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Reading from a script (sounds robotic)</h4>
+          <div class="why">When you read word-for-word, your tone becomes flat and unnatural. Prospects can tell you are reading, which kills authenticity</div>
+          <div class="fix">Outline 3 bullet points (hook, value, CTA) and speak naturally. Practice once, then record. Retake if needed, but do not read verbatim</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Too long (over 60 seconds)</h4>
+          <div class="why">Completion rate drops by 50% after 60 seconds. Long voice notes signal you do not respect their time</div>
+          <div class="fix">Cap at 45-60 seconds. If you cannot say it in 60 seconds, your message is not clear enough. Edit ruthlessly</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. No personalisation (could be sent to anyone)</h4>
+          <div class="why">Generic voice notes are just templated emails in audio form. No hook = no attention = delete</div>
+          <div class="fix">Mention their name and a specific detail (recent post, company news, job change) in the first 10 seconds. Personalisation is the entire point of voice</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Sending to cold prospects who have not connected</h4>
+          <div class="why">Voice notes require trust. Sending a voice note to someone who does not know you feels invasive, not personal</div>
+          <div class="fix">Connect first, then send voice. Or use voice as a follow-up after 1-2 text-based emails to warm prospects</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No follow-up text message</h4>
+          <div class="why">They listen to your voice note, think it is interesting, but then forget. No text reminder = no action</div>
+          <div class="fix">Follow up 24-48 hours later with a short text: "Did you get a chance to listen? Happy to send a calendar link." Make it easy to reply</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Bad audio quality (noisy background, unclear voice)</h4>
+          <div class="why">Poor audio quality signals low effort or unprofessionalism. If they cannot hear you clearly, they stop listening</div>
+          <div class="fix">Record in a quiet room. Test your audio first. Use headphones with a mic if needed. Clear audio is non-negotiable</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>
