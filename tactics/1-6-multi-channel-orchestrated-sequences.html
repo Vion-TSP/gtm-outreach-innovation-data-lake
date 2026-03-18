@@ -1,1 +1,156 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 1.6 - Multi-Channel Orchestrated Sequences | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+@media(max-width:600px){body{padding:12px}.hero{padding:18px}.hero h1{font-size:1.3rem}table{font-size:.75rem}th,td{padding:6px 8px}.tabs{gap:2px}.tab{padding:6px 10px;font-size:.75rem}}
+</style>
+</head>
+<body>
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+<div class="hero">
+  <div class="hero-id">Tactic 1.6 - Reactive Outbound</div>
+  <h1>Multi-Channel Orchestrated Sequences</h1>
+  <p class="desc">Signal-based, multi-channel outreach that responds to triggers and buyer intent - not spray-and-pray cold blasting.</p>
+  <div class="hero-channels">
+    <div class="hero-ch" style="background:#58a6ff33;border-color:#58a6ff"><span class="hero-ch-icon" style="background:#58a6ff">E</span><span class="hero-ch-name">Email</span></div>
+    <div class="hero-ch-plus">+</div>
+    <div class="hero-ch" style="background:#0a66c233;border-color:#0a66c2"><span class="hero-ch-icon" style="background:#0a66c2">Li</span><span class="hero-ch-name">LinkedIn</span></div>
+    <div class="hero-ch-plus">+</div>
+    <div class="hero-ch" style="background:#d2992233;border-color:#d29922"><span class="hero-ch-icon" style="background:#d29922">P</span><span class="hero-ch-name">Phone</span></div>
+    <div class="hero-ch-plus">+</div>
+    <div class="hero-ch" style="background:#bc8cff33;border-color:#bc8cff"><span class="hero-ch-icon" style="background:#bc8cff">V</span><span class="hero-ch-name">Video</span></div>
+    <div class="hero-ch-plus">+</div>
+    <div class="hero-ch" style="background:#f8514933;border-color:#f85149"><span class="hero-ch-icon" style="background:#f85149">DM</span><span class="hero-ch-name">Direct Mail</span></div>
+  </div>
+  <p class="hero-sub">Combine channels strategically - each touchpoint reinforces the last</p>
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low-Medium</span>
+    <span class="tag tag-icp">ICP: All ICPs</span>
+  </div>
+</div>
+
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)"><div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div><span class="acc-arrow">&#9660;</span></div>
+  <div class="acc-body"><div class="acc-content">
+    <div class="highlight"><strong>The core insight:</strong> Spreading touchpoints across multiple channels feels helpful rather than spammy. A prospect who gets one email, one LinkedIn message, and one call feels engaged - not harassed.</div>
+    <h3>The psychology behind multi-channel</h3>
+    <ul>
+      <li><strong>Mere exposure effect</strong> - Seeing your name across channels builds familiarity and trust</li>
+      <li><strong>Channel preference</strong> - Different buyers prefer different channels. Multi-channel meets them where they pay attention</li>
+      <li><strong>Context switching</strong> - A LinkedIn message after an email creates a "surround sound" effect</li>
+      <li><strong>Reduced spam fatigue</strong> - 3 emails in a week = annoying. 1 email + 1 LinkedIn + 1 call = thorough</li>
+    </ul>
+  </div></div>
+</div>
+
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)"><div><span class="num">03</span><h2 style="display:inline">Sequence Templates</h2></div><span class="acc-arrow">&#9660;</span></div>
+  <div class="acc-body"><div class="acc-content">
+    <p>Four templates covering different intensity levels. All designed for reactive outbound - triggered by signals, not blasting cold lists.</p>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(event,'t-standard')">Standard 14-Day</div>
+      <div class="tab" onclick="switchTab(event,'t-aggressive')">Aggressive 21-Day</div>
+      <div class="tab" onclick="switchTab(event,'t-abm')">Executive ABM</div>
+      <div class="tab" onclick="switchTab(event,'t-reengagement')">Re-Engagement</div>
+    </div>
+    <div class="tab-panel active" id="t-standard">
+      <h3>Standard 14-Day Sequence (Email + LinkedIn)</h3>
+      <p><strong>Target ICP:</strong> Directors, Managers, individual contributors</p>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Day 1</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #1</div><div class="wf-action">Cold open</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 2</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">View + connect</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 4</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #2</div><div class="wf-action">Value-add</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 5</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Engage content</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 7</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #3</div><div class="wf-action">Social proof</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 9</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Direct message</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 11</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #4</div><div class="wf-action">New angle</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 14</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #5</div><div class="wf-action">Breakup</div></div></div>
+      <table><tr><th>Day</th><th>Channel</th><th>Action</th><th>Notes</th></tr><tr><td>1</td><td>Email</td><td>Personalised cold email #1</td><td>Pain-focused, under 125 words, clear CTA</td></tr><tr><td>2</td><td>LinkedIn</td><td>View profile + connect</td><td>Short note. Builds familiarity</td></tr><tr><td>4</td><td>Email</td><td>Follow-up #1 (value-add)</td><td>Share relevant insight or case study</td></tr><tr><td>5</td><td>LinkedIn</td><td>Engage with their content</td><td>Like/comment on a recent post</td></tr><tr><td>7</td><td>Email</td><td>Follow-up #2 (social proof)</td><td>Customer result relevant to their role</td></tr><tr><td>9</td><td>LinkedIn</td><td>Send direct message</td><td>Reference email thread. Ask a question</td></tr><tr><td>11</td><td>Email</td><td>Follow-up #3 (new angle)</td><td>Different pain point or insight</td></tr><tr><td>14</td><td>Email</td><td>Breakup email</td><td>Respectful close. Remove pressure</td></tr></table>
+    </div>
+    <div class="tab-panel" id="t-aggressive">
+      <h3>Aggressive 21-Day Sequence (Email + LinkedIn + Phone)</h3>
+      <p><strong>Target ICP:</strong> VP-level, senior decision-makers</p>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Day 1</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #1</div><div class="wf-action">Cold open</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 1</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">View profile</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 2</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Connect</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 3</div><div class="wf-node ch-phone">P</div><div class="wf-label">Phone</div><div class="wf-action">Call #1</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 5</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #2</div><div class="wf-action">Insight</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 7</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Engage + DM</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 8</div><div class="wf-node ch-phone">P</div><div class="wf-label">Phone</div><div class="wf-action">Call #2</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 10</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #3</div><div class="wf-action">Case study</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 12</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Voice note</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 14</div><div class="wf-node ch-phone">P</div><div class="wf-label">Phone</div><div class="wf-action">Call #3</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 16</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #4</div><div class="wf-action">New angle</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 19</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Share content</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 21</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #5</div><div class="wf-action">Breakup</div></div></div>
+      <table><tr><th>Day</th><th>Channel</th><th>Action</th><th>Notes</th></tr><tr><td>1</td><td>Email</td><td>Personalised cold email #1</td><td>Reference company initiative or trigger</td></tr><tr><td>1</td><td>LinkedIn</td><td>View profile</td><td>Primes recognition</td></tr><tr><td>2</td><td>LinkedIn</td><td>Connection request</td><td>Brief note referencing context</td></tr><tr><td>3</td><td>Phone</td><td>Call attempt #1</td><td>Leave voicemail if no answer</td></tr><tr><td>5</td><td>Email</td><td>Follow-up #1 (insight)</td><td>Industry data or benchmark</td></tr><tr><td>7</td><td>LinkedIn</td><td>Engage + DM</td><td>Comment then message</td></tr><tr><td>8</td><td>Phone</td><td>Call attempt #2</td><td>Different time of day</td></tr><tr><td>10</td><td>Email</td><td>Follow-up #2 (case study)</td><td>Quantified outcome from similar company</td></tr><tr><td>12</td><td>LinkedIn</td><td>Voice note</td><td>60-sec personal message</td></tr><tr><td>14</td><td>Phone</td><td>Call attempt #3</td><td>Reference all previous touches</td></tr><tr><td>16</td><td>Email</td><td>Follow-up #3 (new angle)</td><td>Different value proposition</td></tr><tr><td>19</td><td>LinkedIn</td><td>Share relevant content</td><td>Genuinely valuable content</td></tr><tr><td>21</td><td>Email</td><td>Breakup email</td><td>Permission-based close</td></tr></table>
+    </div>
+    <div class="tab-panel" id="t-abm">
+      <h3>Executive ABM Sequence (High-Touch)</h3>
+      <p><strong>Target ICP:</strong> C-suite at enterprise accounts</p>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Wk 1</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Multi-connect</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 1</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #1</div><div class="wf-action">Personalised</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 1</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Engage content</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 2</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #2</div><div class="wf-action">Research/audit</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 2</div><div class="wf-node ch-video">V</div><div class="wf-label">Video</div><div class="wf-action">60s Loom</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 2</div><div class="wf-node ch-phone">P</div><div class="wf-label">Phone</div><div class="wf-action">Call primary</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 3</div><div class="wf-node ch-dm">DM</div><div class="wf-label">Direct Mail</div><div class="wf-action">Physical gift</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 3</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #3</div><div class="wf-action">Gift follow-up</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 3</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Multi-thread</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 4</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #4</div><div class="wf-action">Exec brief</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 4</div><div class="wf-node ch-phone">P</div><div class="wf-label">Phone</div><div class="wf-action">Final call</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Wk 4</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #5</div><div class="wf-action">Graceful close</div></div></div>
+      <table><tr><th>Week</th><th>Channel</th><th>Action</th><th>Notes</th></tr><tr><td>1</td><td>LinkedIn</td><td>Connect with stakeholders</td><td>Map buying committee first</td></tr><tr><td>1</td><td>Email</td><td>Personalised email to primary</td><td>Reference recent announcement</td></tr><tr><td>1</td><td>LinkedIn</td><td>Engage with exec content</td><td>Thoughtful comments across the week</td></tr><tr><td>2</td><td>Email</td><td>Custom research/audit</td><td>1-page custom analysis</td></tr><tr><td>2</td><td>Video</td><td>60-sec personalised Loom</td><td>Walk through their website</td></tr><tr><td>2</td><td>Phone</td><td>Call primary contact</td><td>Reference the video/email</td></tr><tr><td>3</td><td>Direct Mail</td><td>Send physical package</td><td>Premium item + handwritten note</td></tr><tr><td>3</td><td>Email</td><td>Follow-up to direct mail</td><td>Reference the gift</td></tr><tr><td>3</td><td>LinkedIn</td><td>Multi-thread DMs</td><td>Different messaging per role</td></tr><tr><td>4</td><td>Email</td><td>Executive brief</td><td>Tailored strategy doc</td></tr><tr><td>4</td><td>Phone</td><td>Final call attempt</td><td>Offer concrete next step</td></tr><tr><td>4</td><td>Email</td><td>Graceful close</td><td>Leave door open</td></tr></table>
+    </div>
+    <div class="tab-panel" id="t-reengagement">
+      <h3>Re-Engagement / Breakup Sequence</h3>
+      <p><strong>Target ICP:</strong> Cold leads who went silent, churned prospects</p>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Day 1</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #1</div><div class="wf-action">Trigger re-open</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 3</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">Re-engage</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 5</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #2</div><div class="wf-action">New value</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 7</div><div class="wf-node ch-linkedin">Li</div><div class="wf-label">LinkedIn</div><div class="wf-action">DM value share</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 10</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #3</div><div class="wf-action">Honest check-in</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Day 14</div><div class="wf-node ch-email">E</div><div class="wf-label">Email #4</div><div class="wf-action">Breakup</div></div></div>
+      <table><tr><th>Day</th><th>Channel</th><th>Action</th><th>Notes</th></tr><tr><td>1</td><td>Email</td><td>Trigger-based re-open</td><td>Reference a new signal</td></tr><tr><td>3</td><td>LinkedIn</td><td>View profile + re-engage</td><td>Like/comment. Don't pitch</td></tr><tr><td>5</td><td>Email</td><td>Quick update</td><td>New feature, case study, or insight</td></tr><tr><td>7</td><td>LinkedIn</td><td>DM with value content</td><td>Share useful article or tool</td></tr><tr><td>10</td><td>Email</td><td>Honest check-in</td><td>Vulnerable, direct, no pressure</td></tr><tr><td>14</td><td>Email</td><td>The breakup</td><td>Removes all pressure. Often gets the most responses</td></tr></table>
+    </div>
+  </div></div>
+</div>
+
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+function toggleAcc(header){header.parentElement.classList.toggle('open')}
+function switchTab(e,panelId){const c=e.target.closest('.acc-content');c.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));c.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));e.target.classList.add('active');document.getElementById(panelId).classList.add('active')}
+</script>
+</body>
+</html>
