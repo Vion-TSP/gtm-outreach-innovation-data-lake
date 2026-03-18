@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 6.1 — Job Posting Signal Triggers | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 6.1 - Signal-Based / Intent</div>
+  <h1>Job Posting Signal Triggers</h1>
+  <p class="desc">Monitor target accounts for relevant job postings that signal pain points, growth initiatives, or tech stack gaps. Reach out with contextual messaging tied directly to hiring needs they have publicly advertised.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low-Medium</span>
+    <span class="tag tag-cost">Cost: Low</span>
+    <span class="tag tag-icp">ICP: Founders, Sales Leaders, Operations Teams</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Job postings reveal strategic priorities and current pain points with perfect timing. When a company posts for a Revenue Operations Manager, they are publicly admitting they have operational gaps. Your outreach arrives exactly when they are thinking about solving that problem.
+      </div>
+      <h3>The psychology behind job posting triggers</h3>
+      <ul>
+        <li><strong>Public admission of need</strong> - Job postings are companies explicitly stating they lack capability in an area. This removes the objection that they do not need your category</li>
+        <li><strong>Budget already allocated</strong> - If they are hiring for a role, budget has been approved. Decision makers are in spending mode for that function, making them more receptive to tools that support it</li>
+        <li><strong>Timing advantage</strong> - Catching them during active hiring means your solution can potentially reduce headcount needs or accelerate new hire productivity. Both are compelling value propositions</li>
+        <li><strong>Contextual relevance</strong> - Referencing their specific job posting in outreach demonstrates you understand their exact situation. It is personalisation based on their own words</li>
+      </ul>
+      <h3>Why job postings specifically</h3>
+      <p>Unlike vague signals like website visits, job postings are concrete public declarations of strategic direction. The job description itself provides incredible detail about tech stack, processes, and pain points. It is free market research handed to you.</p>
+      <p><strong>The compounding effect:</strong> Companies hiring in one area often have related needs. A sales hire suggests potential need for sales tools. An engineering hire might signal product expansion that requires additional infrastructure. One signal can reveal multiple opportunities.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">D</div><div class="wf-label">Define</div><div class="wf-action">Target roles</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">M</div><div class="wf-label">Monitor</div><div class="wf-action">Job boards</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">A</div><div class="wf-label">Analyse</div><div class="wf-action">JD content</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Identify</div><div class="wf-action">Decision maker</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">C</div><div class="wf-label">Craft Message</div><div class="wf-action">Reference JD</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">O</div><div class="wf-label">Outreach</div><div class="wf-action">Timely contact</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Define Target Job Roles</td>
+          <td>Identify roles that signal need for your category. If you sell sales enablement tools, monitor for sales ops, sales manager, and revenue operations roles. Focus on 3-5 high-signal job titles</td>
+          <td>30 min role selection</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Set Up Monitoring</td>
+          <td>Use Clay, LinkedIn, or Otta to track when target accounts post relevant roles. Set alerts so you are notified within 24 hours of posting. Fresh postings get better response than stale ones</td>
+          <td>1 hour initial setup</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Analyse Job Description</td>
+          <td>Read full job description looking for pain points, tech stack mentions, and process gaps. Note specific language they use. This becomes your outreach talking points</td>
+          <td>5-10 min per posting</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Identify Decision Maker</td>
+          <td>Find hiring manager or relevant exec. For sales roles, reach out to VP Sales or CRO. For operations roles, find COO or Head of Ops. Avoid HR unless that is your buyer</td>
+          <td>5 min per company</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Craft Contextual Message</td>
+          <td>Reference specific job posting and tie to how your solution addresses needs mentioned. Offer to share resources that could help new hire ramp faster or reduce need for additional headcount</td>
+          <td>10-15 min per message</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Send Timely Outreach</td>
+          <td>Reach out within 48 hours of job posting going live. Timing matters. The earlier you reach them in hiring process, the more receptive they are to alternatives like tooling instead of headcount</td>
+          <td>2-3 min per send</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Connect with the person who gets hired in that role 30-60 days after they start. New hires are often tasked with evaluating tools and processes. They are highly receptive to vendors offering to help them succeed in new role.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Clay</strong></td>
+          <td>£££</td>
+          <td>Automated monitoring and enrichment at scale</td>
+          <td>Pull job postings from LinkedIn and other sources automatically. Enrich with decision maker contact info. Trigger outreach workflows based on posting criteria. Scales to 1000s of accounts</td>
+          <td>Expensive for small teams. Learning curve to build effective workflows. Requires credits for enrichment which add to cost</td>
+        </tr>
+        <tr>
+          <td><strong>LinkedIn Jobs</strong></td>
+          <td>Free</td>
+          <td>Manual monitoring of high-value target accounts</td>
+          <td>Search by company name to see all current openings. Set up job alerts for specific titles. Free and accessible to everyone. Most companies post here first</td>
+          <td>Manual effort required. No automation. Difficult to track 50+ accounts without dedicated time. Easy to miss new postings</td>
+        </tr>
+        <tr>
+          <td><strong>Otta</strong></td>
+          <td>Free</td>
+          <td>Startup and scale-up job tracking</td>
+          <td>Focused on high-growth companies. Clean interface for browsing roles by company. Startup-focused audience means less enterprise noise. Good for tracking emerging companies</td>
+          <td>Limited to startups and scale-ups. Enterprise companies rarely post here. Smaller volume of overall postings compared to LinkedIn</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>LinkedIn Jobs</strong> (free) for manual monitoring of top 20-30 accounts. Once you validate the signal quality and conversion, invest in <strong>Clay</strong> to automate tracking across hundreds of accounts and trigger outreach sequences.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Role Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Role Selection - Choosing High-Signal Job Titles</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Identifying relevant roles for your category</h3>
+            <p>Not all job postings signal buying intent for your solution. Focus on roles where the job description naturally includes responsibilities that your product supports or pain points it solves.</p>
+
+            <h3>Role categories to monitor</h3>
+            <ul>
+              <li><strong>Roles your product replaces or reduces</strong> - If your automation tool reduces need for manual work, monitor for operations coordinator or data entry roles. Their hiring need is your sales opportunity</li>
+              <li><strong>Roles your product empowers</strong> - If you sell sales enablement software, track sales development rep, account executive, and sales operations postings. These roles will use your product daily</li>
+              <li><strong>Roles that influence buying decisions</strong> - For B2B software, track revenue operations, sales ops, marketing ops, and chief of staff roles. These people evaluate and recommend tools</li>
+              <li><strong>Executive roles signalling growth</strong> - New VP or C-level hires often bring budget and mandate to change tech stack. Monitor for CRO, CMO, VP Sales, VP Ops appointments</li>
+            </ul>
+
+            <h3>Signal quality by role type</h3>
+            <table>
+              <tr><th>Role Type</th><th>Signal Quality</th><th>Why</th></tr>
+              <tr>
+                <td>VP or C-level</td>
+                <td>Very High</td>
+                <td>Executives bring budget and authority to change stack. Often hired specifically to transform function</td>
+              </tr>
+              <tr>
+                <td>Operations roles</td>
+                <td>High</td>
+                <td>Ops people are tool evaluators by nature. Hiring ops signals process gaps your solution may address</td>
+              </tr>
+              <tr>
+                <td>IC contributor roles</td>
+                <td>Medium</td>
+                <td>Individual contributors signal team growth but less direct buying power. Good secondary signal</td>
+              </tr>
+              <tr>
+                <td>Support or admin roles</td>
+                <td>Low</td>
+                <td>Unless your product specifically targets these functions, they are weak signal for software buying intent</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Relevance test:</strong> Before adding a job title to monitoring list, ask: "If I saw this role posted, could I craft a credible message about how our product helps that person succeed?" If the answer is not immediately obvious, it is probably not a strong signal.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Job Description Analysis sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Job Description Analysis - Mining for Insights</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What to extract from job descriptions</h3>
+            <p>Job descriptions are goldmines of information about company priorities, tech stack, processes, and pain points. Spend time analysing them rather than just noting the title.</p>
+
+            <h3>Key elements to identify</h3>
+            <ul>
+              <li><strong>Pain points and challenges</strong> - Look for phrases like "streamline processes," "improve efficiency," or "reduce manual work." These reveal problems they are trying to solve</li>
+              <li><strong>Tech stack mentions</strong> - JDs often list required experience with specific tools. This tells you their current stack and potential integration needs</li>
+              <li><strong>Responsibilities that map to your product</strong> - If JD lists tasks your product automates or supports, you have perfect talking points for outreach</li>
+              <li><strong>Growth indicators</strong> - Mentions of scaling, expansion, or building new teams signal company trajectory and receptiveness to growth-enabling tools</li>
+            </ul>
+
+            <h3>Turning JD language into outreach hooks</h3>
+            <table>
+              <tr><th>JD Language</th><th>What It Signals</th><th>Outreach Angle</th></tr>
+              <tr>
+                <td>Streamline sales operations</td>
+                <td>Current processes are inefficient and manual</td>
+                <td>Position product as operational efficiency tool that reduces need for additional headcount</td>
+              </tr>
+              <tr>
+                <td>Must have experience with Salesforce and HubSpot</td>
+                <td>They use these tools and need integration capabilities</td>
+                <td>Highlight seamless integrations with their existing stack. Remove implementation friction</td>
+              </tr>
+              <tr>
+                <td>Build and scale outbound motion from scratch</td>
+                <td>They are in early stages of building function. Need tooling and frameworks</td>
+                <td>Offer templates, playbooks, and best practices alongside product. Support new hire success</td>
+              </tr>
+              <tr>
+                <td>Support growing team of 20+ reps</td>
+                <td>Team is already at scale and struggling with management</td>
+                <td>Focus on management and visibility features that help leaders scale without losing control</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Copy their words:</strong> Use exact phrases from the job description in your outreach. If they say "streamline operations," use "streamline operations" in your message. This creates subconscious familiarity and relevance.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outreach Messaging sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Outreach Messaging - Tying to Job Posting</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Message structure for job posting triggers</h3>
+            <p>Your outreach must explicitly reference the job posting to establish context and relevance. Generic messages waste the timing advantage this signal provides.</p>
+
+            <h3>Effective message framework</h3>
+            <ul>
+              <li><strong>Subject line references the posting</strong> - "Re: Your Sales Ops Manager posting" or "Saw you are hiring for Revenue Operations"</li>
+              <li><strong>Opening acknowledges the hire</strong> - "Noticed Acme is bringing on a Sales Operations Manager. Congrats on the growth"</li>
+              <li><strong>Connect posting to product value</strong> - "Many companies hiring for this role find that tool X helps new ops hires ramp 3x faster by..."</li>
+              <li><strong>Specific JD reference</strong> - Quote or paraphrase responsibility from job description and tie to your solution</li>
+              <li><strong>Low-friction CTA</strong> - Offer resource, template, or quick call rather than full demo. Meet them where they are in the journey</li>
+            </ul>
+
+            <h3>Positioning angles based on hiring context</h3>
+            <table>
+              <tr><th>Scenario</th><th>Angle</th><th>Value Prop</th></tr>
+              <tr>
+                <td>First hire in function</td>
+                <td>Help new hire succeed from day one</td>
+                <td>Provide frameworks, templates, and automation so they can deliver quick wins and prove value fast</td>
+              </tr>
+              <tr>
+                <td>Backfill for departed employee</td>
+                <td>Reduce transition disruption</td>
+                <td>Your tool provides continuity and processes so new hire does not start from scratch. Minimise knowledge loss</td>
+              </tr>
+              <tr>
+                <td>Scaling existing team</td>
+                <td>Enable team to scale without linear headcount growth</td>
+                <td>Automation and productivity features let smaller team do more. Potentially reduce number of hires needed</td>
+              </tr>
+              <tr>
+                <td>Senior or executive hire</td>
+                <td>Give them tools to execute their mandate</td>
+                <td>Execs are hired to transform function. Position product as key enabler of their strategic initiatives</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Timing variation:</strong> If you reach out within 1-2 weeks of posting, focus on "considering alternatives to headcount." If you reach out 4-6 weeks later or after hire is made, shift to "helping new hire ramp quickly." Adjust message to their current stage.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Follow-Up Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Follow-Up Strategy - Staying Relevant Through Hiring Cycle</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Multi-touch approach across hiring timeline</h3>
+            <p>One message is rarely enough. Most hiring cycles take 4-8 weeks. Stay relevant with multiple touches tied to likely stages of their process.</p>
+
+            <h3>Follow-up cadence and messaging</h3>
+            <ul>
+              <li><strong>Touch 1 - Week of posting</strong> - Initial outreach referencing JD and offering resource</li>
+              <li><strong>Touch 2 - Two weeks later</strong> - Share relevant case study or customer story from similar company hiring for same role</li>
+              <li><strong>Touch 3 - Four weeks later</strong> - Assume they may have made hire. Offer to help new hire ramp with templates or onboarding resources</li>
+              <li><strong>Touch 4 - Six to eight weeks later</strong> - If hire is confirmed via LinkedIn, reach out directly to new person in role offering to support their first 90 days</li>
+            </ul>
+
+            <h3>Targeting both hiring manager and new hire</h3>
+            <table>
+              <tr><th>Target</th><th>Timing</th><th>Message Focus</th></tr>
+              <tr>
+                <td>Hiring manager or exec</td>
+                <td>During active hiring process</td>
+                <td>Tool can reduce headcount needs, accelerate new hire impact, or provide frameworks for success</td>
+              </tr>
+              <tr>
+                <td>New hire in role</td>
+                <td>30-60 days after start date</td>
+                <td>Help them deliver quick wins, ramp faster, and prove value in new role. Often have mandate to evaluate tools</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>LinkedIn stalking pays off:</strong> Monitor target company's LinkedIn page for announcement of new hire. When they post "Please welcome Sarah as our new Head of Sales Ops," that is your signal to reach out to both the hiring exec and Sarah directly with relevant positioning for each.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Generic messaging that ignores the job posting</h4>
+          <div class="why">Sending standard pitch without referencing the specific role wastes the contextual trigger. Recipient does not see connection between your outreach and their current need.</div>
+          <div class="fix">Explicitly mention the job title and quote or reference specific responsibilities from the JD. Make it obvious you are reaching out because of this specific posting, not blind outreach.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Tracking too many irrelevant job titles</h4>
+          <div class="why">Monitoring every role creates noise and false signals. You waste time on postings that do not actually indicate need for your solution.</div>
+          <div class="fix">Limit to 3-5 high-signal job titles where connection to your product is obvious. Quality over quantity. Better to catch 100% of VP Sales Ops postings than 20% of all sales-related roles.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Reaching out too late after posting goes live</h4>
+          <div class="why">Job posting is freshest signal in first 1-2 weeks. Reaching out 6 weeks later means they have likely already made hiring decision or committed to headcount plan.</div>
+          <div class="fix">Set up alerts to notify you within 24 hours of posting. Reach out within first week while they are still considering all options including tools versus headcount.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Only reaching out to HR instead of hiring manager</h4>
+          <div class="why">HR posts the role but is rarely the budget owner or decision maker for software purchases. You are pitching to wrong person.</div>
+          <div class="fix">Use LinkedIn to identify likely hiring manager based on function. For sales roles, reach out to VP Sales or CRO. For ops roles, find COO or Head of Operations. Target decision makers.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No follow-up after initial outreach</h4>
+          <div class="why">Hiring cycles take weeks. One message gets lost in their inbox during busy hiring process. You lose the opportunity.</div>
+          <div class="fix">Plan 3-4 touch sequence over 6-8 weeks tied to likely hiring stages. Stay relevant without being annoying. Provide value at each touch.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Forgetting to reach out to new hire after they start</h4>
+          <div class="why">New hires are highly motivated to prove value quickly and often have mandate to evaluate tools. Missing this window wastes the signal.</div>
+          <div class="fix">Monitor LinkedIn for hire announcements. 30-60 days after start date, reach out offering templates, best practices, or quick win resources. Help them succeed in new role.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 6.5 — Website Visitor ID | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 6.5 - Signal-Based / Intent</div>
+  <h1>Website Visitor Identification</h1>
+  <p class="desc">Identify companies visiting your website, especially high-intent pages like pricing, features, or case studies. Deanonymise anonymous traffic to reveal which target accounts are researching your solution. Reach out while interest is active.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low-Medium</span>
+    <span class="tag tag-cost">Cost: Medium</span>
+    <span class="tag tag-icp">ICP: All Buyer Personas</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Most website visitors never fill out forms or identify themselves. Visitor identification technology deanonymises this traffic, revealing which companies are researching you. Pricing page visitors especially signal high buying intent. Your outreach catches them mid-evaluation.
+      </div>
+      <h3>The psychology behind website visitor signals</h3>
+      <ul>
+        <li><strong>Revealed preference through behaviour</strong> - Visiting your pricing page is stronger signal than opening cold email. They actively sought you out and invested time learning about your solution</li>
+        <li><strong>Self-qualification</strong> - By the time someone reaches pricing or features pages, they have typically self-qualified as having the problem you solve. They are serious prospects not casual browsers</li>
+        <li><strong>Privacy-respecting engagement</strong> - People appreciate when you help them with research they are already doing versus interrupting them cold. Outreach based on website visit feels helpful not intrusive</li>
+        <li><strong>Timing advantage</strong> - Catching them during active research means your outreach arrives when they are forming vendor shortlist. You influence evaluation criteria early</li>
+      </ul>
+      <h3>Why website visitor ID specifically</h3>
+      <p>Unlike paid intent data from third parties, website visitors came to you directly. They found your site through search, referral, or direct navigation. This demonstrates higher motivation and more advanced buying stage than passive content consumption.</p>
+      <p><strong>The compounding effect:</strong> Visitor identification works passively in background. Every qualified visitor becomes outreach opportunity automatically. Unlike active prospecting that requires ongoing effort, this scales with your inbound traffic.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Install</div><div class="wf-action">Tracking tool</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">D</div><div class="wf-label">Define</div><div class="wf-action">High-intent pages</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">M</div><div class="wf-label">Monitor</div><div class="wf-action">Daily visits</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">Q</div><div class="wf-label">Qualify</div><div class="wf-action">ICP fit</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">R</div><div class="wf-label">Research</div><div class="wf-action">Company context</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">O</div><div class="wf-label">Outreach</div><div class="wf-action">Within 24 hrs</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Install Visitor ID Tool</td>
+          <td>Add tracking script from Dealfront, RB2B, Clearbit Reveal, or Warmly to your website. Tool uses IP address matching to identify visiting companies. Installation typically under 30 minutes</td>
+          <td>30 min one-time setup</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Define High-Intent Pages</td>
+          <td>Configure tool to alert when visitors hit pricing, demo request, case studies, or product pages. Filter out low-intent pages like blog or careers. Focus on buying-stage content</td>
+          <td>1 hour initial configuration</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Review Daily Visitor Reports</td>
+          <td>Check dashboard each morning for companies that visited high-intent pages in last 24 hours. Export list with company name, pages viewed, time spent, and engagement level</td>
+          <td>10-15 min daily review</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Qualify Against ICP</td>
+          <td>Filter visitor list to companies matching your ideal customer profile. Remove competitors, agencies doing research, companies too small or wrong industry. Focus on qualified prospects</td>
+          <td>5 min per batch</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Research Company and Identify Contact</td>
+          <td>Use LinkedIn to find relevant decision maker at visiting company. Check for recent funding, job postings, or other signals indicating timing. Build context for personalised outreach</td>
+          <td>10 min per company</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Send Contextual Outreach</td>
+          <td>Reference pages they viewed and offer to help with their evaluation. Position as resource not sales pitch. Reach out within 24 hours while your brand is fresh in their mind</td>
+          <td>10-15 min per message</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Set up real-time Slack alerts when target accounts visit pricing or demo pages. This lets you reach out within hours not days, maximising impact while interest is hottest.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Dealfront</strong></td>
+          <td>££</td>
+          <td>European companies focused on GDPR compliance</td>
+          <td>GDPR-compliant visitor identification. Strong European IP database. Tracks company visits with engagement scoring. Affordable pricing for startups. CRM integration</td>
+          <td>Weaker US coverage. Primarily European database. Less advanced features than Clearbit. Good for EU-focused companies only</td>
+        </tr>
+        <tr>
+          <td><strong>RB2B</strong></td>
+          <td>£</td>
+          <td>Startups and SMBs wanting affordable option</td>
+          <td>Very affordable visitor ID for budget-conscious teams. Simple setup. Daily email digest of visitors. Good for testing channel before bigger investment</td>
+          <td>Limited data accuracy compared to premium tools. Fewer integrations. Basic feature set. Best as starter tool not long-term solution</td>
+        </tr>
+        <tr>
+          <td><strong>Clearbit Reveal</strong></td>
+          <td>£££</td>
+          <td>US companies wanting comprehensive data enrichment</td>
+          <td>Industry-leading IP matching accuracy. Rich company data appended. Deep CRM and marketing automation integrations. Real-time alerts. Advanced segmentation and scoring</td>
+          <td>Expensive for small teams. Overkill if you only need basic visitor ID. Best suited for companies with significant web traffic volume</td>
+        </tr>
+        <tr>
+          <td><strong>Warmly</strong></td>
+          <td>££</td>
+          <td>Sales teams wanting real-time engagement</td>
+          <td>Live visitor tracking with in-app notifications. See visitors browsing in real time. Orchestrate immediate outreach. Good for high-velocity sales. Slack integration for alerts</td>
+          <td>Requires active monitoring during business hours. Less useful for async follow-up. Best when sales team can respond to live visitors immediately</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> For EU-focused teams, start with <strong>Dealfront</strong> (££) for GDPR compliance. US-focused teams with budget should invest in <strong>Clearbit Reveal</strong> (£££). Startups testing channel can begin with <strong>RB2B</strong> (£) before upgrading.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Page-Level Intent Scoring sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Page-Level Intent Scoring - Not All Visits Equal</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Different pages signal different intent levels</h3>
+            <p>Someone reading blog post is far weaker signal than someone viewing pricing page three times. Build page-based intent scoring to prioritise outreach on highest-intent visitors.</p>
+
+            <h3>Intent levels by page type</h3>
+            <ul>
+              <li><strong>Very high intent - Pricing, demo request, comparison pages</strong> - These visitors are actively evaluating vendors and comparing options. Bottom of funnel behaviour. Immediate outreach priority</li>
+              <li><strong>High intent - Product pages, case studies, integration docs</strong> - Learning how product works and whether it solves their problem. Serious consideration stage. Strong outreach opportunity</li>
+              <li><strong>Medium intent - Features overview, use case pages</strong> - Understanding what product does and who it serves. Early evaluation stage. Worth nurturing but lower urgency</li>
+              <li><strong>Low intent - Blog, about page, careers</strong> - General research or unrelated browsing. Weak buying signal. Skip outreach unless combined with other signals</li>
+            </ul>
+
+            <h3>Engagement depth scoring</h3>
+            <table>
+              <tr><th>Behaviour</th><th>Intent Signal</th><th>Action Priority</th></tr>
+              <tr>
+                <td>Multiple visits to pricing in one session</td>
+                <td>Very High</td>
+                <td>Immediate outreach same day. Actively comparing pricing models. Ready for sales conversation</td>
+              </tr>
+              <tr>
+                <td>Visited product pages plus case studies</td>
+                <td>High</td>
+                <td>Outreach within 24 hours. Evaluating product fit and social proof. Good timing for helpful conversation</td>
+              </tr>
+              <tr>
+                <td>Single page visit under 30 seconds</td>
+                <td>Low</td>
+                <td>Skip outreach. Likely bounce or misclick. Not genuine research behaviour</td>
+              </tr>
+              <tr>
+                <td>Return visitor over multiple days</td>
+                <td>Very High</td>
+                <td>Priority outreach. Persistent interest signals strong intent. They are seriously considering you</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Scoring formula:</strong> Combine page type, time on page, number of pages viewed, and return visits into composite intent score. Only reach out to top 20% highest scoring visitors to maintain quality.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ICP Qualification sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>ICP Qualification - Filtering the Noise</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Not every visitor is a prospect</h3>
+            <p>Visitor ID tools show all company traffic including competitors, partners, agencies, and personal research. Apply strict ICP filter before investing time in outreach.</p>
+
+            <h3>Visitors to filter out</h3>
+            <ul>
+              <li><strong>Competitors and partners</strong> - Companies in your space doing market research. Build blocklist of known competitors and partner companies to auto-filter</li>
+              <li><strong>Agencies and consultants</strong> - Researching on behalf of clients or generally learning market. Rarely have buying authority themselves</li>
+              <li><strong>Too small or too large</strong> - Companies outside your sweet spot company size. Filter by employee count or revenue to match ICP</li>
+              <li><strong>Wrong geography</strong> - If you only serve specific regions, filter out companies in geographies you cannot support</li>
+              <li><strong>Wrong industry</strong> - Visitors from industries where your solution does not apply. Build positive filter for target industries</li>
+            </ul>
+
+            <h3>Quick qualification checklist</h3>
+            <table>
+              <tr><th>Criterion</th><th>Check</th><th>Reject If</th></tr>
+              <tr>
+                <td>Company size</td>
+                <td>Employee count from LinkedIn or visitor ID tool</td>
+                <td>Outside your target range (eg under 50 or over 500 depending on ICP)</td>
+              </tr>
+              <tr>
+                <td>Industry relevance</td>
+                <td>Company description and sector</td>
+                <td>Industry where your product does not apply or has no success stories</td>
+              </tr>
+              <tr>
+                <td>Geography</td>
+                <td>HQ location from visitor IP and company data</td>
+                <td>Region you do not serve or cannot support due to time zone or compliance</td>
+              </tr>
+              <tr>
+                <td>Competitor check</td>
+                <td>Cross-reference against competitor list</td>
+                <td>Direct competitor or close partner doing market research</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Auto-filtering:</strong> Build ICP filter rules directly in visitor ID tool if possible. This prevents unqualified visitors from appearing in daily reports, saving manual filtering time.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outreach Messaging sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Outreach Messaging - Page-Specific Hooks</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Tailor message to pages they viewed</h3>
+            <p>Generic "saw you visited our site" misses opportunity to reference specific pages and demonstrate understanding of what they were researching. Customise hook based on their browsing behaviour.</p>
+
+            <h3>Message templates by page type</h3>
+            <ul>
+              <li><strong>Pricing page visitor</strong> - "Noticed someone from Acme was checking out our pricing. Happy to walk through how we structure plans and what makes sense for your size company."</li>
+              <li><strong>Case study reader</strong> - "Saw you were looking at our case study with similar company. Can share more detail on how we helped them with X challenge if relevant."</li>
+              <li><strong>Integration page visitor</strong> - "Noticed interest in our Salesforce integration. Most companies ask about Y and Z. Happy to explain how integration works."</li>
+              <li><strong>Return visitor</strong> - "Noticed your team has checked us out a few times this week. Guessing you are evaluating options. Happy to answer questions that came up during research."</li>
+            </ul>
+
+            <h3>Message framework by intent level</h3>
+            <table>
+              <tr><th>Intent Level</th><th>Opening Hook</th><th>CTA</th></tr>
+              <tr>
+                <td>Very High (pricing, demo)</td>
+                <td>Saw you were checking out pricing. Happy to walk through options...</td>
+                <td>15 min call to discuss your situation and what fits best?</td>
+              </tr>
+              <tr>
+                <td>High (features, cases)</td>
+                <td>Noticed you were researching how we handle X use case...</td>
+                <td>Can share more context or answer specific questions if helpful?</td>
+              </tr>
+              <tr>
+                <td>Medium (general product)</td>
+                <td>Saw someone from Acme was learning about our platform...</td>
+                <td>Here is buyer guide we created. Let me know if questions come up</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Transparency approach:</strong> Some companies worry about revealing visitor tracking. Test being explicit: "We use visitor ID technology to see when companies research us. Saw Acme visited our site." Honesty often builds trust.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timing and Response Speed sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Timing and Response Speed - Strike While Fresh</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Website visitor signals decay quickly</h3>
+            <p>Unlike funding announcements that stay relevant for weeks, website visit intent degrades within days. Visitor researched you today. Tomorrow they may research competitor. Speed wins.</p>
+
+            <h3>Optimal response timeline</h3>
+            <ul>
+              <li><strong>Same day ideal</strong> - Real-time alerts let you reach out hours after visit. Your brand is fresh. They may still be actively researching. Best conversion timing</li>
+              <li><strong>Within 24 hours strong</strong> - Daily morning review lets you contact yesterday visitors. Still recent enough for good brand recall. Solid response window</li>
+              <li><strong>24-48 hours acceptable</strong> - Slightly degraded but worth attempting. They may have moved to other vendors but not decided yet</li>
+              <li><strong>48+ hours weak</strong> - Intent signal mostly decayed. They likely already shortlisted vendors or moved on. Low conversion probability</li>
+            </ul>
+
+            <h3>Building speed workflow</h3>
+            <table>
+              <tr><th>Component</th><th>Purpose</th><th>Implementation</th></tr>
+              <tr>
+                <td>Real-time Slack alerts</td>
+                <td>Know immediately when high-intent visitor hits pricing</td>
+                <td>Configure tool to send Slack notification when target account visits pricing or demo pages. Enables same-hour response</td>
+              </tr>
+              <tr>
+                <td>Morning dashboard routine</td>
+                <td>Catch all overnight visitors first thing</td>
+                <td>Make visitor review first task each morning. Process and send outreach before 10am. Clear yesterday backlog daily</td>
+              </tr>
+              <tr>
+                <td>Message template library</td>
+                <td>Speed up personalised writing</td>
+                <td>Pre-write templates for pricing visitors, case study readers, return visitors. Personalise company name and context. Send in 5 minutes</td>
+              </tr>
+              <tr>
+                <td>Auto-qualification filter</td>
+                <td>Eliminate manual ICP checking</td>
+                <td>Set ICP filters in tool so only qualified visitors appear. Saves 5 minutes per visitor in qualification time</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Weekend handling:</strong> If target account visits Saturday or Sunday, reach out Monday morning first thing. Weekend visits are still fresh Monday. Do not let them sit until Tuesday or Wednesday.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Treating all page visits equally</h4>
+          <div class="why">Blog reader and pricing page visitor have completely different intent levels. Generic "saw you visited our site" approach misses opportunity to prioritise high-intent signals.</div>
+          <div class="fix">Build page-level intent scoring. Prioritise outreach to pricing and demo page visitors. Filter out low-intent blog and career page traffic entirely.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Slow response to visitor signals</h4>
+          <div class="why">Checking visitor dashboard once per week means signals are 5-7 days old. Visitor already researched competitors and made shortlist. Window closed.</div>
+          <div class="fix">Review visitor dashboard daily at minimum. Set up real-time Slack alerts for high-intent pages. Reach out same day or within 24 hours maximum.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. No ICP qualification filtering</h4>
+          <div class="why">Reaching out to every visitor includes competitors, wrong company sizes, irrelevant industries. Waste time on unqualified opportunities.</div>
+          <div class="fix">Apply strict ICP filter before outreach. Build blocklist of competitors. Filter by company size and industry. Only contact qualified prospects.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Generic messaging ignoring pages viewed</h4>
+          <div class="why">Saying "saw you visited our website" without referencing specific pages feels generic and surveillance-like. Miss chance to demonstrate understanding.</div>
+          <div class="fix">Reference specific pages they viewed. "Saw you were checking out pricing" or "noticed you read our case study on X." Make it obviously personalised.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Leading with aggressive sales pitch</h4>
+          <div class="why">They came to your site to research independently. Immediate hard sell feels pushy and disrespects their buying process. They disengage.</div>
+          <div class="fix">Position as helpful resource for their evaluation. Offer to answer questions or provide additional context. Support their research rather than pressuring for demo.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Not enriching visitor data with context</h4>
+          <div class="why">Knowing company name is not enough. Without understanding their size, industry, recent activity, messaging feels generic and conversion suffers.</div>
+          <div class="fix">Research each qualified visitor before outreach. Check LinkedIn for company info, recent funding, job postings. Use context to craft highly relevant message.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

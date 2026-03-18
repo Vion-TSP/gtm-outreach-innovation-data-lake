@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 10.4 — AI-Powered Dynamic Landing Pages | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 10.4 - AI-Powered</div>
+  <h1>Dynamic AI Landing Pages</h1>
+  <p class="desc">Website pages that automatically personalise content in real-time based on visiting company, role, and behaviour. Show different messaging, case studies, and CTAs to each visitor without building separate pages manually.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Medium</span>
+    <span class="tag tag-icp">ICP: All Segments</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Every visitor arrives at your website with different context, needs, and objections. Generic pages force prospects to translate how your product applies to them. Dynamic AI pages do that translation automatically, showing each visitor the most relevant messaging, social proof, and value proposition based on their company and role.
+      </div>
+      <h3>The psychology behind dynamic personalisation</h3>
+      <ul>
+        <li><strong>Relevance bias</strong> - Humans pay more attention to information that feels specifically relevant to their situation. When Sarah from Acme sees case studies from financial services companies instead of generic examples, she engages longer</li>
+        <li><strong>Cognitive ease</strong> - Making prospects work to understand how you solve their specific problem creates friction. Dynamic pages remove that friction by pre-filtering content to their context</li>
+        <li><strong>Trust signals</strong> - Seeing your industry, company size, or role mentioned specifically signals that this vendor understands your world. It builds trust faster than generic positioning</li>
+        <li><strong>Decision acceleration</strong> - When visitors immediately see relevant use cases and social proof from similar companies, they can make buying decisions faster without needing to request custom information</li>
+      </ul>
+      <h3>Why AI-powered specifically</h3>
+      <p>Manual personalisation requires building separate pages for every segment. With 5 industries, 3 company sizes, and 4 roles, you need 60 page variations. AI-powered dynamic pages maintain a single page that adapts automatically based on visitor data, making true 1-to-1 personalisation scalable.</p>
+      <p><strong>The compounding effect:</strong> Dynamic pages continuously learn which variations perform best for each segment. Over time, the AI optimises messaging automatically, improving conversion rates without manual testing cycles.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Identify Visitor</div><div class="wf-action">Company + role</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">E</div><div class="wf-label">Enrich Data</div><div class="wf-action">Industry, size</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">S</div><div class="wf-label">Select Content</div><div class="wf-action">AI chooses</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">R</div><div class="wf-label">Render Page</div><div class="wf-action">Personalised view</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">T</div><div class="wf-label">Track Behaviour</div><div class="wf-action">Engagement data</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">O</div><div class="wf-label">Optimise</div><div class="wf-action">Learn + improve</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Implement Tracking Script</td>
+          <td>Add tracking pixel from your dynamic personalisation platform to your website. This identifies visiting companies via IP address and enriches with firmographic data automatically</td>
+          <td>30 min initial setup</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Create Content Variations</td>
+          <td>Build alternative versions of key page elements such as headlines, hero images, case studies, CTAs, and value propositions. Aim for 3-5 variations per element targeting different segments</td>
+          <td>4-6 hours content creation</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Configure Personalisation Rules</td>
+          <td>Set rules for which content variations show to which visitor segments. Rules might include industry equals financial services, company size over 1000 employees, or job title contains director</td>
+          <td>2-3 hours rule configuration</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Map Content to Segments</td>
+          <td>Associate your content variations with specific audience segments. Financial services visitors see fintech case studies, retail visitors see ecommerce examples, etc. Platform AI suggests optimal mappings</td>
+          <td>1-2 hours mapping</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Launch and Monitor</td>
+          <td>Activate personalisation on target pages. Start with homepage and key landing pages. Monitor performance metrics by segment to identify what resonates with each audience</td>
+          <td>30 min launch, ongoing monitoring</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>AI Optimisation</td>
+          <td>Let platform AI test variations automatically and optimise content selection based on conversion performance. AI learns which combinations work best for each segment without manual A/B test setup</td>
+          <td>Automated ongoing</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Start by personalising just the hero section and primary CTA. Once you see conversion lift, expand personalisation to case studies, testimonials, and feature sections. Incremental implementation reduces setup time and lets you validate ROI before full investment.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Mutiny</strong></td>
+          <td>$$$</td>
+          <td>B2B companies with enterprise target accounts</td>
+          <td>AI-powered personalisation engine with no-code visual editor. Identifies visiting companies automatically. Built-in experimentation framework. Deep integrations with CRM and marketing automation platforms</td>
+          <td>Expensive starting at several thousand monthly. Requires minimum 10k monthly visitors to justify cost. Best for companies with established inbound traffic</td>
+        </tr>
+        <tr>
+          <td><strong>Intellimize</strong></td>
+          <td>$$-$$$</td>
+          <td>Marketing teams focused on conversion rate optimisation</td>
+          <td>Machine learning optimises content variations automatically without manual A/B testing. Personalises based on dozens of visitor attributes. Real-time reporting on performance by segment</td>
+          <td>Complex setup requiring technical implementation. Learning period requires substantial traffic volume. Steeper learning curve than simpler tools</td>
+        </tr>
+        <tr>
+          <td><strong>Warmly</strong></td>
+          <td>$-$$</td>
+          <td>Sales-focused teams wanting visitor identification plus personalisation</td>
+          <td>Combines visitor identification with dynamic content personalisation. Alerts sales reps when target accounts visit. Shows personalised content based on CRM data and firmographics</td>
+          <td>Personalisation capabilities less advanced than dedicated platforms. Better for simple use cases than complex multi-variant optimisation</td>
+        </tr>
+        <tr>
+          <td><strong>Clearbit</strong></td>
+          <td>$$</td>
+          <td>Teams with development resources wanting custom implementation</td>
+          <td>Provides visitor enrichment API that returns company and contact data. Use enriched data to power your own personalisation logic. Flexible for custom use cases</td>
+          <td>Requires engineering effort to build personalisation on top of enrichment data. Not a complete out-of-box solution. Best for technical teams</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Warmly</strong> if you have under 5k monthly visitors and want quick wins. Graduate to <strong>Mutiny</strong> once you exceed 10k monthly visitors and can justify investment with demonstrated conversion lift. For technical teams, consider <strong>Clearbit</strong> API plus custom implementation for maximum flexibility.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Segmentation Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Segmentation Strategy - Which Attributes to Personalise On</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Start with high-signal attributes</h3>
+            <p>You could theoretically personalise content based on dozens of visitor attributes. In practice, focus on the 2-3 attributes that most strongly predict fit and buying behaviour. Over-segmentation dilutes your content across too many variations.</p>
+
+            <h3>Primary segmentation attributes</h3>
+            <ul>
+              <li><strong>Industry</strong> - Different industries have fundamentally different needs, terminology, and use cases. Financial services cares about compliance and security, while retail focuses on conversion and customer experience</li>
+              <li><strong>Company size</strong> - Enterprise buyers evaluate differently than SMB buyers. Show enterprise buyers governance features and dedicated support, show SMB buyers ease of setup and pricing transparency</li>
+              <li><strong>Job function</strong> - Marketing roles care about different outcomes than engineering roles. Personalise value propositions and feature highlights based on functional priorities</li>
+              <li><strong>Account status</strong> - Known accounts in your CRM deserve different treatment than anonymous visitors. Show existing customers expansion opportunities, show prospects introductory messaging</li>
+            </ul>
+
+            <h3>Segmentation decision framework</h3>
+            <table>
+              <tr><th>If Your Product</th><th>Prioritise Segmenting By</th><th>Why</th></tr>
+              <tr>
+                <td>Highly industry-specific</td>
+                <td>Industry first, then company size</td>
+                <td>Use cases and pain points vary dramatically by vertical. Show industry-specific proof points</td>
+              </tr>
+              <tr>
+                <td>Serves multiple roles</td>
+                <td>Job function first, then industry</td>
+                <td>Different personas care about completely different capabilities. Speak their language</td>
+              </tr>
+              <tr>
+                <td>Horizontal across industries</td>
+                <td>Company size first, then use case</td>
+                <td>Buying process and requirements differ more by scale than by vertical when product is universal</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Data quality check:</strong> Before building complex segmentation, verify data accuracy for your key attributes. Test visitor identification on your own team browsing from office IPs. Confirm industry and size data matches reality for known accounts.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Variations sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Content Variations - What to Personalise</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Prioritise high-impact page elements</h3>
+            <p>You cannot personalise every word on your website. Focus variation efforts on the elements that most influence conversion decisions. Start with above-the-fold content that shapes first impressions, then expand to supporting sections.</p>
+
+            <h3>Page elements to personalise by priority</h3>
+            <ul>
+              <li><strong>Headline and subheadline</strong> - Most impactful element. Swap generic value prop for segment-specific outcome. "Sarah, see how financial services teams reduce compliance overhead" versus "Streamline operations"</li>
+              <li><strong>Hero image or video</strong> - Visual representation of use case. Show imagery that reflects visitor industry or role. Enterprise software for enterprise visitors, consumer apps for SMB audiences</li>
+              <li><strong>Social proof section</strong> - Customer logos and testimonials filtered to visitor segment. Financial services visitor sees financial services customers, not random assortment</li>
+              <li><strong>Primary CTA</strong> - Adjust call-to-action based on buying stage and company size. Enterprise accounts get "Talk to Sales", SMB accounts get "Start Free Trial"</li>
+              <li><strong>Feature highlights</strong> - Emphasise features relevant to visitor role. Show marketing features to CMOs, show API capabilities to CTOs</li>
+            </ul>
+
+            <h3>Content variation examples</h3>
+            <table>
+              <tr><th>Page Element</th><th>Generic Version</th><th>Personalised Version</th></tr>
+              <tr>
+                <td>Headline</td>
+                <td>The modern sales platform</td>
+                <td>James, see how enterprise sales teams hit quota 30% faster (for VP Sales at companies over 500 employees)</td>
+              </tr>
+              <tr>
+                <td>Case study</td>
+                <td>How Acme increased revenue by 45%</td>
+                <td>How financial services firms like yours reduce sales cycles (shown to financial services visitors only)</td>
+              </tr>
+              <tr>
+                <td>Feature section</td>
+                <td>All features listed equally</td>
+                <td>Compliance and security features highlighted first for regulated industries, ROI and ease of use highlighted for SMB</td>
+              </tr>
+              <tr>
+                <td>CTA button</td>
+                <td>Get Started</td>
+                <td>Book Enterprise Demo (for companies over 1000 employees) or Start Free Trial (for smaller companies)</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Testing discipline:</strong> Create variations that differ meaningfully, not just cosmetically. Changing "enterprise sales teams" to "sales organisations" is not real personalisation. Swap entire value propositions and proof points to create genuine relevance.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Implementation Approach sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Implementation Approach - Crawl, Walk, Run</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Phase implementation for faster results</h3>
+            <p>Attempting to personalise your entire website at once creates massive content production burden and delays launch. Start with highest-traffic pages and highest-value segments, prove ROI, then expand scope incrementally.</p>
+
+            <h3>Phase 1 - Crawl (Week 1-2)</h3>
+            <ul>
+              <li><strong>Single page</strong> - Implement on homepage only as proof of concept</li>
+              <li><strong>Two segments</strong> - Create variations for your two largest or highest-converting segments</li>
+              <li><strong>Three elements</strong> - Personalise headline, social proof section, and primary CTA only</li>
+              <li><strong>Goal</strong> - Validate that personalisation increases engagement and conversion versus control</li>
+            </ul>
+
+            <h3>Phase 2 - Walk (Week 3-6)</h3>
+            <ul>
+              <li><strong>Additional pages</strong> - Expand to top 3 landing pages based on traffic volume</li>
+              <li><strong>Four segments</strong> - Add next two important segments based on Phase 1 learnings</li>
+              <li><strong>Five elements</strong> - Add hero image and feature section personalisation</li>
+              <li><strong>Goal</strong> - Demonstrate scalability and refine segmentation based on performance data</li>
+            </ul>
+
+            <h3>Phase 3 - Run (Week 7+)</h3>
+            <ul>
+              <li><strong>Full site</strong> - Roll out personalisation across all key pages including product pages, pricing, and resources</li>
+              <li><strong>Advanced segmentation</strong> - Combine multiple attributes for nuanced targeting such as enterprise financial services versus SMB financial services</li>
+              <li><strong>AI optimisation</strong> - Enable machine learning to automatically test variations and optimise content selection</li>
+              <li><strong>Goal</strong> - Maximise conversion impact across entire buyer journey with minimal ongoing manual effort</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Resource planning:</strong> Phased approach requires 8-12 hours in Phase 1, 15-20 hours in Phase 2, and 25-35 hours in Phase 3. Total investment of 50-70 hours spread over 2-3 months is manageable for lean teams while delivering incremental value throughout.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance Monitoring sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Performance Monitoring - Measuring What Matters</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Track the right metrics</h3>
+            <p>Vanity metrics like page views and time on site do not validate personalisation effectiveness. Focus on business outcome metrics that prove personalisation drives more qualified conversions and pipeline.</p>
+
+            <h3>Primary success metrics</h3>
+            <ul>
+              <li><strong>Conversion rate by segment</strong> - Compare conversion rates between personalised and control experiences for each segment. Look for 10-30% lift in target segments</li>
+              <li><strong>Form fill quality</strong> - Measure what percentage of form fills come from target account segments. Personalisation should increase qualified lead volume, not just total volume</li>
+              <li><strong>Engagement depth</strong> - Track how many page sections personalised visitors view compared to control. More engagement signals better resonance</li>
+              <li><strong>Pipeline velocity</strong> - For known accounts, measure how personalisation affects deal progression speed from first touch to opportunity creation</li>
+            </ul>
+
+            <h3>Monitoring dashboard structure</h3>
+            <table>
+              <tr><th>Metric</th><th>Segment View</th><th>Action Threshold</th></tr>
+              <tr>
+                <td>Conversion rate</td>
+                <td>Compare personalised versus control for each segment</td>
+                <td>If lift under 5% after 500 visitors, revise variations for that segment</td>
+              </tr>
+              <tr>
+                <td>Bounce rate</td>
+                <td>Track by visitor segment and content variation</td>
+                <td>If personalised bounce rate higher than control, content likely missing mark</td>
+              </tr>
+              <tr>
+                <td>Scroll depth</td>
+                <td>Measure how far down page each segment scrolls</td>
+                <td>Low scroll depth suggests above-fold content not resonating, test new variations</td>
+              </tr>
+              <tr>
+                <td>Return visitor rate</td>
+                <td>Track which segments return after initial personalised visit</td>
+                <td>High return rate signals interest, trigger sales follow-up for known accounts</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Statistical significance:</strong> Wait for at least 100 conversions per variation before making optimisation decisions. Premature decisions based on small samples lead to false conclusions. Use built-in significance calculators in your personalisation platform.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Over-segmentation diluting content quality</h4>
+          <div class="why">Creating 20 different segments means building 20 sets of content variations. Content quality suffers as you spread limited resources too thin. Variations become superficial.</div>
+          <div class="fix">Start with 2-4 core segments that represent majority of your target market. Create genuinely differentiated content for each. Expand segments only after validating lift and building content production capacity.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Personalising low-traffic pages first</h4>
+          <div class="why">Implementing personalisation on niche pages with 50 monthly visitors makes it impossible to gather enough data to validate effectiveness. Wasted effort with no learnings.</div>
+          <div class="fix">Prioritise pages with highest traffic volume such as homepage and primary landing pages. These generate data quickly for optimisation decisions. Expand to lower-traffic pages after proving ROI on high-traffic pages.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Not maintaining fallback content</h4>
+          <div class="why">When visitor identification fails or visitor does not match any segment rules, page shows broken or empty. Poor experience damages credibility.</div>
+          <div class="fix">Always configure strong default content for unmatched visitors. Treat default as your best generic messaging. Test that all pages render properly when personalisation fails to fire.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Ignoring mobile experience</h4>
+          <div class="why">Personalisation works on desktop but breaks on mobile due to different page layouts or slower script loading. Half your traffic sees broken experience.</div>
+          <div class="fix">Test every personalisation variation on mobile devices before launch. Ensure content fits mobile layouts without breaking. Monitor mobile conversion rates separately from desktop.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Setting up once and forgetting</h4>
+          <div class="why">Personalisation rules and content variations go stale as market changes. What resonated 6 months ago may no longer be relevant. Performance degrades over time.</div>
+          <div class="fix">Schedule quarterly content reviews to refresh variations based on performance data and market changes. Update case studies, refresh headlines, retire underperforming variations. Treat as ongoing optimisation, not set-and-forget.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. No holdout control group</h4>
+          <div class="why">Without control group seeing generic experience, you cannot definitively attribute conversion lift to personalisation. Might be coincidental improvement from other factors.</div>
+          <div class="fix">Always maintain 10-20% holdout group that sees unpersonalised experience. Compare conversion rates between personalised and control groups. Use statistical testing to validate lift is real and significant.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

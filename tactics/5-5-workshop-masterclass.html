@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 5.5 — Workshop/Masterclass Series | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 5.5 - Event-Based Plays</div>
+  <h1>Workshop/Masterclass Series</h1>
+  <p class="desc">Run a free multi-session workshop or masterclass series teaching valuable skills related to your product category. Attract ideal buyers, demonstrate expertise, and nurture attendees into qualified pipeline over 3-4 weeks of consistent engagement.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: High</span>
+    <span class="tag tag-cost">Cost: Low-Medium</span>
+    <span class="tag tag-icp">ICP: Founders, Sales Leaders, Ops Professionals</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Decision makers are drowning in product pitches but starving for practical skills training. A multi-session workshop creates sustained engagement over weeks, builds genuine trust through education, and naturally segments participants by engagement level into qualified pipeline.
+      </div>
+      <h3>The psychology behind workshop series</h3>
+      <ul>
+        <li><strong>Commitment and consistency</strong> - When someone attends session one, they feel invested. Psychological commitment drives attendance at sessions two, three, and four. Each session deepens the relationship</li>
+        <li><strong>Authority positioning</strong> - Teaching a skill positions you as the expert authority in the category. Attendees begin to associate your expertise with the solution category itself</li>
+        <li><strong>Gradual trust building</strong> - A single webinar can educate but rarely builds deep trust. Four sessions over four weeks creates repeated positive interactions that compound into genuine relationship</li>
+        <li><strong>Natural qualification</strong> - Engagement signals across multiple sessions reveal who is genuinely interested versus tire kickers. High attendance equals high intent</li>
+      </ul>
+      <h3>Why workshop format specifically</h3>
+      <p>Unlike single webinars that feel transactional, a workshop series creates a learning journey. Participants expect to put in effort, complete exercises between sessions, and engage with the content deeply. This active participation creates far stronger emotional investment than passive consumption.</p>
+      <p><strong>The compounding effect:</strong> Each session builds on the previous one. Attendees who complete the full series have invested 4-6 hours with you. That level of time investment creates tremendous switching cost and naturally leads to sales conversations.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-email">D</div><div class="wf-label">Design Series</div><div class="wf-action">3-4 sessions</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-linkedin">P</div><div class="wf-label">Promote</div><div class="wf-action">Landing page</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">S1</div><div class="wf-label">Session 1</div><div class="wf-action">Foundations</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-video">S2</div><div class="wf-label">Session 2</div><div class="wf-action">Deep dive</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-video">S3</div><div class="wf-label">Session 3</div><div class="wf-action">Implementation</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">F</div><div class="wf-label">Follow Up</div><div class="wf-action">Sales calls</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Design Curriculum</td>
+          <td>Create 3-4 session arc teaching valuable skill adjacent to your product. Each session builds on previous. Include exercises, templates, and practical takeaways attendees can implement immediately</td>
+          <td>8-12 hours curriculum design</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Build Promotion Assets</td>
+          <td>Create landing page explaining series value. Design email sequences for registered attendees. Prepare social promotion posts highlighting key takeaways from each session</td>
+          <td>4-6 hours asset creation</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Run Session 1</td>
+          <td>Deliver first session focusing on foundations and frameworks. Keep it high value with minimal product mention. Send follow-up email with recording, resources, and preview of session two</td>
+          <td>1 hour live + 1 hour prep</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Run Sessions 2-3</td>
+          <td>Continue building on curriculum with deeper tactical content each session. Include exercises and templates. Gradually introduce how your product fits into the framework being taught</td>
+          <td>1 hour live + 30 min prep per session</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Run Final Session</td>
+          <td>Conclude with advanced implementation tactics. Include optional product demo showing how tool accelerates what they have learned. Announce exclusive offer for series participants</td>
+          <td>1 hour live + 1 hour prep</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Follow Up Based on Engagement</td>
+          <td>Segment attendees by sessions attended. Reach out to high-engagement participants with personalised messages. Offer free consultation to implement workshop concepts. Nurture lower-engagement folks with recordings</td>
+          <td>30 min per qualified lead</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Record every session and offer recordings to registered attendees who miss live sessions. This keeps them engaged with the series even if they cannot attend live, and recordings become evergreen lead magnets you can promote continuously.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Zoom</strong></td>
+          <td>£10/mo</td>
+          <td>Live interactive sessions with Q&A</td>
+          <td>Reliable video quality. Breakout rooms for exercises. Polls and Q&A features built in. Automatic recording and transcription</td>
+          <td>Zoom fatigue is real. Less engaging than purpose-built webinar platforms. Attendees may multitask during sessions</td>
+        </tr>
+        <tr>
+          <td><strong>Luma</strong></td>
+          <td>Free</td>
+          <td>Event registration and promotion</td>
+          <td>Beautiful event pages with calendar integration. Email reminders automated. Waitlists and capacity management. Social sharing built in for virality</td>
+          <td>Limited customisation of registration form fields. Cannot build complex conditional logic. Best paired with separate webinar platform</td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot</strong></td>
+          <td>Free-£££</td>
+          <td>Managing attendee data and follow-up sequences</td>
+          <td>Track attendee engagement across sessions. Automate email sequences based on attendance. Score leads by participation level. Integrate with sales workflow</td>
+          <td>Requires setup time to build proper workflows. Overkill if you are only running one workshop series. Learning curve for non-technical users</td>
+        </tr>
+        <tr>
+          <td><strong>Teachable</strong></td>
+          <td>£29/mo</td>
+          <td>Hosting recordings and materials as mini-course</td>
+          <td>Turn workshop series into evergreen on-demand course. Drip content week by week. Built-in payment processing if you want to charge. Student progress tracking</td>
+          <td>Not ideal for live delivery. Monthly fee adds up. Requires content to be pre-recorded or uploaded after live sessions</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Luma</strong> (free) for event registration plus <strong>Zoom</strong> (£10/mo) for delivery. Once you have run the series twice live and validated demand, consider uploading recordings to <strong>Teachable</strong> (£29/mo) as an evergreen lead generation asset.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Curriculum Design sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Curriculum Design - Teaching Adjacent Skills</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Adjacent skill selection</h3>
+            <p>The workshop topic should teach a valuable skill that your product supports but is not purely about your product. Teach the process, methodology, or framework first. The product becomes the accelerator of what they have learned.</p>
+
+            <h3>Session arc structure</h3>
+            <ul>
+              <li><strong>Session 1 - Foundations and Frameworks</strong> - Establish the why behind the skill. Share frameworks and mental models. Minimal product mention. Pure value delivery</li>
+              <li><strong>Session 2 - Tactical Deep Dive</strong> - Get into specific tactics and step-by-step processes. Share templates and checklists. Include exercise attendees complete before next session</li>
+              <li><strong>Session 3 - Implementation and Scaling</strong> - Address common obstacles and how to overcome them. Introduce how tools and technology can accelerate the process. Natural place for product introduction</li>
+              <li><strong>Session 4 - Advanced Optimisation</strong> - Share advanced tactics for people who have mastered basics. Optional product demo showing how to implement workshop concepts at scale</li>
+            </ul>
+
+            <h3>Value balance over sessions</h3>
+            <table>
+              <tr><th>Session</th><th>Educational Content</th><th>Product Mention</th><th>Goal</th></tr>
+              <tr>
+                <td>Session 1</td>
+                <td>90%</td>
+                <td>10%</td>
+                <td>Establish credibility and deliver massive value upfront to ensure return attendance</td>
+              </tr>
+              <tr>
+                <td>Session 2</td>
+                <td>85%</td>
+                <td>15%</td>
+                <td>Continue education while beginning to introduce product as enabler of concepts being taught</td>
+              </tr>
+              <tr>
+                <td>Session 3</td>
+                <td>70%</td>
+                <td>30%</td>
+                <td>Show product in action as natural extension of methodology. Make clear how it solves problems discussed</td>
+              </tr>
+              <tr>
+                <td>Session 4</td>
+                <td>60%</td>
+                <td>40%</td>
+                <td>Transition qualified high-intent participants toward sales conversations. Offer exclusive deal for attendees</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Content reuse strategy:</strong> Each session should produce 3-5 standalone pieces of content such as frameworks, templates, checklists. These become social posts, blog articles, and lead magnets you promote continuously to drive registrations for next cohort.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Promotion and Registration sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Promotion and Registration - Filling Seats</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Promotion timeline</h3>
+            <p>Begin promoting 3-4 weeks before first session. Create urgency with early bird bonuses for first 50 registrants. Continue promoting up until day before session one to maximise registrations.</p>
+
+            <h3>Multi-channel promotion approach</h3>
+            <ul>
+              <li><strong>Email existing list</strong> - Send dedicated emails to existing contacts and customers. Segment by role and personalise messaging around how workshop applies to their function</li>
+              <li><strong>LinkedIn organic</strong> - Share session previews, behind-the-scenes curriculum development, and testimonials from previous participants if you have run workshops before</li>
+              <li><strong>LinkedIn ads</strong> - Target specific job titles in your ICP. Promote the value of skills being taught, not just the workshop itself. Budget £500-£1000 for 4-week promotion window</li>
+              <li><strong>Partner co-promotion</strong> - Collaborate with complementary tools or consultants who serve same audience. They promote to their list, you promote to yours. Expands reach significantly</li>
+            </ul>
+
+            <h3>Registration page essentials</h3>
+            <table>
+              <tr><th>Element</th><th>Purpose</th><th>Best Practice</th></tr>
+              <tr>
+                <td>Clear value promise</td>
+                <td>Explain what attendees will learn and be able to do after completing series</td>
+                <td>Focus on outcomes and skills gained, not session agenda. "By the end you will be able to X, Y, Z"</td>
+              </tr>
+              <tr>
+                <td>Session breakdown</td>
+                <td>Show structure and progression across sessions</td>
+                <td>One sentence per session highlighting key takeaway. Creates anticipation for later sessions</td>
+              </tr>
+              <tr>
+                <td>Instructor credibility</td>
+                <td>Establish why instructor is qualified to teach this topic</td>
+                <td>Brief bio focusing on relevant experience and results. Include photo to humanise</td>
+              </tr>
+              <tr>
+                <td>Time commitment clarity</td>
+                <td>Set expectations on time investment required</td>
+                <td>Be explicit about session length, homework time, total investment. Filters out non-serious registrants</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Registration conversion tip:</strong> Include video preview of session one content on registration page. 2-3 minute sample of teaching style and value delivered dramatically increases conversion from visitors to registrants.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery and Engagement sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Delivery and Engagement - Keeping Attendance High</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Combating drop-off across sessions</h3>
+            <p>Expect 40-50% drop-off from session one to final session. This is normal. The key is maximising engagement of those who do attend all sessions, as they become your highest-intent prospects.</p>
+
+            <h3>Engagement tactics during live sessions</h3>
+            <ul>
+              <li><strong>Interactive exercises</strong> - Every 15-20 minutes, pause for attendee exercise or discussion. Breakout rooms, polls, or chat responses keep energy high</li>
+              <li><strong>Real-time Q&A</strong> - Reserve final 10-15 minutes for questions. Address specific attendee situations. This personalisation makes content feel custom to them</li>
+              <li><strong>Accountability mechanisms</strong> - Assign homework between sessions. Ask attendees to share results in next session. Public commitment increases completion rates</li>
+              <li><strong>Community building</strong> - Create Slack channel or LinkedIn group for series participants. Encourage questions and discussion between sessions. Peer support reduces drop-off</li>
+            </ul>
+
+            <h3>Follow-up cadence between sessions</h3>
+            <table>
+              <tr><th>Timing</th><th>Communication</th><th>Purpose</th></tr>
+              <tr>
+                <td>Within 2 hours after session</td>
+                <td>Send recording, slides, and resources mentioned</td>
+                <td>Strike while content is fresh. Let attendees review and share with colleagues who missed it</td>
+              </tr>
+              <tr>
+                <td>3 days before next session</td>
+                <td>Preview next session topic and remind about homework</td>
+                <td>Build anticipation and ensure attendees complete exercises. Drives engagement in upcoming session</td>
+              </tr>
+              <tr>
+                <td>1 day before next session</td>
+                <td>Calendar reminder with Zoom link</td>
+                <td>Reduce no-shows. Simple logistics reminder ensures they have link ready</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Retention hack:</strong> At end of each session, tease one specific valuable framework or template they will receive in next session. Create cliffhanger that makes them want to return for session two, three, four.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conversion and Follow-Up sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Conversion and Follow-Up - Turning Attendees into Customers</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Engagement scoring and segmentation</h3>
+            <p>Not all attendees are equal prospects. Segment based on engagement signals to prioritise follow-up efforts on highest-intent participants.</p>
+
+            <h3>Attendee segments and follow-up approach</h3>
+            <ul>
+              <li><strong>High intent</strong> - Attended 3-4 sessions, asked questions, completed exercises. These are hot leads. Immediate personalised outreach offering free consultation to implement workshop concepts</li>
+              <li><strong>Medium intent</strong> - Attended 2-3 sessions or watched recordings. Warm leads. Email sequence highlighting how product accelerates what they learned. Invite to product demo</li>
+              <li><strong>Low intent</strong> - Registered but attended 0-1 sessions. Cool leads. Nurture with recordings and content. May convert in future cohorts</li>
+              <li><strong>Champions</strong> - Highly engaged and vocal. Ask for testimonials and case studies. These become promotion assets for future workshop cohorts</li>
+            </ul>
+
+            <h3>Conversion offers for workshop graduates</h3>
+            <table>
+              <tr><th>Offer Type</th><th>Appeal</th><th>Conversion Rate Boost</th></tr>
+              <tr>
+                <td>Exclusive workshop pricing</td>
+                <td>Special discount only for series participants</td>
+                <td>Rewards their time investment. Creates urgency with limited window after final session</td>
+              </tr>
+              <tr>
+                <td>Free implementation consultation</td>
+                <td>30-60 min working session applying workshop concepts to their business</td>
+                <td>Low barrier to entry. Natural transition from education to sales conversation</td>
+              </tr>
+              <tr>
+                <td>Extended trial with setup support</td>
+                <td>Longer trial period plus guided setup based on workshop frameworks</td>
+                <td>Removes friction of figuring out setup alone. Increases activation and adoption</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Long-term nurture:</strong> Even attendees who do not convert immediately are far warmer than cold prospects. Add them to specialised nurture sequence with advanced content. They may convert 3-6 months later when timing is right.
+            </div>
+          </div>
+        </</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Making it too product-focused too early</h4>
+          <div class="why">Leading with product pitch in first session breaks trust. Attendees registered for education, not a sales pitch. They disengage immediately.</div>
+          <div class="fix">Keep first two sessions 85-90% pure education. Introduce product gradually in sessions 3-4 as natural extension of concepts taught. Let value build trust first.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Sessions too long and lecture-heavy</h4>
+          <div class="why">90-minute lecture with no interaction loses attention. Attendees multitask, disengage, and drop off for future sessions.</div>
+          <div class="fix">Keep sessions to 45-60 minutes maximum. Include interactive elements every 15-20 minutes such as polls, exercises, breakout discussions. Engagement sustains attention.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. No homework or exercises between sessions</h4>
+          <div class="why">Without application between sessions, content does not stick. Attendees forget what was covered and lose momentum.</div>
+          <div class="fix">Assign simple homework or provide template to implement before next session. Creates accountability and keeps workshop top of mind throughout the week.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Poor follow-up after final session</h4>
+          <div class="why">Delivering great workshop then going silent wastes all the relationship-building. Attendees move on and forget about you.</div>
+          <div class="fix">Have clear conversion offer ready for final session. Follow up within 24 hours with personalised outreach to high-engagement attendees. Strike while momentum is high.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Not recording sessions</h4>
+          <div class="why">People who miss live sessions drop out entirely. You lose potential conversions. You also miss chance to create evergreen content asset.</div>
+          <div class="fix">Record every session and send to all registrants within 2 hours. Let people catch up asynchronously. Repurpose recordings as standalone lead magnets.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Treating all attendees the same in follow-up</h4>
+          <div class="why">Someone who attended all 4 sessions and asked questions is far hotter lead than someone who registered but never showed up. Generic follow-up wastes time.</div>
+          <div class="fix">Segment by engagement level. Immediate personalised outreach to high-engagement folks. Automated nurture for low-engagement. Prioritise your time on warmest leads.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

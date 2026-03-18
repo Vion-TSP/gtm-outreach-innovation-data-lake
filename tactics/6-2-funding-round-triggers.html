@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 6.2 — Funding Round Triggers | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 6.2 - Signal-Based / Intent</div>
+  <h1>Funding Round Triggers</h1>
+  <p class="desc">Target companies immediately after they announce funding rounds. Post-funding companies enter buying mode with budget to deploy, growth mandates to execute, and urgency to show momentum. Perfect timing for category-creating solutions.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low</span>
+    <span class="tag tag-cost">Cost: Low-Medium</span>
+    <span class="tag tag-icp">ICP: Founders, C-suite Executives</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Companies raise funding to execute specific growth plans. In the 90 days post-funding, they are actively building infrastructure, hiring teams, and buying tools to deploy that capital. Budget objections evaporate when there is fresh cash in the bank and investor pressure to move fast.
+      </div>
+      <h3>The psychology behind funding triggers</h3>
+      <ul>
+        <li><strong>Budget abundance mindset</strong> - Fresh capital removes price sensitivity temporarily. Founders shift from conservation mode to investment mode. They are looking for ways to spend strategically</li>
+        <li><strong>Urgency to show progress</strong> - Investors expect to see momentum quickly. Companies feel pressure to deploy capital and hit milestones. This creates urgency that benefits vendors</li>
+        <li><strong>Permission to upgrade infrastructure</strong> - Pre-funding they made do with free tools and scrappy solutions. Post-funding they have mandate to professionalise and invest in proper tooling</li>
+        <li><strong>Growth mandate execution</strong> - Funding announcements often specify use of funds such as "expanding sales team" or "scaling operations." These stated priorities reveal exactly what they will buy</li>
+      </ul>
+      <h3>Why funding signals specifically</h3>
+      <p>Unlike vague intent signals, funding announcements are public declarations of strategic direction backed by millions in capital. The press release literally tells you their priorities and budget availability. It is the highest-quality buying signal available.</p>
+      <p><strong>The compounding effect:</strong> Companies that raise funding successfully often raise again 12-18 months later. Win them early in their journey and you grow with them across multiple funding stages, expanding deal size as they scale.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">M</div><div class="wf-label">Monitor</div><div class="wf-action">Funding news</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">R</div><div class="wf-label">Read</div><div class="wf-action">Press release</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">I</div><div class="wf-label">Identify</div><div class="wf-action">Use of funds</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">F</div><div class="wf-label">Find</div><div class="wf-action">Decision maker</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">C</div><div class="wf-label">Craft Message</div><div class="wf-action">Tie to priorities</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">O</div><div class="wf-label">Outreach</div><div class="wf-action">Within 2 weeks</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Set Up Funding Alerts</td>
+          <td>Use Crunchbase, Dealroom, or Clay to monitor funding announcements in your target market. Filter by industry, funding stage, and geography to surface only relevant deals</td>
+          <td>30 min initial setup</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Read Full Announcement</td>
+          <td>Review press release or announcement post on LinkedIn. Identify funding amount, lead investor, stated use of funds, and quoted priorities from founders. This becomes your research goldmine</td>
+          <td>5 min per announcement</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Map Use of Funds to Your Solution</td>
+          <td>If they say "expanding sales team," think about sales tools. If they mention "scaling operations," consider ops infrastructure. Find explicit connection between stated priorities and your category</td>
+          <td>5 min analysis</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Identify Decision Maker</td>
+          <td>For early-stage startups, reach out to founder or CEO directly. For later-stage companies, identify relevant VP or C-level executive based on stated use of funds. Use LinkedIn to find right person</td>
+          <td>5 min per company</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Write Contextual Message</td>
+          <td>Congratulate them on funding. Reference specific quote from announcement or stated priority. Tie your solution to helping them execute on growth plans faster. Position as growth enabler</td>
+          <td>10-15 min per message</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Send Within Two Weeks of Announcement</td>
+          <td>Timing is critical. Reach out while funding is still fresh news and spending plans are being finalised. After 30 days the window closes as budgets get allocated elsewhere</td>
+          <td>2-3 min per send</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Engage with their funding announcement post on LinkedIn before sending message. Like and comment with genuine congratulations. This warms them up and makes your name familiar when outreach arrives in their inbox.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Crunchbase</strong></td>
+          <td>£££</td>
+          <td>Global funding tracking with detailed company data</td>
+          <td>Most comprehensive database of funding rounds globally. Advanced filters by industry, stage, location, investor. CSV export for building lists. Detailed company profiles with news and updates</td>
+          <td>Expensive for small teams. Pro plan required for meaningful functionality. Data quality varies outside US and UK markets</td>
+        </tr>
+        <tr>
+          <td><strong>Dealroom</strong></td>
+          <td>££</td>
+          <td>European startup funding focus</td>
+          <td>Excellent coverage of European startup ecosystem. Clean interface with visual data. Good filtering by sector and funding stage. More affordable than Crunchbase for EU-focused teams</td>
+          <td>Weaker coverage outside Europe. Less detailed company data compared to Crunchbase. Smaller user community means fewer integrations</td>
+        </tr>
+        <tr>
+          <td><strong>Clay</strong></td>
+          <td>£££</td>
+          <td>Automated enrichment and outreach workflows</td>
+          <td>Pull funding data from Crunchbase API automatically. Enrich with decision maker contacts. Build automated outreach sequences triggered by funding announcements. Scales to hundreds of companies</td>
+          <td>Requires Crunchbase API access which costs extra. Steep learning curve. Credits required for enrichment add ongoing cost</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Crunchbase</strong> (£££) if budget allows, filtering to your specific ICP and setting up daily email alerts. For teams focused on European startups, <strong>Dealroom</strong> (££) offers better value. Add <strong>Clay</strong> only when manually processing 20+ funding announcements per week becomes bottleneck.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Filtering Relevant Deals sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Filtering Relevant Deals - Quality Over Quantity</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Not all funding is equal signal</h3>
+            <p>Hundreds of companies raise funding every week. Tracking everything creates noise. Focus on funding rounds that indicate genuine buying intent for your category based on stage, amount, and stated priorities.</p>
+
+            <h3>Filtering criteria to apply</h3>
+            <ul>
+              <li><strong>Funding stage relevance</strong> - Series A and B companies are typically buying category-defining tools. Seed companies may still be too early. Series C+ companies may have already chosen vendors</li>
+              <li><strong>Minimum round size</strong> - Filter for rounds above certain threshold based on your ACV. If you sell £20k ACV product, ignore sub-£1M rounds. Not enough budget for meaningful tool investment</li>
+              <li><strong>Industry and sector alignment</strong> - Only track companies in industries where your solution applies. B2B SaaS tool should not waste time tracking consumer app funding</li>
+              <li><strong>Geographic fit</strong> - If you only serve UK and EU markets, filter out US-only companies unless they have stated European expansion plans</li>
+            </ul>
+
+            <h3>Signal quality by funding stage</h3>
+            <table>
+              <tr><th>Stage</th><th>Signal Quality</th><th>Why</th></tr>
+              <tr>
+                <td>Seed</td>
+                <td>Low-Medium</td>
+                <td>Often still finding product-market fit. Limited budget for non-essential tools. May pivot. Good for land-and-expand plays</td>
+              </tr>
+              <tr>
+                <td>Series A</td>
+                <td>Very High</td>
+                <td>Building foundational infrastructure. High buying intent. Budget to invest properly. This is the sweet spot for many B2B tools</td>
+              </tr>
+              <tr>
+                <td>Series B</td>
+                <td>High</td>
+                <td>Scaling proven model. Professionalising operations. Upgrading from Seed-stage tools. Strong buying intent but may have vendor relationships</td>
+              </tr>
+              <tr>
+                <td>Series C+</td>
+                <td>Medium</td>
+                <td>Established operations with existing vendors. Harder to displace incumbents. Best for complementary tools or new categories</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Sweet spot formula:</strong> For most B2B SaaS tools, focus on Series A rounds of £5M+ in your target industry and geography. This balances signal quality with manageable volume.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Announcement Analysis sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Announcement Analysis - Mining Use of Funds</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What to extract from funding announcements</h3>
+            <p>Press releases and announcement posts reveal strategic priorities explicitly. Companies tell you exactly what they plan to build, who they plan to hire, and what markets they will enter. This intelligence informs your entire approach.</p>
+
+            <h3>Key elements to identify</h3>
+            <ul>
+              <li><strong>Stated use of funds</strong> - Most announcements say "funds will be used to expand sales team" or "invest in product development." This tells you departmental budget priorities</li>
+              <li><strong>Founder or exec quotes</strong> - Quotes reveal personal priorities and pain points. "We have been bottlenecked by manual processes" signals ops tool opportunity</li>
+              <li><strong>Growth targets</strong> - Mentions of "triple revenue" or "expand to 50 enterprise customers" reveal ambition level and create urgency to invest in enablement</li>
+              <li><strong>Market expansion plans</strong> - "Enter North American market" or "Launch enterprise tier" signal new infrastructure needs and receptiveness to supporting tools</li>
+            </ul>
+
+            <h3>Translating announcement language to outreach hooks</h3>
+            <table>
+              <tr><th>Announcement Quote</th><th>What It Signals</th><th>Your Positioning</th></tr>
+              <tr>
+                <td>Funds will accelerate sales hiring</td>
+                <td>Building sales team from 5 to 20+ reps</td>
+                <td>Position as sales productivity tool that helps new reps ramp faster and hit quota sooner. ROI tied to faster time-to-productivity</td>
+              </tr>
+              <tr>
+                <td>Expanding into enterprise segment</td>
+                <td>Moving upmarket requires new processes and tools</td>
+                <td>Highlight enterprise features and capabilities. Position as bridge helping them successfully move upmarket without stumbling</td>
+              </tr>
+              <tr>
+                <td>Scaling operations to support growth</td>
+                <td>Current ops infrastructure cannot handle 3x scale</td>
+                <td>Focus on operational efficiency and automation. Show how manual processes break at scale and your solution prevents that</td>
+              </tr>
+              <tr>
+                <td>Investing in product development</td>
+                <td>Hiring engineers and building new features</td>
+                <td>If you sell dev tools or product ops software, position as accelerating development velocity and shipping speed</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Quote directly:</strong> Use exact phrases from announcement in your outreach. If founder says "accelerate our go-to-market motion," use "accelerate go-to-market" in your message. This linguistic mirroring creates subconscious alignment.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outreach Timing and Messaging sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Outreach Timing and Messaging - Striking While Fresh</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The funding announcement window</h3>
+            <p>Post-funding buying intent is highest in first 30-60 days when budgets are being allocated and priorities finalised. After 90 days, capital is deployed and switching cost increases. Speed matters.</p>
+
+            <h3>Optimal outreach timeline</h3>
+            <ul>
+              <li><strong>Days 1-3 after announcement</strong> - Too soon. They are fielding congratulations and press inquiries. Your sales message gets lost in noise</li>
+              <li><strong>Days 4-14 after announcement</strong> - Sweet spot. Initial frenzy has died down. They are starting to allocate budget and make buying decisions. Reach out now</li>
+              <li><strong>Days 15-30 after announcement</strong> - Still good window but urgency fading. Many budgets already earmarked. Can still work if you have strong positioning</li>
+              <li><strong>30+ days after announcement</strong> - Diminishing returns. Capital deployed to priorities. Harder to get attention. Better to wait for next trigger signal</li>
+            </ul>
+
+            <h3>Message structure for funding triggers</h3>
+            <table>
+              <tr><th>Element</th><th>Purpose</th><th>Example</th></tr>
+              <tr>
+                <td>Genuine congratulations</td>
+                <td>Open warmly and acknowledge their win</td>
+                <td>Congrats on the Series A, James. Exciting to see Acme scaling</td>
+              </tr>
+              <tr>
+                <td>Reference specific announcement detail</td>
+                <td>Show you read the announcement not just the headline</td>
+                <td>Saw you are using funds to triple the sales team</td>
+              </tr>
+              <tr>
+                <td>Connect to your value prop</td>
+                <td>Tie their stated priority to your solution</td>
+                <td>Most companies scaling sales that fast hit a productivity wall around rep 15. Our platform helps new reps ramp 40% faster</td>
+              </tr>
+              <tr>
+                <td>Low-friction CTA</td>
+                <td>Make next step easy and relevant</td>
+                <td>Happy to share our sales team scaling playbook if useful. 10 min call?</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Avoid being salesy:</strong> Post-funding companies are bombarded with vendor pitches. Lead with value and insight rather than product pitch. Offer to help them succeed with their growth plans. Sales conversation comes later.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multi-Touch Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Multi-Touch Strategy - Nurturing Post-Funding Relationships</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>One message is rarely enough</h3>
+            <p>Founders and execs are overwhelmed post-funding. Your first message may not land. Plan multi-touch sequence that provides value at each touchpoint rather than just asking for meetings.</p>
+
+            <h3>Multi-touch cadence and value delivery</h3>
+            <ul>
+              <li><strong>Touch 1 - Week 1</strong> - Initial congratulations plus insight or resource tied to their priorities</li>
+              <li><strong>Touch 2 - Week 3</strong> - Share relevant case study of similar company at same stage using your solution</li>
+              <li><strong>Touch 3 - Week 5</strong> - Provide tactical template or framework for challenge they mentioned in announcement</li>
+              <li><strong>Touch 4 - Week 7</strong> - Final attempt with direct value offer such as free consultation or assessment</li>
+            </ul>
+
+            <h3>Value delivery at each touch</h3>
+            <table>
+              <tr><th>Touch</th><th>Value Offered</th><th>Goal</th></tr>
+              <tr>
+                <td>Touch 1</td>
+                <td>Scaling playbook or checklist for their stated priority</td>
+                <td>Establish credibility and generosity. Show you understand their challenge</td>
+              </tr>
+              <tr>
+                <td>Touch 2</td>
+                <td>Case study of company like theirs that succeeded with similar approach</td>
+                <td>Provide social proof and tangible example. Make success feel achievable</td>
+              </tr>
+              <tr>
+                <td>Touch 3</td>
+                <td>Ready-to-use template or tool they can implement immediately</td>
+                <td>Deliver quick win they can use whether they buy from you or not. Build trust through utility</td>
+              </tr>
+              <tr>
+                <td>Touch 4</td>
+                <td>Free assessment or consultation offer</td>
+                <td>Transition from value delivery to sales conversation. Low barrier to entry for first meeting</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Long game mentality:</strong> If they do not respond to initial sequence, add to quarterly nurture. They may raise again in 12-18 months. Staying top of mind through ongoing value delivery positions you for next funding window.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Generic congratulations with immediate pitch</h4>
+          <div class="why">Sending "Congrats on funding, want to see a demo?" feels opportunistic and transactional. Founders see through this immediately and delete.</div>
+          <div class="fix">Lead with genuine insight or value tied to their announced priorities. Reference specific detail from announcement. Build relationship before asking for meeting.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Reaching out too soon after announcement</h4>
+          <div class="why">Outreach on day of announcement gets buried in flood of congratulations and press inquiries. Your message disappears in noise.</div>
+          <div class="fix">Wait 4-7 days after announcement. Let initial frenzy die down. Reach out when they are transitioning from celebrating to executing on growth plans.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Not reading the full announcement</h4>
+          <div class="why">Just knowing they raised funding is not enough context. You miss critical details about priorities, use of funds, and strategic direction that inform positioning.</div>
+          <div class="fix">Read entire press release or LinkedIn post. Note stated use of funds, founder quotes, growth targets. Use this intelligence to craft highly contextual outreach.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Targeting wrong person in organisation</h4>
+          <div class="why">Reaching out to founder when you should target VP of function wastes the opportunity. Decision maker varies by what you sell and their org structure.</div>
+          <div class="fix">If they announced sales team expansion, target VP Sales or CRO. If ops investment, find COO or Head of Ops. Match your outreach to relevant decision maker.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. One-and-done outreach approach</h4>
+          <div class="why">Founders are overwhelmed post-funding. Single message likely gets missed or deprioritised. You lose opportunity through lack of follow-up.</div>
+          <div class="fix">Plan 3-4 touch sequence over 6-8 weeks. Provide different value at each touch. Persistence with value wins where single message fails.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Ignoring smaller funding rounds</h4>
+          <div class="why">Focusing only on large Series A+ rounds means missing early relationships with companies that will grow into major accounts.</div>
+          <div class="fix">Track relevant seed rounds in your ICP. Even if not ready to buy today, building relationships early pays off when they raise Series A in 12-18 months.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

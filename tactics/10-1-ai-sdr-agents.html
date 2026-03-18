@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 10.1 — AI SDR Agents | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 10.1 - AI-Powered</div>
+  <h1>AI SDR Agents</h1>
+  <p class="desc">Deploy AI agents that research prospects, write personalised emails, send outreach, handle responses, and book meetings automatically. AI SDRs work around the clock executing high-volume outbound with human-level personalisation at machine scale.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Medium-High</span>
+    <span class="tag tag-icp">ICP: Mid-Market and Enterprise Accounts</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> AI SDRs solve the personalisation-at-scale problem. Human SDRs cannot personalise 100 emails per day. Traditional automation cannot write messages that feel human. AI agents deliver both scale and quality, researching each prospect and crafting contextual outreach automatically.
+      </div>
+      <h3>The psychology behind AI SDR effectiveness</h3>
+      <ul>
+        <li><strong>Personalisation creates reciprocity</strong> - Even AI-generated personalisation triggers psychological response. When someone demonstrates they researched you, you feel obligated to engage</li>
+        <li><strong>Consistency and persistence</strong> - AI never gets tired, discouraged, or distracted. Executes perfect follow-up sequences without human inconsistency. This persistence compounds results</li>
+        <li><strong>Speed to lead advantage</strong> - AI responds to intent signals within minutes not hours. First vendor to reach inbound lead or website visitor wins disproportionately</li>
+        <li><strong>Quality filtering</strong> - AI can qualify and prioritise prospects before human involvement. Sales reps only talk to pre-qualified high-intent leads, improving efficiency</li>
+      </ul>
+      <h3>Why AI SDRs specifically</h3>
+      <p>Unlike basic email automation, AI SDRs make decisions. They research prospects, adapt messaging based on context, handle objections, and qualify leads. This intelligence layer makes outreach feel human while operating at machine scale.</p>
+      <p><strong>The compounding effect:</strong> AI SDRs get better over time through learning loops. Every response trains the model. Every successful conversation improves future messaging. Quality improves as volume increases.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-email">S</div><div class="wf-label">Setup</div><div class="wf-action">Configure AI</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-linkedin">U</div><div class="wf-label">Upload</div><div class="wf-action">Prospect list</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">R</div><div class="wf-label">Research</div><div class="wf-action">AI enriches</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">W</div><div class="wf-label">Write</div><div class="wf-action">Personalised</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-phone">S</div><div class="wf-label">Send</div><div class="wf-action">Auto outreach</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-video">B</div><div class="wf-label">Book</div><div class="wf-action">Meetings</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Configure AI SDR Platform</td>
+          <td>Choose platform like 11x.ai, Artisan, or AiSDR. Connect email, calendar, CRM. Configure brand voice, value proposition, and ideal customer profile. Train AI on your messaging</td>
+          <td>4-6 hours initial setup</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Upload Target Prospect List</td>
+          <td>Provide list of companies and contacts to target. Can integrate with intent data sources, website visitors, or manual uploads. Define segmentation and prioritisation rules</td>
+          <td>1 hour list preparation</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>AI Researches Each Prospect</td>
+          <td>AI automatically enriches prospects with company data, recent news, tech stack, job changes, and relevant context. Builds personalisation hooks for each individual</td>
+          <td>Automated, no manual time</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>AI Writes Personalised Messages</td>
+          <td>For each prospect, AI generates custom email referencing their specific context, pain points, and relevant value propositions. Adapts tone and content to persona and seniority</td>
+          <td>Automated, no manual time</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>AI Sends and Manages Sequences</td>
+          <td>AI sends initial outreach, tracks opens and replies, executes follow-up sequences automatically. Adapts messaging based on engagement. Handles objections and questions in real-time</td>
+          <td>Automated, ongoing</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>AI Qualifies and Books Meetings</td>
+          <td>When prospects respond positively, AI qualifies them through conversational questions. Once qualified, books meeting directly into sales rep calendar. Handoff to human at optimal time</td>
+          <td>Automated, no manual time</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Start with small test batch of 100-200 prospects. Review AI-generated messages before full automation. Refine voice and positioning based on initial responses before scaling to thousands.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>11x.ai</strong></td>
+          <td>£££</td>
+          <td>End-to-end AI SDR replacement with highest sophistication</td>
+          <td>Autonomous AI SDR that researches, writes, sends, responds, qualifies, and books. Handles objections conversationally. Learns from every interaction. Best-in-class AI quality</td>
+          <td>Premium pricing. Requires significant volume to justify cost. Complex onboarding. Best for companies with existing SDR team to augment or replace</td>
+        </tr>
+        <tr>
+          <td><strong>Artisan AI</strong></td>
+          <td>££</td>
+          <td>Balance of automation and control for mid-market</td>
+          <td>AI SDR with good personalisation at more accessible price point. Integrates with common tools. Easier setup than enterprise options. Good for companies new to AI SDR</td>
+          <td>Less sophisticated than 11x. Requires more manual oversight. Personalisation quality variable. Best for mid-market not enterprise</td>
+        </tr>
+        <tr>
+          <td><strong>AiSDR</strong></td>
+          <td>££</td>
+          <td>Startups wanting to test AI SDR without large commitment</td>
+          <td>Affordable entry point to AI-powered outbound. Simple setup. Focused on email outreach with basic personalisation. Good for validating channel before bigger investment</td>
+          <td>Limited feature set compared to premium tools. Basic personalisation. No complex qualification flows. Best as starter tool not long-term solution</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> For mid-market and enterprise with existing SDR team, invest in <strong>11x.ai</strong> (£££) for best quality and automation. For startups testing channel, start with <strong>AiSDR</strong> (££) to validate before upgrading.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- AI Training and Configuration sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>AI Training and Configuration - Teaching Your Brand Voice</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>AI quality depends on configuration quality</h3>
+            <p>Generic AI SDR setup produces generic results. Invest time training AI on your specific value proposition, ideal customer profile, and brand voice. Quality inputs create quality outputs.</p>
+
+            <h3>Critical configuration elements</h3>
+            <ul>
+              <li><strong>Brand voice guidelines</strong> - Provide examples of tone you want. Formal versus casual. Technical versus accessible. Confident versus humble. AI adapts to examples you give</li>
+              <li><strong>Value proposition clarity</strong> - Explicitly define what you solve, for whom, and why you are different. AI cannot infer positioning. Must be explicitly configured</li>
+              <li><strong>ICP definition</strong> - Detailed ideal customer profile including company size, industries, roles, pain points, and buying triggers. Helps AI qualify and prioritise prospects</li>
+              <li><strong>Objection handling playbook</strong> - Common objections and your best responses. AI uses these to handle pushback conversationally without human intervention</li>
+            </ul>
+
+            <h3>Training data to provide</h3>
+            <table>
+              <tr><th>Training Input</th><th>What to Provide</th><th>Why It Matters</th></tr>
+              <tr>
+                <td>Best performing emails</td>
+                <td>5-10 highest-converting human-written emails from past campaigns</td>
+                <td>AI learns structure, hooks, and positioning that actually work for your market. Replicates success patterns</td>
+              </tr>
+              <tr>
+                <td>Customer case studies</td>
+                <td>Detailed customer stories with before-after and specific outcomes</td>
+                <td>AI references relevant case studies in outreach. Social proof improves conversion. Provides concrete examples</td>
+              </tr>
+              <tr>
+                <td>Competitor positioning</td>
+                <td>How you compare to alternatives and your differentiation</td>
+                <td>AI handles competitive questions and positions you uniquely. Prevents generic category messaging</td>
+              </tr>
+              <tr>
+                <td>Failed message examples</td>
+                <td>Low-performing emails and common mistakes to avoid</td>
+                <td>AI learns what not to do. Avoids patterns that generate unsubscribes or spam complaints</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Iteration mindset:</strong> Initial AI configuration is starting point not final state. Review messages weekly, provide feedback, refine prompts. AI quality improves through iterative refinement over weeks.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quality Control and Oversight sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Quality Control and Oversight - Human in Loop</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Full automation requires earned trust</h3>
+            <p>Do not enable complete automation on day one. Start with AI drafting messages for human review. Graduate to selective automation. Only full automation once AI consistently produces quality you would send yourself.</p>
+
+            <h3>Phased automation rollout</h3>
+            <ul>
+              <li><strong>Phase 1 - AI drafts, human sends</strong> - AI generates messages, human reviews and edits before sending. Catch errors and refine prompts based on output quality</li>
+              <li><strong>Phase 2 - Automated sending, human monitors</strong> - AI sends automatically but human reviews dashboard daily. Spot-check random messages for quality. Intervene if drift occurs</li>
+              <li><strong>Phase 3 - Full automation with alerts</strong> - AI runs autonomously. Alerts triggered for unusual patterns like spike in unsubscribes or response rate drop. Human investigates anomalies</li>
+              <li><strong>Phase 4 - Scaled automation</strong> - AI fully trusted. Human reviews aggregate metrics weekly. Focus shifts from message quality to strategic optimisation</li>
+            </ul>
+
+            <h3>Quality metrics to monitor</h3>
+            <table>
+              <tr><th>Metric</th><th>Warning Threshold</th><th>Action if Triggered</th></tr>
+              <tr>
+                <td>Unsubscribe rate</td>
+                <td>Above 2% per campaign</td>
+                <td>Pause automation. Review recent messages for spam triggers or poor targeting. Refine ICP filtering</td>
+              </tr>
+              <tr>
+                <td>Spam complaint rate</td>
+                <td>Above 0.1%</td>
+                <td>Immediate pause. Review deliverability and message content. May indicate fundamental messaging or targeting issue</td>
+              </tr>
+              <tr>
+                <td>Response rate drop</td>
+                <td>30% decline week-over-week</td>
+                <td>Review recent AI-generated messages. Check for drift in quality, relevance, or personalisation depth</td>
+              </tr>
+              <tr>
+                <td>Meeting booking rate</td>
+                <td>50% decline from baseline</td>
+                <td>AI qualification may be off. Review conversation transcripts. Adjust qualification criteria or response handling</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Spot-check routine:</strong> Even in full automation, randomly review 10 AI-generated messages per week. Ensures quality maintains. Catch drift before it impacts results at scale.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Targeting and Segmentation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Targeting and Segmentation - Feeding Quality Inputs</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>AI amplifies targeting quality</h3>
+            <p>AI SDRs execute at scale. Poor targeting multiplied by AI speed creates massive waste. Invest heavily in prospect list quality. AI personalisation cannot fix fundamental targeting mismatch.</p>
+
+            <h3>List quality requirements</h3>
+            <ul>
+              <li><strong>ICP fit verification</strong> - Every prospect should match ideal customer profile. Filter by company size, industry, geography, tech stack. Quality over quantity</li>
+              <li><strong>Role and seniority accuracy</strong> - Messaging for VP differs from messaging for Manager. Ensure job titles are current and accurate. Stale data produces irrelevant outreach</li>
+              <li><strong>Intent signal integration</strong> - Layer intent data onto prospect lists. Prioritise companies showing buying signals. AI reaches high-intent prospects first</li>
+              <li><strong>Negative filtering</strong> - Remove existing customers, churned accounts, competitors, and recent unsubscribes. Clean lists prevent embarrassing mistakes at scale</li>
+            </ul>
+
+            <h3>Segmentation for personalisation depth</h3>
+            <table>
+              <tr><th>Segment</th><th>Personalisation Approach</th><th>Volume Guidance</th></tr>
+              <tr>
+                <td>Tier 1 - High-value targets</td>
+                <td>Maximum AI research depth. Reference multiple data points. Longer messages with specific value props</td>
+                <td>Top 100-200 accounts. Worth deep personalisation investment</td>
+              </tr>
+              <tr>
+                <td>Tier 2 - Mid-market prospects</td>
+                <td>Moderate personalisation. Industry and role-based hooks. Balanced volume and quality</td>
+                <td>500-1000 prospects. Good fit but not strategic accounts</td>
+              </tr>
+              <tr>
+                <td>Tier 3 - Volume outreach</td>
+                <td>Basic personalisation. Company name and high-level industry reference. Focus on speed and scale</td>
+                <td>5000+ prospects. Broad market coverage with acceptable conversion</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>List refresh cadence:</strong> Update prospect lists monthly minimum. Job changes, company acquisitions, and market shifts make lists stale quickly. Fresh data improves AI effectiveness dramatically.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Human Handoff Optimisation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Human Handoff Optimisation - Smooth Transition</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Critical moment is AI-to-human transition</h3>
+            <p>AI can generate interest and book meeting. But sales rep must deliver on expectations AI set. Poor handoff destroys all AI-generated value. Optimise transition ruthlessly.</p>
+
+            <h3>Handoff best practices</h3>
+            <ul>
+              <li><strong>AI provides context to rep</strong> - Before meeting, rep receives summary of AI conversation, prospect pain points discussed, and expectations set. Rep prepared not blindsided</li>
+              <li><strong>Consistent positioning</strong> - AI and human must tell same story. If AI promised X, rep must deliver X. Misalignment breaks trust immediately</li>
+              <li><strong>Acknowledge AI role transparently</strong> - Rep can say "I saw you were chatting with our AI assistant about X. Let me dig deeper into that." Transparency prevents awkwardness</li>
+              <li><strong>Quick response time</strong> - AI books meeting, human confirms within 2 hours. Delay between AI engagement and human follow-up kills momentum</li>
+            </ul>
+
+            <h3>Handoff quality signals</h3>
+            <table>
+              <tr><th>Signal</th><th>What It Means</th><th>Action</th></tr>
+              <tr>
+                <td>Prospect asks same questions in meeting as in AI chat</td>
+                <td>Rep did not read AI conversation context</td>
+                <td>Improve pre-meeting brief delivered to reps. Make AI context unmissable</td>
+              </tr>
+              <tr>
+                <td>Prospect says "I expected something different"</td>
+                <td>AI set wrong expectations or rep misaligned</td>
+                <td>Review AI messaging. Ensure AI promises match what reps deliver in demos</td>
+              </tr>
+              <tr>
+                <td>High show rate but low conversion</td>
+                <td>AI booking unqualified leads or rep failing to capitalise</td>
+                <td>Tighten AI qualification criteria. Coach reps on handling AI-sourced leads differently</td>
+              </tr>
+              <tr>
+                <td>Prospects mention feeling tricked</td>
+                <td>AI not transparent about being AI</td>
+                <td>Adjust AI to clearly identify as automated assistant. Transparency prevents backlash</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Rep training essential:</strong> Sales reps need training on handling AI-sourced leads. Different from self-sourced leads. Prospect already qualified and educated. Rep must advance not repeat.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Enabling full automation without testing</h4>
+          <div class="why">Letting AI send 1000 emails day one without human review means errors and poor messaging get amplified massively before you catch them.</div>
+          <div class="fix">Start with AI drafting for human review. Test with 100-200 prospects. Refine prompts and configuration. Graduate to automation only after quality proven.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Poor initial AI configuration</h4>
+          <div class="why">Skipping brand voice training and value prop configuration produces generic AI messages that underperform. Garbage in, garbage out.</div>
+          <div class="fix">Invest 4-6 hours in detailed AI training. Provide examples, case studies, positioning, objections. Quality configuration creates quality output from day one.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Feeding AI low-quality prospect lists</h4>
+          <div class="why">AI personalisation cannot overcome poor targeting. Sending to wrong company sizes, industries, or roles wastes AI capability and damages brand.</div>
+          <div class="fix">Rigorously qualify prospect lists before AI touches them. ICP fit, accurate titles, intent signals. AI amplifies list quality good or bad.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. No monitoring after automation enabled</h4>
+          <div class="why">AI can drift over time. Quality degrades slowly without oversight. By time you notice, damage done across thousands of prospects.</div>
+          <div class="fix">Weekly spot-checks of random messages. Monitor unsubscribe rates, response rates, spam complaints. Alert thresholds trigger immediate review.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Poor AI-to-human handoff</h4>
+          <div class="why">AI books meeting but rep unprepared. Prospect repeats same info. Rep contradicts what AI said. Meeting fails despite good AI work.</div>
+          <div class="fix">Provide reps with detailed AI conversation summary before meetings. Train reps on handling AI-sourced leads. Ensure positioning alignment.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Expecting immediate results</h4>
+          <div class="why">AI SDRs require tuning period. First 2-4 weeks are learning and optimisation. Judging too early leads to premature abandonment of channel.</div>
+          <div class="fix">Commit to 60-day test minimum. Expect refinement period. Measure improvement week-over-week not day one performance. AI improves with iteration.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 10.5 — Automated Research Agents | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 10.5 - AI-Powered</div>
+  <h1>Automated Research Agents</h1>
+  <p class="desc">AI agents that continuously monitor target accounts for buying signals, research company context, and surface actionable insights. Agents run 24/7 tracking trigger events, executive changes, tech stack updates, and industry news without manual effort.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low-Medium</span>
+    <span class="tag tag-icp">ICP: All Segments</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Sales teams waste hours manually researching accounts before outreach, often finding outdated information or missing critical buying signals. AI research agents automate the discovery of trigger events and company context, delivering fresh insights continuously so reps spend time selling instead of researching.
+      </div>
+      <h3>The psychology behind automated research</h3>
+      <ul>
+        <li><strong>Timing advantage</strong> - Reaching out within days of a trigger event like funding or leadership change means you catch prospects when they are actively evaluating solutions. Late outreach gets buried in noise</li>
+        <li><strong>Relevance depth</strong> - Knowing specific details about company challenges, tech stack, and recent initiatives lets you craft outreach that demonstrates genuine understanding rather than generic spray-and-pray</li>
+        <li><strong>Consistency at scale</strong> - Humans forget to check for updates, get busy, or research unevenly. Automated agents maintain consistent monitoring across hundreds of accounts simultaneously</li>
+        <li><strong>Competitive edge</strong> - Most competitors still do manual research or skip it entirely. Automated insights let you move faster and more intelligently than competition</li>
+      </ul>
+      <h3>Why AI agents specifically</h3>
+      <p>Traditional alerts send raw notifications like "Acme posted on LinkedIn" without context. AI agents synthesise information across multiple sources, identify what matters, and surface actionable insights like "Acme announced expansion into Europe, likely need compliance tools" saving hours of analysis.</p>
+      <p><strong>The compounding effect:</strong> As agents monitor accounts over time, they build historical context about each company. This longitudinal understanding helps identify patterns and predict buying windows better than point-in-time research snapshots.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">D</div><div class="wf-label">Define Accounts</div><div class="wf-action">Upload target list</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">C</div><div class="wf-label">Configure Signals</div><div class="wf-action">Pick triggers</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">A</div><div class="wf-label">Agents Monitor</div><div class="wf-action">24/7 tracking</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Synthesise Insights</div><div class="wf-action">AI analysis</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">D</div><div class="wf-label">Deliver Alerts</div><div class="wf-action">Actionable intel</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">A</div><div class="wf-label">Act on Signals</div><div class="wf-action">Timely outreach</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Upload Target Account List</td>
+          <td>Import list of target accounts from your CRM or CSV file. Include company name, domain, and any known attributes like industry or employee count. Agents will enrich with additional data automatically</td>
+          <td>30 min initial setup</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Configure Trigger Signals</td>
+          <td>Select which events and signals agents should monitor. Options include funding announcements, leadership changes, technology purchases, hiring activity, location expansion, social media mentions, and competitor wins or losses</td>
+          <td>45 min configuration</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Set Up Data Sources</td>
+          <td>Connect agents to relevant data sources such as company websites, LinkedIn, news APIs, job boards, tech stack databases, and industry publications. More sources means richer insights but also more noise to filter</td>
+          <td>1 hour connection setup</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Define Alert Preferences</td>
+          <td>Configure how and when you want to receive insights. Options include Slack notifications for high-priority signals, daily digest emails for routine updates, or direct CRM task creation for immediate follow-up triggers</td>
+          <td>20 min alert setup</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Launch Agent Monitoring</td>
+          <td>Activate agents to begin continuous monitoring. Agents check sources on schedules ranging from hourly for high-priority signals to daily or weekly for lower-urgency information. Initial enrichment runs on all accounts</td>
+          <td>Automated ongoing</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Review and Act on Insights</td>
+          <td>Check daily summaries of account activity and trigger events. Prioritise accounts showing multiple buying signals. Use research insights to personalise outreach messages referencing specific company context and timing</td>
+          <td>15-30 min daily review</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Start monitoring 50-100 accounts rather than your entire TAM. This lets you validate signal quality and refine trigger configurations before scaling. Too many accounts creates alert fatigue, too few reduces chances of catching buying signals.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Clay</strong></td>
+          <td>$-$$</td>
+          <td>Teams wanting flexible research automation with enrichment</td>
+          <td>Visual workflow builder connects to 50+ data sources. Waterfall enrichment pulls from multiple providers. AI research assistant synthesises findings. Integrates with CRM and outreach tools for automated workflows</td>
+          <td>Requires learning their workflow paradigm. Can get expensive at scale with heavy data enrichment. Best for technical users comfortable building automation</td>
+        </tr>
+        <tr>
+          <td><strong>Relevance AI</strong></td>
+          <td>$$</td>
+          <td>Teams building custom AI research workflows</td>
+          <td>Build custom AI agents that research any data source. Natural language configuration without code. Flexible output formatting. Can create specialised agents for specific research tasks like competitive intelligence or technology detection</td>
+          <td>Newer platform with smaller community and fewer pre-built templates. Requires defining research prompts carefully for quality results. Learning curve for effective agent design</td>
+        </tr>
+        <tr>
+          <td><strong>Perplexity API</strong></td>
+          <td>$</td>
+          <td>Technical teams wanting to build custom research tools</td>
+          <td>AI-powered search API that returns researched answers with citations. Better than raw LLM for factual company research. Affordable API pricing. Integrate into custom tools or existing workflows</td>
+          <td>Requires engineering resources to build automation around API. No pre-built UI or monitoring features. You build everything from scratch. Best as component in larger system</td>
+        </tr>
+        <tr>
+          <td><strong>6sense</strong></td>
+          <td>$$$</td>
+          <td>Enterprise teams with large account lists and existing tech stack</td>
+          <td>Intent data shows which accounts are actively researching your category. Integrates deeply with CRM and marketing automation. Predictive scoring identifies accounts entering buying mode. Strong for existing inbound programs</td>
+          <td>Expensive enterprise pricing. Focused on intent signals more than comprehensive research. Requires substantial traffic and account volume to generate useful intent data</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Clay</strong> for most teams seeking balance of power and ease of use. Use <strong>Perplexity API</strong> if you have engineering resources and want custom implementation. Reserve <strong>6sense</strong> for enterprise teams with mature demand generation programs requiring intent data integration.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Signal Prioritisation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Signal Prioritisation - Focus on High-Intent Triggers</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Not all signals matter equally</h3>
+            <p>Agents can monitor hundreds of potential trigger events. Most generate noise without actionable insight. Focus monitoring on signals that strongly correlate with buying windows and provide clear outreach angles.</p>
+
+            <h3>High-priority trigger signals</h3>
+            <ul>
+              <li><strong>Funding announcements</strong> - Companies receiving investment actively hire and buy tools to support growth. Outreach within 2 weeks of funding announcement catches them in buying mode</li>
+              <li><strong>Executive hires</strong> - New executives bring budgets and mandates to implement their preferred tools. Target new CMOs, CROs, and CTOs in first 90 days with solutions for quick wins</li>
+              <li><strong>Technology changes</strong> - When companies adopt or remove specific technologies, they create integration opportunities or reveal capability gaps. Tech stack changes signal active evaluation</li>
+              <li><strong>Expansion announcements</strong> - New office openings, market entries, or product launches create immediate needs for supporting infrastructure and tools</li>
+            </ul>
+
+            <h3>Signal quality framework</h3>
+            <table>
+              <tr><th>Signal Type</th><th>Priority Level</th><th>Outreach Timing</th><th>Message Angle</th></tr>
+              <tr>
+                <td>Series funding round</td>
+                <td>High</td>
+                <td>Within 1-2 weeks</td>
+                <td>Support growth plans, scale infrastructure</td>
+              </tr>
+              <tr>
+                <td>C-level hire in relevant function</td>
+                <td>High</td>
+                <td>30-60 days after start date</td>
+                <td>Help new exec achieve early wins</td>
+              </tr>
+              <tr>
+                <td>Technology adoption or removal</td>
+                <td>Medium-High</td>
+                <td>Within 1 week of detection</td>
+                <td>Integration opportunity or gap solution</td>
+              </tr>
+              <tr>
+                <td>Job posting for relevant role</td>
+                <td>Medium</td>
+                <td>Within 2 weeks</td>
+                <td>Tools to help new hire succeed faster</td>
+              </tr>
+              <tr>
+                <td>Social media post or press mention</td>
+                <td>Low-Medium</td>
+                <td>Within 1-3 days</td>
+                <td>Congratulate and offer relevant resource</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Alert fatigue prevention:</strong> Limit notifications to 2-3 high-priority signal types initially. As team develops routines for acting on insights, gradually add medium-priority signals. Too many alerts create noise that gets ignored.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent Configuration sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Agent Configuration - Quality Over Quantity</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Configure agents for actionable output</h3>
+            <p>Default agent configurations often return raw data dumps that still require manual synthesis. Invest time upfront configuring agents to deliver analysis and recommendations, not just data collection.</p>
+
+            <h3>Effective agent instruction patterns</h3>
+            <ul>
+              <li><strong>Specify desired output format</strong> - Tell agents exactly what format you want such as bullet points, summaries, or structured fields. "Summarise this company's Q4 priorities in 3 bullets" works better than "research this company"</li>
+              <li><strong>Define relevance filters</strong> - Instruct agents what to ignore. "Skip social media posts about company culture, focus only on product and go-to-market announcements" reduces noise significantly</li>
+              <li><strong>Request contextual analysis</strong> - Ask agents to connect findings to your solution. "Identify pain points we can address" rather than generic "tell me about this company"</li>
+              <li><strong>Set freshness requirements</strong> - Specify how recent information must be. "Only include information from last 90 days" for time-sensitive triggers, longer windows for strategic context</li>
+            </ul>
+
+            <h3>Example agent configurations</h3>
+            <table>
+              <tr><th>Research Goal</th><th>Agent Instructions</th><th>Output Format</th></tr>
+              <tr>
+                <td>Funding trigger follow-up</td>
+                <td>When company announces funding, research: funding amount, stated use of funds, and hiring plans. Identify how our product supports their growth initiatives.</td>
+                <td>Structured summary: Amount, Use Case Match, Recommended Pitch Angle</td>
+              </tr>
+              <tr>
+                <td>Executive change monitoring</td>
+                <td>Track new C-level hires in target accounts. Research their background, previous companies, and publicly stated priorities. Identify alignment with our value prop.</td>
+                <td>Executive brief: Name, Background, Priorities, Outreach Angle</td>
+              </tr>
+              <tr>
+                <td>Tech stack changes</td>
+                <td>Monitor target accounts for technology additions or removals using job postings, case studies, and tech tracking databases. Flag when they adopt complementary tools or remove competitors.</td>
+                <td>Alert with: Technology Changed, Detected Date, Integration Opportunity</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Iteration approach:</strong> Start with basic agent instructions, review first 20 outputs, then refine instructions based on what you wish was different. Agents improve significantly with 2-3 rounds of instruction tuning based on real results.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Insight Delivery sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Insight Delivery - Right Info to Right Person</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Route insights to drive action</h3>
+            <p>Research insights lose value if they sit in a dashboard nobody checks. Configure delivery mechanisms that put insights directly in front of the people who can act on them, in the tools they already use daily.</p>
+
+            <h3>Insight routing strategies</h3>
+            <ul>
+              <li><strong>Account owner assignment</strong> - Route insights to the specific sales rep or account executive responsible for each account. They get alerts for their accounts only, reducing noise and increasing relevance</li>
+              <li><strong>Slack channel by priority</strong> - Post high-priority triggers to a dedicated Slack channel that sales leadership monitors. Medium-priority insights go to broader team channel. Creates visibility without overwhelming notifications</li>
+              <li><strong>CRM task creation</strong> - Automatically create tasks in CRM for high-intent signals like funding or executive changes. Task includes research summary and suggested outreach timing. Forces follow-up discipline</li>
+              <li><strong>Daily digest email</strong> - Send morning summary email with all overnight insights organised by priority. Good for teams that prefer batch processing over real-time alerts</li>
+            </ul>
+
+            <h3>Delivery configuration by signal type</h3>
+            <table>
+              <tr><th>Signal Priority</th><th>Delivery Method</th><th>Recipient</th><th>Response SLA</th></tr>
+              <tr>
+                <td>High (funding, exec hire)</td>
+                <td>Slack DM + CRM task</td>
+                <td>Account owner + manager</td>
+                <td>Within 24 hours</td>
+              </tr>
+              <tr>
+                <td>Medium (tech change, expansion)</td>
+                <td>Slack channel post</td>
+                <td>Full sales team</td>
+                <td>Within 1 week</td>
+              </tr>
+              <tr>
+                <td>Low (social mention, hiring)</td>
+                <td>Daily digest email</td>
+                <td>Account owners</td>
+                <td>Opportunistic</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Feedback loops:</strong> Track which insights lead to meetings booked or opportunities created. Use this data to refine which signals deserve high-priority routing versus digest inclusion. Continuous optimisation based on actual conversion improves signal quality over time.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Discipline sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Action Discipline - Turn Insights Into Outreach</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Research means nothing without follow-through</h3>
+            <p>The most common failure mode with research agents is collecting insights that never translate into outreach. Build discipline and enablement around acting on research quickly before signals go stale.</p>
+
+            <h3>Outreach playbooks by trigger type</h3>
+            <ul>
+              <li><strong>Funding announcement</strong> - Congratulate on funding in subject line. Reference stated growth plans from announcement. Offer specific capability that supports scaling such as "help your new sales team ramp faster with X"</li>
+              <li><strong>Executive hire</strong> - Welcome new exec to role. Reference their background or previous company if relevant. Offer resource that helps them achieve early wins such as "top priorities for new CROs in first 90 days"</li>
+              <li><strong>Technology adoption</strong> - Mention you noticed they adopted specific tool. Position your solution as complementary integration or gap-filler. Offer integration guide or joint use case</li>
+              <li><strong>Expansion news</strong> - Reference expansion announcement. Connect to specific challenges that come with expansion such as "as you open London office, here's how companies handle X"</li>
+            </ul>
+
+            <h3>Response time benchmarks</h3>
+            <table>
+              <tr><th>Trigger Event</th><th>Ideal Response Time</th><th>Template Approach</th></tr>
+              <tr>
+                <td>Funding announcement</td>
+                <td>1-2 weeks after news</td>
+                <td>Personalised message referencing funding and growth plans</td>
+              </tr>
+              <tr>
+                <td>Executive hire</td>
+                <td>4-8 weeks after start date</td>
+                <td>Welcome message with relevant resource offer</td>
+              </tr>
+              <tr>
+                <td>Tech stack change</td>
+                <td>1-2 weeks after detection</td>
+                <td>Integration or complementary capability message</td>
+              </tr>
+              <tr>
+                <td>Company announcement</td>
+                <td>2-5 days after news</td>
+                <td>Timely congratulations with subtle connection to your solution</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Enablement investment:</strong> Create message templates for top 5 trigger types with specific examples of how to personalise. Train reps on transforming research bullets into compelling outreach. Without enablement, even great research goes unused.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Monitoring too many low-value signals</h4>
+          <div class="why">Configuring agents to track every possible trigger creates overwhelming noise. Team drowns in alerts about minor social media posts and irrelevant company updates. Signal gets lost in noise.</div>
+          <div class="fix">Start monitoring only 2-3 high-intent trigger types like funding, executive hires, and tech stack changes. Add more signal types only after team consistently acts on existing alerts. Quality over quantity.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Accepting raw data instead of insights</h4>
+          <div class="why">Agents return lists of facts without analysis or recommendation. Reps still spend time figuring out what it means and why it matters. Automation saved no time on the hard part.</div>
+          <div class="fix">Configure agents to provide synthesised insights and recommended actions, not just data dumps. Ask agents to explain relevance and suggest outreach angles. Iterate instructions until output is immediately actionable.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. No follow-up discipline on insights</h4>
+          <div class="why">Insights pile up in Slack or dashboard but nobody acts on them. Triggers go stale. Research investment delivers zero return because insights never translate to outreach.</div>
+          <div class="fix">Create CRM tasks automatically for high-priority triggers. Set team SLAs for responding to different signal types. Track conversion from insight to outreach. Hold team accountable for follow-through.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Insufficient instruction tuning for agents</h4>
+          <div class="why">Using default agent configurations without customisation produces generic, low-quality research that misses nuance. Output requires heavy manual refinement.</div>
+          <div class="fix">Review first 20 agent outputs carefully. Refine instructions based on what you wish was different. Iterate agent prompts 2-3 times with specific examples of desired output. Quality improves dramatically with tuning.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Not measuring signal-to-opportunity conversion</h4>
+          <div class="why">No visibility into which trigger types actually lead to pipeline. Waste time monitoring signals that never convert while missing high-value triggers.</div>
+          <div class="fix">Track which trigger types result in meetings booked and opportunities created. Calculate ROI by signal type. Double down on high-converting triggers, eliminate or deprioritise signals that rarely drive action.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Monitoring accounts with no outbound plan</h4>
+          <div class="why">Agents monitor hundreds of accounts but team has no capacity or plan for outreach. Research insights go unused because nobody assigned to act on them.</div>
+          <div class="fix">Only monitor accounts you have capacity to pursue. Better to research 50 accounts deeply and follow up consistently than monitor 500 and never act. Match monitoring scope to team capacity.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

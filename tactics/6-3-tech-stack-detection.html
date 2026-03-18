@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 6.3 — Tech Stack Change Detection | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 6.3 - Signal-Based / Intent</div>
+  <h1>Tech Stack Change Detection</h1>
+  <p class="desc">Monitor target accounts for technology additions, removals, or upgrades. Tech stack changes signal dissatisfaction with current tools, new initiatives launching, or budget freed up for alternatives. Perfect timing to position complementary or replacement solutions.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low-Medium</span>
+    <span class="tag tag-cost">Cost: Medium</span>
+    <span class="tag tag-icp">ICP: Technical Buyers, Operations Teams</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Tech stack changes are concrete evidence of buying behaviour and strategic shifts. When a company adds a new tool or removes an old one, they are actively evaluating their infrastructure and receptive to related solutions. You catch them in decision-making mode rather than status-quo mode.
+      </div>
+      <h3>The psychology behind tech stack signals</h3>
+      <ul>
+        <li><strong>Active evaluation mindset</strong> - Companies changing one tool are often evaluating entire category or workflow. They are in research mode and comparing options, making them receptive to conversations</li>
+        <li><strong>Proven willingness to switch</strong> - Stack changes demonstrate they will overcome switching cost and change vendors when value is clear. They are not risk-averse or stuck with incumbents</li>
+        <li><strong>Integration opportunity</strong> - New tool adoptions create integration needs. Complementary solutions that connect to their new stack become immediately relevant</li>
+        <li><strong>Budget reallocation signal</strong> - Removing tools frees up budget. Adding expensive tools suggests budget expansion. Both scenarios indicate spending capacity for your category</li>
+      </ul>
+      <h3>Why tech stack monitoring specifically</h3>
+      <p>Unlike intent signals that require interpretation, tech stack changes are observable facts. You are not guessing whether they might be interested. You know they made a decision to change infrastructure, which is high-effort and high-cost behaviour indicating serious need.</p>
+      <p><strong>The compounding effect:</strong> Companies that modernise one part of their stack often undertake broader infrastructure refreshes. Catching them mid-transformation positions you to be part of the entire upgrade cycle, not just a single tool swap.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">D</div><div class="wf-label">Define</div><div class="wf-action">Tech to track</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">M</div><div class="wf-label">Monitor</div><div class="wf-action">Stack changes</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">A</div><div class="wf-label">Analyse</div><div class="wf-action">Change type</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Identify</div><div class="wf-action">Tech owner</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">C</div><div class="wf-label">Craft Hook</div><div class="wf-action">Tie to change</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">O</div><div class="wf-label">Outreach</div><div class="wf-action">Timely contact</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Define Technologies to Track</td>
+          <td>Identify complementary tools, competitive tools, or upstream tools that signal need for your solution. If you sell sales analytics, track CRM changes. If you sell integrations, track any new tool adoptions</td>
+          <td>1 hour strategic planning</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Set Up Monitoring</td>
+          <td>Use BuiltWith, Wappalyzer, or Clay to track when target accounts add or remove specific technologies. Set alerts so you are notified of changes within days of occurrence</td>
+          <td>1-2 hours initial setup</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Analyse Change Type</td>
+          <td>Determine if change is addition, removal, or upgrade. Each signals different opportunity. New tool means integration play. Removed tool means replacement opportunity. Upgrade means growth and investment</td>
+          <td>5 min per change</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Identify Technology Owner</td>
+          <td>Find person responsible for that tool category. For marketing tech, reach out to CMO or Head of Marketing Ops. For sales tech, target VP Sales or RevOps. Use LinkedIn to find right person</td>
+          <td>5-10 min per company</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Craft Contextual Hook</td>
+          <td>Reference the specific tech change and tie to your value proposition. If they added HubSpot, mention you integrate seamlessly. If they removed competitor tool, position as better alternative</td>
+          <td>10-15 min per message</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Send Timely Outreach</td>
+          <td>Reach out within 1-2 weeks of detecting change. Timing matters because they are still in implementation and evaluation mode. After 30 days, new tool becomes status quo and receptiveness drops</td>
+          <td>2-3 min per send</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Track job postings alongside tech changes. When a company adopts new CRM and posts for RevOps Manager simultaneously, both signals together indicate major infrastructure overhaul. Multi-signal accounts are hottest prospects.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>BuiltWith</strong></td>
+          <td>££</td>
+          <td>Comprehensive website technology tracking</td>
+          <td>Tracks 1000s of technologies across millions of websites. Historical data shows when tech was added or removed. Export lists of companies using specific tech. API available for automation</td>
+          <td>Only detects publicly visible technologies on websites. Cannot see internal tools or backend infrastructure. Some detection lag of 30-60 days</td>
+        </tr>
+        <tr>
+          <td><strong>Wappalyzer</strong></td>
+          <td>£</td>
+          <td>Real-time browser extension for manual checking</td>
+          <td>Instant tech stack visibility while browsing any website. Browser extension shows technologies used on page. Affordable for small teams. Good for spot-checking specific accounts</td>
+          <td>Manual effort required. No automation or alerts. Must visit each website individually. Best for small account lists not scale</td>
+        </tr>
+        <tr>
+          <td><strong>Clay</strong></td>
+          <td>£££</td>
+          <td>Automated monitoring and enrichment workflows</td>
+          <td>Pull tech stack data from BuiltWith API automatically. Track changes over time. Trigger outreach workflows when target accounts adopt specific technologies. Scales to 1000s of accounts</td>
+          <td>Requires BuiltWith API subscription which costs extra. Complex to set up change detection workflows. Credits required for enrichment operations</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Wappalyzer</strong> (£) browser extension for manually checking top 20-30 target accounts monthly. Once validated as strong signal, upgrade to <strong>BuiltWith</strong> (££) for automated tracking. Add <strong>Clay</strong> only when processing 50+ tech change signals per month.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Technology Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Technology Selection - What to Monitor</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Identifying signal-rich technologies</h3>
+            <p>Not all tech changes are relevant signals. Focus on technologies that have clear connection to your solution and indicate active buying behaviour in your category or adjacent categories.</p>
+
+            <h3>Technology categories to track</h3>
+            <ul>
+              <li><strong>Direct competitors</strong> - Monitor when companies adopt your direct competitors. Signals they are in-market for your category. Position as superior alternative during evaluation window</li>
+              <li><strong>Complementary tools</strong> - Track technologies that naturally integrate with yours. If you sell email marketing tool, monitor CRM adoptions. New CRM users need email integration</li>
+              <li><strong>Upstream dependencies</strong> - Watch for tools that create need for downstream solutions. Companies adopting data warehouses soon need BI tools. Those adding payment processors need fraud detection</li>
+              <li><strong>Category indicators</strong> - Monitor broader category adoptions. If you sell sales enablement, track when companies adopt enterprise CRMs. Signals sophistication level and budget for enablement stack</li>
+            </ul>
+
+            <h3>Signal quality by change type</h3>
+            <table>
+              <tr><th>Change Type</th><th>Signal Quality</th><th>Opportunity</th></tr>
+              <tr>
+                <td>Adding your competitor</td>
+                <td>Very High</td>
+                <td>They are actively buying in your category right now. Catch them during evaluation window before they fully commit</td>
+              </tr>
+              <tr>
+                <td>Adding complementary tool</td>
+                <td>High</td>
+                <td>New tool creates integration need or adjacent use case. Position as essential companion to maximise their new investment</td>
+              </tr>
+              <tr>
+                <td>Removing competitor tool</td>
+                <td>Very High</td>
+                <td>Dissatisfaction with incumbent. Actively searching for replacement. Perfect timing to position as better alternative</td>
+              </tr>
+              <tr>
+                <td>Upgrading existing tool</td>
+                <td>Medium</td>
+                <td>Signals growth and increased spend in category. May have adjacent needs. Less urgent than additions or removals</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Focus test:</strong> Before adding technology to monitoring list, complete this sentence: "When a company adopts X technology, they immediately need Y." If Y is your product and connection is obvious, it is strong signal. If you have to stretch the logic, skip it.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Change Analysis sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Change Analysis - Understanding the Context</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Going deeper than just the change</h3>
+            <p>Knowing they added HubSpot is not enough. Understand why they made the change, what they are trying to accomplish, and how your solution fits into their broader infrastructure strategy.</p>
+
+            <h3>Context to research</h3>
+            <ul>
+              <li><strong>What else changed recently</strong> - Did they also add other tools in same timeframe? Multiple simultaneous adoptions signal major infrastructure overhaul versus single tool swap</li>
+              <li><strong>What they removed</strong> - If they removed competitor tool and added nothing yet, they are actively evaluating replacements. If they removed free tool for enterprise one, they are professionalising operations</li>
+              <li><strong>Company growth stage</strong> - Same tech change means different things at different stages. Series A adding Salesforce signals scaling. Series C adding it signals late professionalisation</li>
+              <li><strong>Team size and hiring</strong> - Check if they are hiring for roles related to the new technology. RevOps hire plus new CRM signals serious investment in sales infrastructure</li>
+            </ul>
+
+            <h3>Positioning based on change context</h3>
+            <table>
+              <tr><th>Context</th><th>What It Signals</th><th>Your Angle</th></tr>
+              <tr>
+                <td>Added enterprise CRM after using free tool</td>
+                <td>Scaling sales operations and professionalising go-to-market</td>
+                <td>Position as accelerating CRM adoption and helping team get value faster. Focus on implementation support</td>
+              </tr>
+              <tr>
+                <td>Removed tool without replacement yet</td>
+                <td>Dissatisfaction but uncertain about alternative. Actively evaluating</td>
+                <td>Lead with why companies switch from old tool to yours. Address pain points that caused churn from previous vendor</td>
+              </tr>
+              <tr>
+                <td>Multiple tools added simultaneously</td>
+                <td>Major infrastructure refresh or funding-driven buildout</td>
+                <td>Emphasise integration capabilities and how you fit into their new modern stack. Position as final piece of transformation</td>
+              </tr>
+              <tr>
+                <td>Same category upgrade</td>
+                <td>Growing sophistication and willingness to pay more for better solution</td>
+                <td>Highlight premium features and enterprise capabilities. They have proven willingness to upgrade for better functionality</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Timeline detective work:</strong> Use LinkedIn posts, press releases, and job postings to build timeline of changes. Companies often announce major initiatives publicly. Context from these announcements informs your positioning.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outreach Messaging sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Outreach Messaging - Tying to Stack Changes</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Crafting stack-aware messages</h3>
+            <p>Your outreach must demonstrate awareness of their tech change without being creepy. Balance showing you have done research with respecting that some monitoring feels invasive.</p>
+
+            <h3>Message frameworks by change type</h3>
+            <ul>
+              <li><strong>For new tool adoption</strong> - "Noticed Acme recently implemented HubSpot. Most companies adding HubSpot discover they need X to fully maximise the investment. We specialise in helping HubSpot users achieve Y outcome."</li>
+              <li><strong>For tool removal</strong> - "Saw you were previously using CompetitorTool. Many companies who move away from them cite challenge A and challenge B. Our platform was built specifically to solve those exact issues."</li>
+              <li><strong>For category upgrades</strong> - "Congrats on upgrading to Enterprise CRM. Companies making that leap often discover they need additional infrastructure around X. We help teams scaling CRM usage avoid common pitfalls."</li>
+              <li><strong>For complementary stack</strong> - "Noticed your team uses Salesforce and Intercom. Our tool sits between those two and solves the handoff challenge most companies struggle with. Built specifically for this stack combination."</li>
+            </ul>
+
+            <h3>Avoiding creepy surveillance vibes</h3>
+            <table>
+              <tr><th>Avoid Saying</th><th>Say Instead</th><th>Why</th></tr>
+              <tr>
+                <td>I was tracking your website technology changes and noticed...</td>
+                <td>Saw your team recently implemented HubSpot...</td>
+                <td>First version reveals monitoring behaviour explicitly. Second is observational and feels less invasive</td>
+              </tr>
+              <tr>
+                <td>My tool detected you removed CompetitorTool on March 3rd...</td>
+                <td>Noticed you were using CompetitorTool previously...</td>
+                <td>Overly specific dates feel surveillance-like. General timeframe is less creepy while still demonstrating awareness</td>
+              </tr>
+              <tr>
+                <td>I monitor 500 companies and you came up...</td>
+                <td>I work with companies like Acme who...</td>
+                <td>Mentioning scale of monitoring makes them feel like number not individual. Focus on them specifically</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Attribution ambiguity:</strong> If they ask how you knew about tech change, attribute to public sources like "saw announcement on LinkedIn" or "noticed in your careers page tech requirements." Avoid mentioning monitoring tools directly.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timing Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Timing Strategy - Catching the Window</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Tech change buying windows</h3>
+            <p>Different types of tech changes create different length buying windows. Addition of new tool opens 30-60 day window for complementary solutions. Removal opens 60-90 day window for replacements. Time your outreach appropriately.</p>
+
+            <h3>Optimal timing by change type</h3>
+            <ul>
+              <li><strong>New tool addition - Days 7-21</strong> - They are in implementation phase. Discovering integration needs and adjacent requirements. Reach out while actively building around new tool</li>
+              <li><strong>Tool removal - Days 1-30</strong> - Immediately start looking for replacement. Evaluation happens quickly when they have removed old solution. Reach out fast before they commit to alternative</li>
+              <li><strong>Tool upgrade - Days 14-45</strong> - Give them time to settle into new tier but reach out before it becomes status quo. Window longer because upgrade is not forcing urgent decision</li>
+              <li><strong>Multiple simultaneous changes - Days 7-60</strong> - Extended window because they are managing complex transformation. Can reach out later without missing opportunity</li>
+            </ul>
+
+            <h3>Multi-touch cadence for tech triggers</h3>
+            <table>
+              <tr><th>Touch</th><th>Timing</th><th>Message Focus</th></tr>
+              <tr>
+                <td>Touch 1</td>
+                <td>Within 2 weeks of change detection</td>
+                <td>Acknowledge change. Offer resource or insight specific to their new tech. Soft introduction</td>
+              </tr>
+              <tr>
+                <td>Touch 2</td>
+                <td>2 weeks after Touch 1</td>
+                <td>Share case study of company with similar stack using your solution. Concrete example of integration value</td>
+              </tr>
+              <tr>
+                <td>Touch 3</td>
+                <td>3 weeks after Touch 2</td>
+                <td>Offer specific template or framework for maximising their new tool. Direct value delivery</td>
+              </tr>
+              <tr>
+                <td>Touch 4</td>
+                <td>3 weeks after Touch 3</td>
+                <td>Direct ask for meeting to discuss their stack and where you might fit. Transition to sales conversation</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Detection lag awareness:</strong> Tech detection tools may have 30-60 day lag between when company implements tool and when it appears in database. Real change may have happened 2 months ago. Adjust messaging if you suspect lag.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Being overly specific about monitoring</h4>
+          <div class="why">Saying "My tool detected you added HubSpot on March 15th" feels invasive and surveillance-like. Recipients find it creepy and disengage.</div>
+          <div class="fix">Keep observations general. "Noticed your team recently implemented HubSpot" demonstrates awareness without revealing monitoring infrastructure. Less creepy, same context.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Tracking irrelevant technologies</h4>
+          <div class="why">Monitoring every possible tech change creates noise. Most changes have no connection to your solution. You waste time on false signals.</div>
+          <div class="fix">Limit tracking to 5-10 technologies with clear connection to your value prop. Direct competitors, key complementary tools, and upstream dependencies only.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Not understanding why they made change</h4>
+          <div class="why">Knowing they added Salesforce without understanding context means generic messaging. Miss opportunity to address specific initiative or pain point driving change.</div>
+          <div class="fix">Research company news, job postings, and LinkedIn activity to understand why they made change. Use context to craft highly relevant positioning.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Reaching out to wrong person</h4>
+          <div class="why">Tech stack changes involve specific functional owners. Reaching out to CEO about marketing tech change wastes opportunity. They will not engage.</div>
+          <div class="fix">Identify functional owner of technology category. Marketing tech goes to CMO or Marketing Ops. Sales tech goes to CRO or RevOps. Target decision maker.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Delayed outreach after change</h4>
+          <div class="why">Waiting 60-90 days after detecting change means they have moved past evaluation mode. New tool is status quo. Window closed.</div>
+          <div class="fix">Set up alerts for real-time change detection. Reach out within 7-14 days of change. Speed matters for catching active buying window.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Only monitoring website-visible technologies</h4>
+          <div class="why">Tools like BuiltWith only see public website tech. Miss internal tools, backend infrastructure, and non-website systems that may be stronger signals.</div>
+          <div class="fix">Supplement tech monitoring with job posting tracking. JDs often mention internal tools and tech stack. Combine signals for complete picture.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

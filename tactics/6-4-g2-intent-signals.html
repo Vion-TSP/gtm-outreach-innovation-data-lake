@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 6.4 — G2/Review Site Intent | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 6.4 - Signal-Based / Intent</div>
+  <h1>G2/Review Site Intent Signals</h1>
+  <p class="desc">Identify companies actively researching your category on G2, TrustRadius, or Capterra. Review site activity signals high purchase intent and active evaluation. Reach out when they are comparing options and most receptive to vendor conversations.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low</span>
+    <span class="tag tag-cost">Cost: Medium-High</span>
+    <span class="tag tag-icp">ICP: Technical Buyers, Operations Teams</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> When someone from a target company visits your G2 page or category on review sites, they are actively researching solutions. This is bottom-of-funnel behaviour indicating imminent purchase decision. Your outreach arrives exactly when they are ready to talk to vendors.
+      </div>
+      <h3>The psychology behind review site intent</h3>
+      <ul>
+        <li><strong>Active evaluation mode</strong> - People browsing review sites are not passively learning. They are comparing specific vendors to make purchase decision. High intent behaviour that indicates budget and authority</li>
+        <li><strong>Pre-qualified interest</strong> - Visiting your G2 profile means they already know your category applies to their problem. You skip awareness stage and jump straight to consideration</li>
+        <li><strong>Comparison mindset</strong> - Review site visitors are explicitly comparing vendors. Your outreach helps them make informed decision rather than interrupting with cold pitch</li>
+        <li><strong>Trust through transparency</strong> - Referencing their review site research shows you respect their due diligence process. Positions you as helpful resource rather than pushy sales person</li>
+      </ul>
+      <h3>Why review site signals specifically</h3>
+      <p>Unlike vague website visits, review site activity is unambiguous buying behaviour. No one casually browses G2 for fun. Every visit represents someone with problem actively looking for solution. This is highest-intent signal available at scale.</p>
+      <p><strong>The compounding effect:</strong> Companies researching on review sites often involve multiple stakeholders. One visitor from a company likely means buying committee is forming. Early outreach positions you to influence entire evaluation process.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">E</div><div class="wf-label">Enable</div><div class="wf-action">Buyer intent</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">M</div><div class="wf-label">Monitor</div><div class="wf-action">Daily signals</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">Q</div><div class="wf-label">Qualify</div><div class="wf-action">ICP fit</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">R</div><div class="wf-label">Research</div><div class="wf-action">Visitor context</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">C</div><div class="wf-label">Craft Message</div><div class="wf-action">Help decide</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">O</div><div class="wf-label">Outreach</div><div class="wf-action">Within 24 hrs</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Enable Buyer Intent Tracking</td>
+          <td>Purchase G2 Buyer Intent product or TrustRadius Intent Data. These paid add-ons reveal companies visiting your profile and category pages. Essential for this tactic to work</td>
+          <td>1 hour procurement setup</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Check Intent Dashboard Daily</td>
+          <td>Review list of companies that visited your profile or category in last 24 hours. G2 and TrustRadius provide company name, page viewed, and engagement level. Export daily for processing</td>
+          <td>10 min daily review</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Qualify Against ICP</td>
+          <td>Filter intent signals to companies matching your ideal customer profile. Remove too-small companies, wrong industries, or geographies you do not serve. Focus on qualified prospects only</td>
+          <td>5 min per batch</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Research Visitor and Company</td>
+          <td>Use LinkedIn to identify likely visitor based on role. Research company context such as recent funding, tech stack, team size. Build context for personalised outreach</td>
+          <td>10 min per company</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Write Helpful Message</td>
+          <td>Position as resource to help with evaluation not sales pitch. Offer to answer questions, provide comparison guidance, or share relevant case study. Lead with value</td>
+          <td>10-15 min per message</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Send Within 24 Hours</td>
+          <td>Speed is critical. Reach out same day or next day while your brand is fresh in their mind from G2 visit. After 48 hours window closes as they move to other vendors</td>
+          <td>2-3 min per send</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> When multiple people from same company visit G2 within short timeframe, it signals buying committee formation. Reach out to senior stakeholder offering to present to full team. Multi-visitor accounts are hottest opportunities.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>G2 Buyer Intent</strong></td>
+          <td>£££</td>
+          <td>Companies with strong G2 presence and profile traffic</td>
+          <td>See companies visiting your G2 profile and category. Track engagement level and pages viewed. Export to CRM. Largest review site database. Most comprehensive intent data</td>
+          <td>Expensive add-on to G2 listing. Only works if you have active G2 profile with traffic. Requires minimum review threshold to access</td>
+        </tr>
+        <tr>
+          <td><strong>TrustRadius Intent</strong></td>
+          <td>££</td>
+          <td>Enterprise B2B companies with technical buyers</td>
+          <td>Buyer intent signals from TrustRadius research activity. Strong enterprise and IT focus. More affordable than G2. Good for technical product categories</td>
+          <td>Smaller audience than G2. Less consumer and SMB traffic. Requires paid TrustRadius listing to access intent data</td>
+        </tr>
+        <tr>
+          <td><strong>Capterra</strong></td>
+          <td>££</td>
+          <td>SMB-focused products with high search volume</td>
+          <td>Intent signals from Capterra which skews SMB and mid-market. Part of Gartner Digital Markets. Access to search and comparison data. Strong SMB buyer audience</td>
+          <td>Less sophisticated than G2 for enterprise. Intent data quality varies. Better for transactional SMB sales than complex enterprise deals</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>G2 Buyer Intent</strong> (£££) if you have strong G2 presence and enterprise ICP. For technical B2B products, add <strong>TrustRadius Intent</strong> (££) to capture IT buyer research. Skip Capterra unless SMB is core ICP.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Intent Signal Qualification sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Intent Signal Qualification - Filtering Noise</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Not all intent signals are equal</h3>
+            <p>G2 visitor lists include everything from hot prospects to competitors doing research. Qualify signals before investing outreach time to focus on genuine buying opportunities.</p>
+
+            <h3>Qualification criteria</h3>
+            <ul>
+              <li><strong>Company ICP fit</strong> - Do they match your ideal customer profile by size, industry, geography? Non-ICP companies waste time even if they show intent</li>
+              <li><strong>Engagement depth</strong> - Did they view one page or browse multiple pages and reviews? Deeper engagement signals stronger intent</li>
+              <li><strong>Recency and frequency</strong> - Single visit 3 weeks ago is weak. Multiple visits this week is strong. Recent repeat visitors are hottest prospects</li>
+              <li><strong>Competitive research filter</strong> - Check if visitor company is direct competitor or partner doing market research. Filter these out</li>
+            </ul>
+
+            <h3>Intent signal scoring</h3>
+            <table>
+              <tr><th>Signal Type</th><th>Intent Score</th><th>Action Priority</th></tr>
+              <tr>
+                <td>Multiple team members visited in 7 days</td>
+                <td>Very High</td>
+                <td>Immediate outreach to senior stakeholder. Buying committee likely forming. Highest priority</td>
+              </tr>
+              <tr>
+                <td>Single visitor, multiple pages, recent</td>
+                <td>High</td>
+                <td>Outreach within 24 hours. Strong individual intent. Good opportunity</td>
+              </tr>
+              <tr>
+                <td>Single visitor, category page only</td>
+                <td>Medium</td>
+                <td>Nurture sequence. Early stage research. Worth engaging but lower urgency</td>
+              </tr>
+              <tr>
+                <td>Visit over 30 days ago</td>
+                <td>Low</td>
+                <td>Add to general nurture. Window likely closed. Low conversion probability</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Quality filter:</strong> Only reach out to companies where you can articulate clear value proposition for their specific context. Intent signal without relevant positioning wastes the opportunity.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Research and Context Building sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Research and Context Building - Know Who Visited</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Building visitor profile</h3>
+            <p>G2 intent data shows company name but not individual visitor identity in most cases. Use LinkedIn and other sources to identify likely visitor and build context for personalised outreach.</p>
+
+            <h3>Identifying the visitor</h3>
+            <ul>
+              <li><strong>Search LinkedIn by company and role</strong> - Look for roles that typically evaluate your category. For sales tools, search for Sales Ops, RevOps, VP Sales at company</li>
+              <li><strong>Check recent activity</strong> - Recent LinkedIn posts or profile updates mentioning tool evaluation or pain points in your category signal likely researcher</li>
+              <li><strong>Multiple potential matches</strong> - If several people could be the visitor, reach out to most senior relevant person. They likely have final authority</li>
+              <li><strong>New hires</strong> - People in role 0-3 months often tasked with evaluating tools. Check for recent hires in relevant functions</li>
+            </ul>
+
+            <h3>Context to research before outreach</h3>
+            <table>
+              <tr><th>Research Area</th><th>Where to Find</th><th>How It Informs Outreach</th></tr>
+              <tr>
+                <td>Current tech stack</td>
+                <td>BuiltWith, job postings, LinkedIn skills</td>
+                <td>Highlight integrations with tools they already use. Address switching from competitor if applicable</td>
+              </tr>
+              <tr>
+                <td>Company growth stage</td>
+                <td>Funding announcements, team size, job postings</td>
+                <td>Tailor messaging to their maturity. Scaling companies need different value props than early-stage</td>
+              </tr>
+              <tr>
+                <td>Pain points and initiatives</td>
+                <td>LinkedIn exec posts, company blog, recent news</td>
+                <td>Connect your solution to strategic priorities they have publicly stated</td>
+              </tr>
+              <tr>
+                <td>Competitor reviews they read</td>
+                <td>G2 intent data if detailed enough</td>
+                <td>If they viewed competitor profiles, address comparison points directly in outreach</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Assumption communication:</strong> If you cannot definitively identify visitor, acknowledge this in outreach. "Noticed someone from Acme was researching our category. Guessing it might be you given your role..." Transparency builds trust.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outreach Messaging sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Outreach Messaging - Helpful Not Pushy</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Positioning as research assistant</h3>
+            <p>Your outreach should help them make better evaluation decision, not pressure them to choose you. Position as insider resource who can accelerate their research and provide unbiased guidance.</p>
+
+            <h3>Message framework for intent-based outreach</h3>
+            <ul>
+              <li><strong>Acknowledge research behaviour</strong> - "Noticed someone from Acme was checking out our G2 profile" establishes context without being creepy</li>
+              <li><strong>Offer to help evaluation</strong> - "Happy to answer any questions that came up during your research" positions you as helpful resource</li>
+              <li><strong>Provide decision-making value</strong> - Share comparison guide, decision framework, or buyer guide for category. Help them evaluate all options not just yours</li>
+              <li><strong>Low-friction next step</strong> - "Quick call to discuss what you are looking for?" not "Book a demo." Match their research stage</li>
+            </ul>
+
+            <h3>Message variations by engagement level</h3>
+            <table>
+              <tr><th>Engagement Type</th><th>Message Approach</th><th>Example Hook</th></tr>
+              <tr>
+                <td>Deep research, multiple pages</td>
+                <td>Offer detailed technical discussion</td>
+                <td>Saw you spent time on our G2 page. Happy to dive into technical details or specific use cases you are evaluating</td>
+              </tr>
+              <tr>
+                <td>Quick category browse</td>
+                <td>Provide educational content</td>
+                <td>Noticed interest in our category. Here is buyer guide we created to help companies evaluate solutions</td>
+              </tr>
+              <tr>
+                <td>Competitor comparison</td>
+                <td>Acknowledge alternatives openly</td>
+                <td>Looks like you are comparing a few options. Happy to provide honest comparison and help you decide what fits best</td>
+              </tr>
+              <tr>
+                <td>Multiple team visitors</td>
+                <td>Offer team presentation</td>
+                <td>Few folks from Acme have been researching our platform. Want to schedule quick overview for the team?</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Review response integration:</strong> If they left review of competitor or asked question on G2, reference it in outreach. "Saw your review mentioning challenge with X. Our platform was built specifically to solve that." Ultra-personalised context.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timing and Speed sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Timing and Speed - Striking While Fresh</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The 24-hour window</h3>
+            <p>Intent signals are time-sensitive. Prospect researched your solution today. Your brand is fresh in their mind right now. Waiting 3-5 days means they have moved on to other vendors or decision fatigue has set in.</p>
+
+            <h3>Optimal response timeline</h3>
+            <ul>
+              <li><strong>Same day if possible</strong> - Best outcome. They literally just looked at your profile hours ago. Message lands while evaluation is active in their mind</li>
+              <li><strong>Within 24 hours</strong> - Still strong. Brand recall is high. They likely have not made decision yet. Good window for engagement</li>
+              <li><strong>24-48 hours</strong> - Acceptable but declining. They may have already started conversations with other vendors. Still worth reaching out</li>
+              <li><strong>48+ hours</strong> - Poor timing. Window likely closed. They have moved to next stage of evaluation or forgotten about initial research. Low conversion</li>
+            </ul>
+
+            <h3>Setting up speed workflow</h3>
+            <table>
+              <tr><th>Component</th><th>Purpose</th><th>Implementation</th></tr>
+              <tr>
+                <td>Daily intent review</td>
+                <td>Catch signals quickly</td>
+                <td>Check G2 dashboard every morning. Export new intent signals. Make it first task of day</td>
+              </tr>
+              <tr>
+                <td>Rapid qualification</td>
+                <td>Filter to best opportunities fast</td>
+                <td>Pre-built ICP filter in spreadsheet. Reject non-fits in 30 seconds. Focus time on qualified signals only</td>
+              </tr>
+              <tr>
+                <td>Message templates</td>
+                <td>Speed up personalised outreach</td>
+                <td>Template library by signal type. Personalise company name, context, and hook. Send in 10 minutes not 30</td>
+              </tr>
+              <tr>
+                <td>Automated enrichment</td>
+                <td>Gather context without manual research</td>
+                <td>Use Clay or Clearbit to auto-enrich intent signals with tech stack, funding, team size. Instant context</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Weekend and evening signals:</strong> If intent signal comes in Friday evening or weekend, reach out Monday morning first thing. Weekend signals are still fresh Monday. Do not delay until Tuesday.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Leading with aggressive sales pitch</h4>
+          <div class="why">They just researched you. Immediate "book a demo" push feels pushy and ignores their research stage. They disengage.</div>
+          <div class="fix">Position as helpful resource for their evaluation. Offer to answer questions, provide comparison guidance, or share relevant content. Help them decide, do not pressure.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Slow follow-up on intent signals</h4>
+          <div class="why">Waiting 4-5 days to reach out means they have moved on to other vendors or lost momentum. Your brand is no longer fresh. Window closed.</div>
+          <div class="fix">Set up daily intent review workflow. Reach out same day or within 24 hours maximum. Speed is competitive advantage for intent-based outreach.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. No qualification of intent signals</h4>
+          <div class="why">Reaching out to every company that visits G2 includes competitors, non-ICP, and casual researchers. Waste time on unqualified opportunities.</div>
+          <div class="fix">Filter intent signals against ICP criteria before outreach. Only contact companies that match ideal customer profile and show genuine buying behaviour.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Generic messaging that ignores research context</h4>
+          <div class="why">Sending standard cold email template to intent signal wastes the context advantage. They know you should know they researched you.</div>
+          <div class="fix">Explicitly reference their G2 visit in message. Tailor value proposition based on which pages they viewed and depth of engagement. Make it obviously personalised.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Reaching out to wrong person</h4>
+          <div class="why">Intent data shows company not individual. Guessing wrong decision maker and reaching out to irrelevant person wastes opportunity.</div>
+          <div class="fix">Research likely visitor based on role and recent activity. If uncertain, reach out to most senior relevant person. They can redirect if needed.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Not investing in intent data product</h4>
+          <div class="why">Trying to manually track G2 visitors or guessing who researched you is impossible at scale. Miss most opportunities.</div>
+          <div class="fix">Budget for G2 Buyer Intent or TrustRadius Intent product. Expensive but ROI is strong. Highest-intent leads available. Prioritise over lower-intent channels.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

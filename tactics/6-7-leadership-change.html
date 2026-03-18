@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 6.7 — Leadership Change Alerts | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 6.7 - Signal-Based / Intent</div>
+  <h1>Leadership Change Alerts</h1>
+  <p class="desc">Monitor new executive and VP-level appointments at target accounts. New leaders have 90-day mandate to make their mark, often through infrastructure and tooling changes. Reach out during honeymoon period when they are actively evaluating stack.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low</span>
+    <span class="tag tag-cost">Cost: Medium</span>
+    <span class="tag tag-icp">ICP: C-suite, VP-level Decision Makers</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> New executives are hired to drive change. They have explicit mandate and pressure to show impact quickly. Tech stack evaluation happens in first 90 days as they assess what they inherited and what they need. Your timing aligns perfectly with their evaluation window.
+      </div>
+      <h3>The psychology behind leadership change signals</h3>
+      <ul>
+        <li><strong>Fresh perspective advantage</strong> - New leaders are not attached to existing vendors. No sunk cost bias or emotional investment in current tools. They evaluate with fresh eyes</li>
+        <li><strong>Prove-yourself pressure</strong> - First 90 days set tone for tenure. New execs need quick wins to build credibility. Introducing better tools is visible high-impact change</li>
+        <li><strong>Budget and authority</strong> - Companies hiring VP or C-level have usually allocated budget for that function. New leader controls purse strings and decision-making</li>
+        <li><strong>Relationship building opportunity</strong> - Helping new leader succeed early creates long-term partnership. They remember vendors who helped them win in critical first months</li>
+      </ul>
+      <h3>Why leadership changes specifically</h3>
+      <p>Unlike passive intent signals, leadership changes are concrete events with predictable evaluation timelines. You know they will assess infrastructure in first 30-90 days. Your outreach arrives exactly when they are receptive.</p>
+      <p><strong>The compounding effect:</strong> Executives change companies every 2-4 years on average. Win them at one company and they become advocates when they move to next role. You gain multi-company champion.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">M</div><div class="wf-label">Monitor</div><div class="wf-action">Hire signals</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">V</div><div class="wf-label">Verify</div><div class="wf-action">Role fit</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">R</div><div class="wf-label">Research</div><div class="wf-action">Background</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">T</div><div class="wf-label">Time Wait</div><div class="wf-action">30-45 days</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">C</div><div class="wf-label">Craft Message</div><div class="wf-action">Welcome + value</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">O</div><div class="wf-label">Outreach</div><div class="wf-action">Days 30-60</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Set Up Monitoring for Exec Changes</td>
+          <td>Use UserGems, LinkedIn Sales Navigator, or Clay to track when target accounts hire new VPs or C-level executives. Focus on roles relevant to your product like CRO, VP Sales, VP Ops, CMO</td>
+          <td>1 hour initial setup</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Verify Role Relevance</td>
+          <td>Confirm new hire role aligns with your buyer persona. VP Sales for sales tools, CTO for dev tools, CMO for marketing tools. Filter out irrelevant functional hires</td>
+          <td>2 min per signal</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Research New Exec Background</td>
+          <td>Review LinkedIn profile, previous companies, stated priorities in announcement post. Understand their background, what they were hired to fix, and their likely priorities</td>
+          <td>15 min per exec</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Wait for Onboarding Window</td>
+          <td>Do not reach out day one. Give them 30-45 days to assess current state and identify gaps. Too early and they are still learning. Perfect window is days 30-60 when evaluation happens</td>
+          <td>Calendar reminder setup</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Craft Contextual Welcome Message</td>
+          <td>Congratulate them on new role. Reference their stated priorities from announcement or background. Position your solution as enabler of their mandate. Offer to help them succeed in first 90 days</td>
+          <td>15-20 min per message</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Send During Evaluation Window</td>
+          <td>Reach out days 30-60 of their tenure. This is when they are actively evaluating infrastructure and receptive to vendor conversations. Earlier is ignored, later misses window</td>
+          <td>2-3 min per send</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Track multiple changes at same company. New CRO plus new VP Sales Ops signals major go-to-market transformation. Multi-hire accounts are highest-intent opportunities.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>UserGems</strong></td>
+          <td>£££</td>
+          <td>Automated tracking of job changes and promotions</td>
+          <td>Alerts when people at target accounts change roles or join new companies. Tracks both new hires into accounts and your champions leaving for new companies. Excellent data quality</td>
+          <td>Expensive for small teams. Requires integration with CRM for full value. Overkill if only tracking 20-30 accounts</td>
+        </tr>
+        <tr>
+          <td><strong>LinkedIn Sales Navigator</strong></td>
+          <td>££</td>
+          <td>Manual monitoring with saved searches and alerts</td>
+          <td>Save target accounts and set alerts for leadership changes. See when new people join in relevant roles. Good for mid-sized account lists. Affordable compared to UserGems</td>
+          <td>Requires manual setup and monitoring. Alerts can be delayed. Need discipline to check regularly. Best for under 100 accounts</td>
+        </tr>
+        <tr>
+          <td><strong>Clay</strong></td>
+          <td>£££</td>
+          <td>Automated workflows with enrichment and outreach</td>
+          <td>Track leadership changes via integrations. Auto-enrich with background data. Trigger outreach sequences at optimal timing. Scales to 1000s of accounts with automation</td>
+          <td>Complex setup requiring workflow building skills. Requires credits for enrichment. Best when tracking high volume of accounts</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> For teams tracking under 50 accounts, start with <strong>LinkedIn Sales Navigator</strong> (££) with saved searches. For higher volume or automated workflows, invest in <strong>UserGems</strong> (£££) for best data quality and automation.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Role Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Role Selection - Which Changes to Track</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Not all leadership changes are equal signals</h3>
+            <p>New CFO signals different buying behaviour than new CRO. Track roles with direct authority over your category and budget to purchase your type of solution.</p>
+
+            <h3>Roles to monitor by product category</h3>
+            <ul>
+              <li><strong>Sales tools</strong> - CRO, VP Sales, VP Revenue Operations, Head of Sales Development. These roles own sales infrastructure budget and decision-making</li>
+              <li><strong>Marketing tools</strong> - CMO, VP Marketing, VP Growth, Head of Demand Gen. Marketing function leaders evaluate and purchase marketing stack</li>
+              <li><strong>Operations tools</strong> - COO, VP Operations, Head of Business Operations. Ops leaders consolidate and optimise operational infrastructure</li>
+              <li><strong>Developer tools</strong> - CTO, VP Engineering, Head of Platform. Technical leaders evaluate and standardise development tooling</li>
+            </ul>
+
+            <h3>Signal strength by role level</h3>
+            <table>
+              <tr><th>Role Level</th><th>Signal Quality</th><th>Why</th></tr>
+              <tr>
+                <td>C-level (CRO, CMO, CTO)</td>
+                <td>Very High</td>
+                <td>Ultimate budget authority. Hired to transform function. Highest willingness to change infrastructure. Direct decision maker</td>
+              </tr>
+              <tr>
+                <td>VP-level (VP Sales, VP Ops)</td>
+                <td>High</td>
+                <td>Strong influence over stack. Often given budget for their function. Can champion purchases through approval process</td>
+              </tr>
+              <tr>
+                <td>Director-level (Dir Sales Ops)</td>
+                <td>Medium</td>
+                <td>Evaluate tools but typically need VP or C-level approval for purchase. Good for influence but less direct authority</td>
+              </tr>
+              <tr>
+                <td>Manager-level</td>
+                <td>Low</td>
+                <td>Rarely have budget authority or vendor selection power. Skip unless selling very low ACV product</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Relevance test:</strong> Before adding role to tracking, ask: "Does this person have authority to evaluate and purchase our category of solution?" If answer is not clear yes, filter it out. Focus on decision makers.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timing Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Timing Strategy - The 30-60 Day Window</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>New exec journey timeline</h3>
+            <p>Leadership onboarding follows predictable pattern. Understanding this lets you time outreach for maximum receptiveness when they are actively evaluating infrastructure.</p>
+
+            <h3>Typical new exec timeline</h3>
+            <ul>
+              <li><strong>Days 1-30 - Learning and listening</strong> - Meeting team, understanding current state, identifying problems. Not ready for vendor conversations yet. Too busy absorbing information</li>
+              <li><strong>Days 30-60 - Evaluating and planning</strong> - Identified gaps and priorities. Actively researching solutions. Perfect window for vendor outreach. Receptive to conversations</li>
+              <li><strong>Days 60-90 - Decision and implementation</strong> - Making vendor selections and beginning implementations. Window closing as decisions finalise</li>
+              <li><strong>Days 90+ - Execution mode</strong> - Stack largely decided. Focused on driving results with chosen tools. Switching cost now high. Window closed</li>
+            </ul>
+
+            <h3>Outreach timing by tenure</h3>
+            <table>
+              <tr><th>Days in Role</th><th>Outreach Strategy</th><th>Message Focus</th></tr>
+              <tr>
+                <td>1-15 days</td>
+                <td>Skip outreach</td>
+                <td>Too early. They are still learning. Message gets ignored or feels pushy. Wait</td>
+              </tr>
+              <tr>
+                <td>30-45 days</td>
+                <td>Primary outreach window</td>
+                <td>Congratulations on role. Here is how we help leaders in your position deliver quick wins in first 90 days</td>
+              </tr>
+              <tr>
+                <td>45-60 days</td>
+                <td>Secondary window if missed first</td>
+                <td>More urgent positioning. Time-sensitive offer to help them hit 90-day goals before window closes</td>
+              </tr>
+              <tr>
+                <td>60-90 days</td>
+                <td>Last chance outreach</td>
+                <td>Very direct. Assume they are finalising decisions. Offer to be included in final evaluation before they commit elsewhere</td>
+              </tr>
+              <tr>
+                <td>90+ days</td>
+                <td>Skip or long-term nurture</td>
+                <td>Evaluation window closed. Add to general nurture for potential re-evaluation in 6-12 months</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Calendar automation:</strong> When you identify new hire, immediately set calendar reminder for day 35 of their tenure. This ensures you do not miss optimal outreach window during busy weeks.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Research and Context Building sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Research and Context Building - Know Their Mandate</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Understanding why they were hired</h3>
+            <p>New executives are brought in to solve specific problems. Understanding their mandate lets you position directly against their priorities and demonstrate how you enable their success.</p>
+
+            <h3>Research sources for context</h3>
+            <ul>
+              <li><strong>LinkedIn announcement post</strong> - Company or exec often posts about new role with stated priorities. "Excited to join Acme to scale our enterprise sales motion" reveals mandate</li>
+              <li><strong>Company press release</strong> - Larger hires get press releases explaining why person was brought in. Explicit statement of what they are tasked with accomplishing</li>
+              <li><strong>Previous role and company</strong> - LinkedIn history shows what they built before. If they scaled sales ops at previous company, they will likely do same at new one</li>
+              <li><strong>Recent company news</strong> - Funding rounds, expansion announcements, or strategic shifts provide context for why this hire was made now</li>
+            </ul>
+
+            <h3>Inferring mandate from role and company stage</h3>
+            <table>
+              <tr><th>Scenario</th><th>Likely Mandate</th><th>Your Positioning</th></tr>
+              <tr>
+                <td>First CRO hire at Series A</td>
+                <td>Build scalable sales infrastructure from scratch</td>
+                <td>Position as foundational tool that prevents growing pains. Help them build right way from start</td>
+              </tr>
+              <tr>
+                <td>New VP Sales replacing departed one</td>
+                <td>Fix broken sales process or underperformance</td>
+                <td>Highlight how you address common sales challenges. Offer fresh start with better tooling</td>
+              </tr>
+              <tr>
+                <td>VP Ops hired after funding round</td>
+                <td>Professionalise operations to support growth</td>
+                <td>Focus on operational efficiency and scaling infrastructure. Enable them to deploy capital effectively</td>
+              </tr>
+              <tr>
+                <td>CTO joining from larger company</td>
+                <td>Bring enterprise-grade practices and tooling</td>
+                <td>Emphasise enterprise features and scalability. Help them elevate technical maturity</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Quote their words:</strong> If exec posted about priorities on LinkedIn, quote them directly in outreach. "You mentioned wanting to scale enterprise sales motion. Here is how we help leaders do exactly that." Shows you paid attention.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outreach Messaging sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Outreach Messaging - Welcome and Enable Success</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Positioning as success partner</h3>
+            <p>New execs are under pressure to prove themselves quickly. Position your solution as accelerator of their success in critical first 90 days. Help them win and build long-term relationship.</p>
+
+            <h3>Message framework for new exec outreach</h3>
+            <ul>
+              <li><strong>Warm congratulations</strong> - "Congrats on joining Acme as CRO. Exciting move from what I can see of your background"</li>
+              <li><strong>Acknowledge their mandate</strong> - "Saw you were brought in to scale enterprise sales. That is exactly the challenge most of our customers hired us to solve"</li>
+              <li><strong>Offer first-90-day value</strong> - "Most new sales leaders we work with find X and Y helpful in their first quarter to show quick wins"</li>
+              <li><strong>Low-pressure CTA</strong> - "Happy to share how we have helped other CROs in similar situation. 15 min call when you come up for air?"</li>
+            </ul>
+
+            <h3>Positioning angles by mandate type</h3>
+            <table>
+              <tr><th>Mandate</th><th>Your Angle</th><th>Value Prop</th></tr>
+              <tr>
+                <td>Build infrastructure from scratch</td>
+                <td>Foundational best practices</td>
+                <td>We help you build it right from day one. Avoid mistakes we have seen others make. Faster path to scalable infrastructure</td>
+              </tr>
+              <tr>
+                <td>Fix underperformance</td>
+                <td>Turnaround enabler</td>
+                <td>Most leaders brought in to fix sales find the problem is X. Our platform addresses root cause and drives quick improvement</td>
+              </tr>
+              <tr>
+                <td>Scale existing success</td>
+                <td>Growth accelerator</td>
+                <td>Scaling from 10 to 50 reps breaks without right infrastructure. We help you maintain quality and control through rapid growth</td>
+              </tr>
+              <tr>
+                <td>Professionalise operations</td>
+                <td>Maturity upgrade</td>
+                <td>Moving from scrappy to enterprise-grade requires different tooling. We bridge that gap without massive disruption</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>First 90 days framing:</strong> Always frame value in context of their critical first quarter. "Help you deliver quick wins in first 90 days" resonates because it acknowledges prove-yourself pressure they feel.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Reaching out too early in their tenure</h4>
+          <div class="why">Contacting them first week when they are drowning in onboarding means message gets ignored. They are not ready for vendor conversations yet.</div>
+          <div class="fix">Wait 30-45 days before outreach. Give them time to assess current state and identify gaps. Then reach out during active evaluation window days 30-60.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Generic congratulations with no context</h4>
+          <div class="why">Saying "Congrats on new role, let me show you our product" feels opportunistic. No connection to their priorities or mandate. Gets deleted.</div>
+          <div class="fix">Research their background and stated priorities. Connect your solution specifically to their mandate. Show you understand why they were hired and how you help them succeed.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Tracking irrelevant role changes</h4>
+          <div class="why">Monitoring every leadership change creates noise. New CFO or new Head of People rarely signal need for sales or marketing tools. Waste time on poor-fit signals.</div>
+          <div class="fix">Only track roles with direct authority over your category. CRO for sales tools, CMO for marketing tools, CTO for dev tools. Filter by buyer persona relevance.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Waiting too long to reach out</h4>
+          <div class="why">Reaching out 90+ days into tenure means they have already evaluated and chosen vendors. Stack decisions are made. Window closed.</div>
+          <div class="fix">Set calendar reminder for day 35 of their tenure. Reach out days 30-60 maximum. Missing this window means waiting 6-12 months for re-evaluation cycle.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Not understanding their mandate</h4>
+          <div class="why">Pitching generic value proposition without connecting to why they were hired misses opportunity. They care about accomplishing their specific goals not your features.</div>
+          <div class="fix">Research announcement posts, press releases, and previous roles. Infer what they were tasked with accomplishing. Position directly against their mandate.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Treating all exec changes equally</h4>
+          <div class="why">First-time CRO building from scratch has different needs than replacement CRO fixing broken sales. Same role, different context requires different positioning.</div>
+          <div class="fix">Understand company stage and whether role is new, replacement, or promotion. Tailor messaging to their specific situation and challenges they inherited.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

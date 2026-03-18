@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 6.6 — Competitor Churn Monitoring | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 6.6 - Signal-Based / Intent</div>
+  <h1>Competitor Churn Monitoring</h1>
+  <p class="desc">Track negative reviews, frustrated social posts, and churn signals from competitor customers. When users express dissatisfaction publicly, they are receptive to alternatives. Position your solution as better option that solves exact pain points they mentioned.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low-Medium</span>
+    <span class="tag tag-icp">ICP: All Buyer Personas</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> People who publicly complain about competitors are actively frustrated and receptive to hearing about alternatives. They have already overcome status quo bias by expressing dissatisfaction. Your timing is perfect because pain is acute and they are mentally ready to switch.
+      </div>
+      <h3>The psychology behind competitor churn signals</h3>
+      <ul>
+        <li><strong>Active pain seeking relief</strong> - Public complaints signal frustration has crossed threshold from annoyance to active problem. They want help escaping current situation</li>
+        <li><strong>Overcome switching cost mentally</strong> - Complaining publicly means they have already considered leaving. Psychological barrier to change is lower than satisfied customers</li>
+        <li><strong>Specific pain points revealed</strong> - Negative reviews and posts detail exactly what frustrates them. You can position directly against those specific issues</li>
+        <li><strong>Social proof opportunity</strong> - Engaging with their public complaint builds credibility. Others see you helping frustrated users, creating positive brand association</li>
+      </ul>
+      <h3>Why competitor dissatisfaction specifically</h3>
+      <p>Unlike cold outreach claiming you are better, reaching out to frustrated competitor users addresses real expressed need. They told you what hurts. You offer relief. Message-market fit is perfect.</p>
+      <p><strong>The compounding effect:</strong> Helping one frustrated user publicly creates case study and social proof. Others experiencing same pain see you rescued someone from competitor. Amplifies beyond single conversion.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Set Alerts</div><div class="wf-action">Track mentions</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">M</div><div class="wf-label">Monitor</div><div class="wf-action">Daily signals</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">A</div><div class="wf-label">Analyse</div><div class="wf-action">Pain points</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">Q</div><div class="wf-label">Qualify</div><div class="wf-action">Fit and timing</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">R</div><div class="wf-label">Respond</div><div class="wf-action">Help first</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">F</div><div class="wf-label">Follow Up</div><div class="wf-action">Move to DM</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Set Up Monitoring Alerts</td>
+          <td>Configure Google Alerts, Reddit alerts, and G2/TrustRadius notifications for competitor mentions. Track negative keywords like "CompetitorName issues," "CompetitorName problems," "switching from CompetitorName"</td>
+          <td>1 hour initial setup</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Review Signals Daily</td>
+          <td>Check alert digest each morning for new negative reviews, frustrated social posts, or Reddit threads complaining about competitors. Look for fresh complaints posted in last 24 hours</td>
+          <td>15 min daily review</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Analyse Complaint Content</td>
+          <td>Read full review or post to understand specific pain point they experienced. Note exact issues mentioned, features that failed, processes that broke. This becomes your positioning ammunition</td>
+          <td>5 min per signal</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Qualify Company and Timing</td>
+          <td>Check if complainer company matches your ICP. Assess severity of complaint. Recent and specific complaints signal higher receptiveness than vague old frustrations</td>
+          <td>5 min per signal</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Respond Helpfully First</td>
+          <td>If public post, comment with genuine help not sales pitch. Acknowledge pain point and offer perspective or workaround. Build credibility before mentioning your product. Be human and empathetic</td>
+          <td>10 min per response</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Move to Private Follow-Up</td>
+          <td>After helpful public comment, send private DM or email. Reference their specific pain point and explain how your solution addresses exact issue they experienced. Offer trial or demo focused on their need</td>
+          <td>15 min per follow-up</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Track which competitor issues come up repeatedly. Build comparison content and positioning assets specifically addressing those common pain points. Speeds up response and strengthens messaging.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>G2</strong></td>
+          <td>Free-££</td>
+          <td>Monitoring competitor reviews and ratings</td>
+          <td>See all competitor reviews. Filter by rating to find negative ones. Track review trends over time. Free to read. Paid tiers offer alerts and exports</td>
+          <td>Reviews posted publicly so competitors see you monitoring. Delayed posting means signal not real-time. Limited to B2B software categories</td>
+        </tr>
+        <tr>
+          <td><strong>Klue</strong></td>
+          <td>£££</td>
+          <td>Comprehensive competitive intelligence platform</td>
+          <td>Aggregates competitor mentions across web, news, reviews, social. Automated alerts for negative sentiment. Battle cards and intel dashboards. Tracks product updates and positioning changes</td>
+          <td>Expensive for small teams. Overkill if you only need churn monitoring. Best for companies with dedicated competitive intel function</td>
+        </tr>
+        <tr>
+          <td><strong>Reddit</strong></td>
+          <td>Free</td>
+          <td>Tracking community discussions and pain points</td>
+          <td>Real unfiltered user complaints in relevant subreddits. Search by competitor name. Set up keyword notifications. Highly engaged communities for many software categories</td>
+          <td>Manual monitoring required. No structured alerts. Need to monitor multiple relevant subreddits. Signal quality varies. Some complaints are low-value rants</td>
+        </tr>
+        <tr>
+          <td><strong>Google Alerts</strong></td>
+          <td>Free</td>
+          <td>Broad web monitoring for competitor mentions</td>
+          <td>Free automated email alerts for any keyword. Set up alerts for "CompetitorName problems," "switching from CompetitorName," etc. Catches blog posts, news, forums</td>
+          <td>High noise-to-signal ratio. Many irrelevant results. No sentiment filtering. Requires manual review of every alert. Best as supplement not primary tool</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>G2</strong> (free) plus <strong>Reddit</strong> (free) manual monitoring for low-cost testing. For dedicated competitive play, invest in <strong>Klue</strong> (£££) to automate aggregation and alerts across all channels.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Signal Source Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Signal Source Strategy - Where to Monitor</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Different channels reveal different insights</h3>
+            <p>Negative G2 reviews, frustrated Reddit posts, and Twitter complaints all signal dissatisfaction but vary in urgency, specificity, and follow-up approach. Monitor multiple channels for comprehensive coverage.</p>
+
+            <h3>Channel characteristics</h3>
+            <ul>
+              <li><strong>G2/TrustRadius reviews</strong> - Structured, detailed, company-attributable feedback. High-quality signal. Slower velocity but very actionable. Respondent expectations moderate</li>
+              <li><strong>Reddit/Community forums</strong> - Unfiltered real complaints from practitioners. Often very specific technical issues. High engagement potential. Casual tone expected in responses</li>
+              <li><strong>Twitter/LinkedIn</strong> - Real-time frustration venting. Less detail but very timely. Public visibility creates pressure to be helpful not salesy. Professional tone required</li>
+              <li><strong>Review site comments</strong> - Follow-up discussions on reviews. Shows ongoing pain. Good for understanding if issue was resolved or persists</li>
+            </ul>
+
+            <h3>Monitoring approach by channel</h3>
+            <table>
+              <tr><th>Channel</th><th>Check Frequency</th><th>Response Style</th></tr>
+              <tr>
+                <td>G2/TrustRadius</td>
+                <td>Weekly review of new competitor reviews</td>
+                <td>Professional, detailed comparison of how you address their specific pain point. Can be slightly more sales-y</td>
+              </tr>
+              <tr>
+                <td>Reddit</td>
+                <td>Daily monitoring of relevant subreddits</td>
+                <td>Casual, peer-to-peer helpfulness. Lead with value and understanding. Soft mention of alternative if relevant</td>
+              </tr>
+              <tr>
+                <td>Twitter/LinkedIn</td>
+                <td>Real-time via notifications if possible</td>
+                <td>Empathetic and brief. Offer to help via DM. Public comment should be supportive not opportunistic</td>
+              </tr>
+              <tr>
+                <td>Private communities (Slack, Discord)</td>
+                <td>Only if you are member; no lurking</td>
+                <td>Helpful community member first. Transparent about working for alternative. Ethical participation essential</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Ethics check:</strong> Only engage in communities where you are genuine member, not just monitoring for leads. Lurking solely to sell feels predatory and damages brand. Participate authentically or stay out.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Complaint Analysis sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Complaint Analysis - Understanding Root Issues</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Not all complaints are equal opportunities</h3>
+            <p>Surface-level complaint might be "tool is buggy" but root issue could be poor onboarding, missing feature, or bad product-market fit. Understand what really frustrated them to position effectively.</p>
+
+            <h3>Reading between complaint lines</h3>
+            <ul>
+              <li><strong>Feature gap vs execution issue</strong> - "They do not have X feature" means your solution needs that feature. "Feature X never works" means execution problem you might also have. Distinguish carefully</li>
+              <li><strong>Onboarding or ongoing problem</strong> - "Could not figure out setup" signals onboarding weakness. "Breaks every week" signals reliability issue. Different problems need different positioning</li>
+              <li><strong>Price vs value complaint</strong> - "Too expensive" might mean actually overpriced or might mean insufficient value delivery. If price-driven, understand what value they needed</li>
+              <li><strong>Support or product problem</strong> - "Support never helped" versus "product cannot do X" are different root causes. Know whether your differentiator is product or service</li>
+            </ul>
+
+            <h3>Complaint patterns to track</h3>
+            <table>
+              <tr><th>Complaint Type</th><th>Positioning Opportunity</th><th>If You Have Same Issue</th></tr>
+              <tr>
+                <td>Missing critical feature</td>
+                <td>If you have feature, lead with that. Show exact capability they needed</td>
+                <td>Be transparent you also lack it. Differentiate on other dimensions or roadmap commitment</td>
+              </tr>
+              <tr>
+                <td>Poor reliability or uptime</td>
+                <td>Highlight your infrastructure, SLAs, uptime track record</td>
+                <td>Do not engage. If you have similar issues, this is not your opportunity</td>
+              </tr>
+              <tr>
+                <td>Bad customer support</td>
+                <td>Emphasise your support model, response times, dedicated success resources</td>
+                <td>If your support is also weak, focus on product superiority not service</td>
+              </tr>
+              <tr>
+                <td>Complicated setup or UX</td>
+                <td>Offer white-glove onboarding, simpler UX, faster time-to-value</td>
+                <td>Acknowledge complexity, highlight where you have made different trade-offs</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pattern recognition:</strong> Track recurring complaints across multiple users. Common pain points become core messaging pillars. If 15 people complain about same competitor weakness, build entire campaign around your strength in that area.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Public Response Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Public Response Strategy - Help First, Sell Second</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Public comments set brand tone</h3>
+            <p>How you respond publicly to competitor complaints shapes perception beyond just that one user. Others see whether you are opportunistic vulture or genuinely helpful expert. Lead with empathy and value.</p>
+
+            <h3>Public response framework</h3>
+            <ul>
+              <li><strong>Acknowledge their pain</strong> - "That sounds incredibly frustrating, especially when X" validates their experience. Shows you listened not just looking for opening</li>
+              <li><strong>Provide perspective or help</strong> - Offer insight on why issue happens or workaround if you know one. Be helpful even if it helps competitor relationship</li>
+              <li><strong>Soft mention if natural</strong> - "We built our platform specifically to avoid that problem after seeing many teams struggle with it" plants seed without hard sell</li>
+              <li><strong>Invite private conversation</strong> - "Happy to chat about how we approach this differently if helpful" opens door without public sales pitch</li>
+            </ul>
+
+            <h3>Response tone by platform</h3>
+            <table>
+              <tr><th>Platform</th><th>Tone</th><th>Example Opening</th></tr>
+              <tr>
+                <td>Reddit</td>
+                <td>Casual, peer-to-peer, transparent about affiliation</td>
+                <td>That is rough. Full disclosure I work at AlternativeTool but even competitor-agnostic, this is a known issue in category because...</td>
+              </tr>
+              <tr>
+                <td>G2 Review Comment</td>
+                <td>Professional but empathetic, educational</td>
+                <td>Thanks for sharing detailed feedback. The issue you described is common when X happens. Here is how different tools approach that problem...</td>
+              </tr>
+              <tr>
+                <td>Twitter/LinkedIn</td>
+                <td>Brief, supportive, move to DM quickly</td>
+                <td>Sorry you are dealing with that. We have seen this before and may have thoughts. Happy to chat in DM if useful</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>The long game:</strong> Even if complainer does not convert, others experiencing same pain see you being helpful expert. Public responses are marketing to lurkers not just the original poster. Play for audience.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Private Follow-Up sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Private Follow-Up - Transitioning to Sales Conversation</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Moving from public empathy to private value delivery</h3>
+            <p>After helpful public comment, private follow-up can be more direct about your solution. They have already seen you understand the problem. Now show you solve it.</p>
+
+            <h3>Private message structure</h3>
+            <ul>
+              <li><strong>Reference public interaction</strong> - "Saw your G2 review about X issue. Wanted to follow up privately with more context"</li>
+              <li><strong>Demonstrate specific understanding</strong> - "The problem you described where Y happens is exactly what we built our platform to prevent"</li>
+              <li><strong>Explain your approach</strong> - "We handle this by Z, which means you would not hit that failure mode you experienced"</li>
+              <li><strong>Offer relevant next step</strong> - "Happy to show you how this works in practice. 15 min call or I can record quick video walkthrough?"</li>
+            </ul>
+
+            <h3>Follow-up timing and cadence</h3>
+            <table>
+              <tr><th>Timing</th><th>Action</th><th>Rationale</th></tr>
+              <tr>
+                <td>Within 24 hours of complaint</td>
+                <td>Public helpful comment</td>
+                <td>Pain is fresh. Receptiveness highest. Quick response shows you are monitoring and care</td>
+              </tr>
+              <tr>
+                <td>2-4 hours after public comment</td>
+                <td>Send private DM or email</td>
+                <td>Let public comment breathe. Give them time to see it and others to engage. Then transition private</td>
+              </tr>
+              <tr>
+                <td>3 days after initial DM if no response</td>
+                <td>Gentle follow-up with additional value</td>
+                <td>They may have missed first message. Add new info like case study of similar switcher. One follow-up only</td>
+              </tr>
+              <tr>
+                <td>After they engage positively</td>
+                <td>Move to call or detailed demo</td>
+                <td>Once they respond with interest, accelerate to higher-bandwidth conversation. Strike while iron is hot</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Switching friction acknowledgment:</strong> Address switching cost head-on. "I know changing tools is painful. Here is how we make migration smooth..." shows you respect their situation and are not naive about asking them to switch.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Immediately pitching in public comment</h4>
+          <div class="why">Jumping on complaint with "Switch to us!" looks opportunistic and desperate. Other community members see you as vulture. Damages brand perception.</div>
+          <div class="fix">Lead with genuine help and empathy in public comment. Soft mention of alternative if natural. Save pitch for private follow-up after building credibility.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Not disclosing affiliation</h4>
+          <div class="why">Pretending to be neutral third party while secretly representing competitor is unethical and backfires when discovered. Destroys trust permanently.</div>
+          <div class="fix">Always transparently disclose you work for alternative solution. "Full disclosure I work at X, but..." Honesty builds credibility even when selling.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Engaging with every complaint regardless of fit</h4>
+          <div class="why">Not all dissatisfied competitor users match your ICP. Reaching out to poor-fit companies wastes time and dilutes messaging effectiveness.</div>
+          <div class="fix">Qualify complaints before engaging. Only respond to users whose company size, industry, and use case match your ideal customer profile.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Promising you solve issue you also have</h4>
+          <div class="why">Claiming superiority on dimension where you are equal or worse creates bad customer experience post-sale. They churn faster than competitor users.</div>
+          <div class="fix">Be honest about your limitations. Differentiate on areas of genuine strength. If you have same weakness, acknowledge and highlight different trade-offs you make.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Only monitoring one channel</h4>
+          <div class="why">Complaints surface across G2, Reddit, Twitter, forums. Monitoring only G2 means missing 70% of dissatisfaction signals.</div>
+          <div class="fix">Set up monitoring across multiple channels. Different user types complain in different places. Reddit for technical users, G2 for buyers, Twitter for real-time venting.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. No follow-up after initial public comment</h4>
+          <div class="why">Helpful public comment builds credibility but does not close deals. Stopping there leaves opportunity on table.</div>
+          <div class="fix">Always follow public helpfulness with private outreach. DM or email within hours referencing public interaction. Move conversation to higher-bandwidth private channel.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

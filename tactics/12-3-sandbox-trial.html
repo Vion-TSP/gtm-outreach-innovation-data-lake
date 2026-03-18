@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 12.3 — Sandbox/Trial | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 12.3 - Product-Led / Experience</div>
+  <h1>Pre-Populated Sandbox/Trial Environment</h1>
+  <p class="desc">Instant access to fully configured product environment pre-loaded with realistic sample data, configured workflows, and guided tour. Prospects experience value immediately without setup friction, seeing exactly how product solves their use case with relevant examples.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: High</span>
+    <span class="tag tag-cost">Cost: Medium-High</span>
+    <span class="tag tag-icp">ICP: Technical Buyers, Operations Teams</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Traditional trials force prospects into empty environments requiring hours of setup before seeing any value. Most abandon before reaching aha moment. Pre-populated sandboxes eliminate setup friction by dropping prospects into fully working environment with realistic data, letting them experience value in first 5 minutes instead of waiting days.
+      </div>
+      <h3>The psychology behind pre-populated experiences</h3>
+      <ul>
+        <li><strong>Instant gratification</strong> - Humans heavily discount future value. Seeing immediate results in pre-loaded environment feels more valuable than promise of what they could build themselves eventually</li>
+        <li><strong>Reduced cognitive load</strong> - Learning new software while simultaneously creating test data overwhelms working memory. Pre-populated environments separate learning from setup, making adoption easier</li>
+        <li><strong>Social proof demonstration</strong> - Realistic sample data shows how similar companies use the product, providing implicit validation and usage ideas without explicit sales messaging</li>
+        <li><strong>Completion momentum</strong> - Starting with working environment creates psychological investment. People feel progress already made and want to continue rather than abandon</li>
+      </ul>
+      <h3>Why pre-populated specifically</h3>
+      <p>Generic empty trials make prospects imagine how product might work. Pre-populated sandboxes show exactly how it works with data resembling their reality. This concrete demonstration converts better than abstract possibility because humans struggle to visualise abstract concepts but immediately understand tangible examples.</p>
+      <p><strong>The compounding effect:</strong> Prospects who experience quick wins in sandbox become internal champions. They have concrete examples to share with stakeholders, accelerating buying committee consensus. Quick sandbox success creates evangelists who sell for you internally.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">R</div><div class="wf-label">Request Access</div><div class="wf-action">Simple form</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">P</div><div class="wf-label">Provision Sandbox</div><div class="wf-action">Auto-generate</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">L</div><div class="wf-label">Load Sample Data</div><div class="wf-action">Pre-configured</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">G</div><div class="wf-label">Guided Tour</div><div class="wf-action">Interactive walk</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">E</div><div class="wf-label">Explore Features</div><div class="wf-action">Hands-on use</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">C</div><div class="wf-label">Convert to Customer</div><div class="wf-action">Easy upgrade</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Design Sample Data Scenarios</td>
+          <td>Create realistic sample datasets representing common use cases for your top 3 customer segments. Include enough variety to show flexibility while maintaining relevance. Data should feel authentic not obviously fake</td>
+          <td>2-3 weeks initial dataset creation</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Build Provisioning Automation</td>
+          <td>Develop scripts or use tools to automatically spin up new sandbox instances pre-loaded with sample data. Process should complete in under 2 minutes from signup to ready-to-use environment. Include user segmentation to load appropriate data</td>
+          <td>3-4 weeks engineering effort</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Create Guided Tour Experience</td>
+          <td>Design interactive walkthrough highlighting key features and value moments using the pre-loaded data. Tour should take 5-8 minutes and show 3-5 core use cases. Include tooltips and progressive disclosure to avoid overwhelming users</td>
+          <td>1-2 weeks design and implementation</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Configure Usage Limits</td>
+          <td>Set appropriate restrictions on sandbox to prevent abuse while allowing meaningful exploration. Limits might include time expiration, feature restrictions, or data volume caps. Balance protection with usability</td>
+          <td>1 week policy definition and implementation</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Implement Conversion Pathways</td>
+          <td>Build clear upgrade flows from sandbox to paid account. Allow prospects to easily convert sandbox to production instance, preserving any work they created. Reduce friction in conversion moment</td>
+          <td>1-2 weeks development</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Set Up Usage Monitoring</td>
+          <td>Track sandbox user behaviour to identify engagement patterns, feature adoption, and conversion signals. Alert sales when prospects show high engagement or reach key milestones indicating buying intent</td>
+          <td>1 week analytics setup</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Start with single pre-populated scenario for your largest customer segment. Validate conversion lift before investing in multiple scenarios. Once proven, expand to segment-specific sandboxes that show relevant examples for different industries or use cases.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Reprise</strong></td>
+          <td>$$$</td>
+          <td>Complex B2B products needing interactive demo environments</td>
+          <td>Create replica product environments without engineering effort. Pre-load custom data per prospect. Track engagement and usage. Supports both self-serve and sales-led demos. No code required for demo creation</td>
+          <td>Expensive for early-stage companies. Best for products with complex interfaces. Requires regular maintenance as product evolves. Learning curve for demo creation</td>
+        </tr>
+        <tr>
+          <td><strong>Walnut</strong></td>
+          <td>$$-$$$</td>
+          <td>Sales teams wanting click-through product demos with customisation</td>
+          <td>Build interactive product demos with branching logic. Personalise demos for different audiences. Analytics on engagement. Collaborative demo creation without engineering. Focus on sales-led use cases</td>
+          <td>Not true sandbox environment, more guided walkthrough. Limited hands-on exploration. Better for showing product than letting prospects try it. Requires demo script design</td>
+        </tr>
+        <tr>
+          <td><strong>Custom Engineering Solution</strong></td>
+          <td>$$$$</td>
+          <td>Technical products where authentic experience requires real product</td>
+          <td>Build your own sandbox provisioning using containerisation and infrastructure-as-code. Complete control over experience. True product environment not replica. Deeply integrated with your architecture</td>
+          <td>High engineering investment to build and maintain. Requires DevOps expertise. Ongoing costs for infrastructure. Security and abuse prevention complexity. Long time to launch</td>
+        </tr>
+        <tr>
+          <td><strong>Qualified Demos</strong></td>
+          <td>$$</td>
+          <td>SaaS products with relatively simple interfaces</td>
+          <td>Screen recording based demos that feel interactive. Pre-configure scenarios and user flows. Fast to create and update. Lower cost than full sandbox solutions. Good for initial validation</td>
+          <td>Not truly interactive, users click through predetermined paths. Cannot explore freely. Feels less authentic than real product. Limited for complex products with many options</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Reprise</strong> for most B2B products needing hands-on trials without heavy engineering. Choose <strong>Custom Engineering</strong> if product complexity demands real environment or you have engineering resources. Use <strong>Walnut</strong> if primary goal is sales-led demos rather than self-serve exploration. Consider <strong>Qualified</strong> for quick MVP to test demand before larger investment.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Sample Data Design sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Sample Data Design - Realistic and Relevant</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Data quality determines experience quality</h3>
+            <p>Sample data must feel authentic enough to be believable while remaining generic enough to apply broadly. Poor sample data makes sandbox feel like toy rather than real product. Invest time creating high-quality realistic datasets.</p>
+
+            <h3>Sample data quality criteria</h3>
+            <ul>
+              <li><strong>Realistic volume</strong> - Include enough data to show product at representative scale. Too little looks empty and unimpressive. Too much overwhelms and slows interface. Match typical customer data volumes</li>
+              <li><strong>Varied examples</strong> - Show range of use cases and edge cases, not just happy path. Include examples of problems product solves and how features handle different scenarios</li>
+              <li><strong>Industry relevance</strong> - Tailor datasets to prospect industry when possible. Financial services prospects see financial examples, retail prospects see retail data. Relevance increases perceived value</li>
+              <li><strong>Plausible relationships</strong> - Ensure data entities relate logically. Customer records should connect to realistic orders, projects should have appropriate tasks. Broken relationships feel fake</li>
+            </ul>
+
+            <h3>Sample data creation approach</h3>
+            <table>
+              <tr><th>Data Type</th><th>Volume Guidance</th><th>Realism Requirements</th></tr>
+              <tr>
+                <td>Core entities (customers, projects)</td>
+                <td>20-50 records showing variety</td>
+                <td>Realistic names, diverse attributes, mix of statuses. Enough variety to demonstrate segmentation and filtering</td>
+              </tr>
+              <tr>
+                <td>Transactional data (orders, activities)</td>
+                <td>100-300 records with temporal spread</td>
+                <td>Distributed over time showing trends. Realistic frequency and patterns. Some outliers to demonstrate handling</td>
+              </tr>
+              <tr>
+                <td>Configuration (settings, workflows)</td>
+                <td>2-3 common configurations</td>
+                <td>Represent typical setup for target segment. Show both simple and advanced configurations</td>
+              </tr>
+              <tr>
+                <td>User accounts</td>
+                <td>3-5 roles showing permissions</td>
+                <td>Represent typical team structure. Show collaboration features and role-based access</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Anonymisation balance:</strong> Use realistic but clearly fictional company names like Acme Industries rather than real customer names (privacy issues) or obviously fake names like Test Company 1 (feels cheap). Create a fictional universe that feels professional and believable.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guided Onboarding sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Guided Onboarding - Fast Time to Value</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Pre-loaded data alone is not enough</h3>
+            <p>Even with sample data, new users need orientation to understand what they are seeing and what to try. Guided tour points them to high-value features and use cases, ensuring they experience aha moments before exploration fatigue sets in.</p>
+
+            <h3>Effective tour design principles</h3>
+            <ul>
+              <li><strong>Progressive disclosure</strong> - Show 3-5 key features in tour, not everything. Attempting comprehensive tour overwhelms users. Focus on features that demonstrate core value proposition most clearly</li>
+              <li><strong>Interactive not passive</strong> - Have users click and interact during tour rather than just watching. Active participation increases retention and engagement</li>
+              <li><strong>Contextual tooltips</strong> - Provide just-in-time help when users hover or click elements. Let them learn by exploring with safety net rather than forcing linear walkthrough</li>
+              <li><strong>Skip-friendly</strong> - Allow users to skip tour if they prefer exploration. Some users want to dive in immediately. Make tour dismissible without losing access to help</li>
+            </ul>
+
+            <h3>Tour content structure</h3>
+            <table>
+              <tr><th>Tour Stage</th><th>Focus</th><th>Duration</th><th>User Action</th></tr>
+              <tr>
+                <td>Welcome</td>
+                <td>Orient to sample data and tour purpose</td>
+                <td>30 seconds</td>
+                <td>Click to start or skip tour</td>
+              </tr>
+              <tr>
+                <td>Core use case 1</td>
+                <td>Show primary value proposition with example</td>
+                <td>90 seconds</td>
+                <td>Interact with pre-loaded example</td>
+              </tr>
+              <tr>
+                <td>Core use case 2</td>
+                <td>Demonstrate second major capability</td>
+                <td>90 seconds</td>
+                <td>Try feature with sample data</td>
+              </tr>
+              <tr>
+                <td>Quick win</td>
+                <td>Let user accomplish something immediately</td>
+                <td>2 minutes</td>
+                <td>Complete simple task successfully</td>
+              </tr>
+              <tr>
+                <td>Next steps</td>
+                <td>Point to additional resources and features to explore</td>
+                <td>30 seconds</td>
+                <td>Dismiss tour and begin free exploration</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Aha moment engineering:</strong> Identify the moment when users typically say "wow, this is useful" during customer onboarding. Structure your tour to reach that exact moment within first 3 minutes. Everything in tour should build toward or reinforce that aha moment.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Usage Monitoring sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Usage Monitoring - Identify Hot Prospects</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Track engagement to prioritise sales follow-up</h3>
+            <p>Sandbox provides rich behavioural data about prospect interest and fit. Monitor usage patterns to identify highly engaged prospects showing buying signals, and surface them to sales for timely follow-up before interest cools.</p>
+
+            <h3>High-intent engagement signals</h3>
+            <ul>
+              <li><strong>Deep feature exploration</strong> - User explores beyond guided tour into advanced features. Indicates serious evaluation not casual browsing</li>
+              <li><strong>Return visits</strong> - User comes back to sandbox multiple times over several days. Repeated engagement signals ongoing interest and internal discussion</li>
+              <li><strong>Collaboration indicators</strong> - User invites team members or shares sandbox with colleagues. Buying committee expansion suggests deal progression</li>
+              <li><strong>Configuration attempts</strong> - User tries to modify settings or import their own data. Signals intent to actually implement not just evaluate</li>
+            </ul>
+
+            <h3>Sales alert criteria framework</h3>
+            <table>
+              <tr><th>Engagement Pattern</th><th>Alert Priority</th><th>Sales Action</th><th>Timing</th></tr>
+              <tr>
+                <td>Explored 5+ features plus invited team member</td>
+                <td>Hot</td>
+                <td>Direct call plus personalised email referencing usage</td>
+                <td>Within 4 hours</td>
+              </tr>
+              <tr>
+                <td>Returned 3+ times or spent 30+ minutes total</td>
+                <td>Warm</td>
+                <td>Personalised email offering help or advanced resources</td>
+                <td>Within 24 hours</td>
+              </tr>
+              <tr>
+                <td>Completed guided tour and explored 2-3 features</td>
+                <td>Engaged</td>
+                <td>Automated nurture email with case studies</td>
+                <td>Day 3 after signup</td>
+              </tr>
+              <tr>
+                <td>Started tour but abandoned quickly or never returned</td>
+                <td>Low</td>
+                <td>Re-engagement email with different positioning</td>
+                <td>Day 7 after signup</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Context for sales:</strong> When alerting reps about hot sandbox users, provide specific details about what prospect explored and tried. "Sarah from Acme spent 45 minutes exploring dashboard features and tried custom report builder" helps rep personalise follow-up much better than generic "Sarah is active in sandbox".
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conversion Path Optimisation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Conversion Path Optimisation - Sandbox to Customer</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Remove friction in upgrade moment</h3>
+            <p>Users love sandbox and want to buy. But clunky conversion process kills momentum. Make transition from sandbox to paid customer as seamless as possible, ideally preserving work they created in sandbox so value carries forward.</p>
+
+            <h3>Conversion friction points to eliminate</h3>
+            <ul>
+              <li><strong>Losing sandbox work</strong> - Requiring users to start fresh in paid version wastes effort they invested in sandbox. Let them convert sandbox instance to production, keeping configurations and sample work</li>
+              <li><strong>Complex pricing decisions</strong> - Forcing users to choose between 5 tier options with 20 features each creates analysis paralysis. Recommend tier based on their sandbox usage patterns</li>
+              <li><strong>Multi-step purchase flow</strong> - Long checkout processes with many form fields increase abandonment. Streamline to minimum required information. Save detailed onboarding for post-purchase</li>
+              <li><strong>Unclear next steps</strong> - Users want to buy but cannot find upgrade button or it is unclear what happens next. Make conversion call-to-action prominent and process transparent</li>
+            </ul>
+
+            <h3>Conversion optimisation tactics</h3>
+            <table>
+              <tr><th>Tactic</th><th>Implementation</th><th>Impact</th></tr>
+              <tr>
+                <td>In-context upgrade prompts</td>
+                <td>When user hits sandbox limit, show upgrade option immediately with benefit of removing limit</td>
+                <td>Captures high-intent moment when user wants to do more</td>
+              </tr>
+              <tr>
+                <td>Usage-based tier recommendation</td>
+                <td>Analyse sandbox usage to recommend appropriate plan. "Based on features you used, we recommend Professional tier"</td>
+                <td>Reduces decision fatigue and positions higher tiers credibly</td>
+              </tr>
+              <tr>
+                <td>Preserve sandbox work</td>
+                <td>Convert sandbox to production account keeping their configurations. Offer migration assistance for complex setups</td>
+                <td>Maintains momentum and demonstrates respect for time invested</td>
+              </tr>
+              <tr>
+                <td>Trial extension offers</td>
+                <td>For engaged users not yet ready to buy, offer extended trial in exchange for feedback or use case discussion</td>
+                <td>Keeps evaluation alive while gathering qualification information</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Async purchase enablement:</strong> For products with complex pricing or enterprise focus, allow prospects to request quote or schedule purchase discussion directly from sandbox with context about their usage. This seamlessly bridges self-serve exploration to assisted buying for high-value deals.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Sample data too generic or obviously fake</h4>
+          <div class="why">Using placeholder names like Test Company 1 or obviously dummy data makes sandbox feel like toy not real product. Prospects cannot envision their actual use case. Credibility suffers.</div>
+          <div class="fix">Create realistic sample data with plausible company names, varied scenarios, and authentic-feeling details. Tailor datasets to prospect industry when possible. Invest time making data feel professional and believable.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. No guided onboarding, just empty environment</h4>
+          <div class="why">Dropping users into pre-populated sandbox without orientation leaves them confused about where to start and what to try. They wander aimlessly then leave without experiencing key value.</div>
+          <div class="fix">Build interactive guided tour that highlights 3-5 key features using the sample data. Get users to aha moment within first 3 minutes. Provide contextual help throughout for self-directed exploration.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Slow provisioning killing momentum</h4>
+          <div class="why">Prospect requests sandbox access and waits 30 minutes or longer for environment to be ready. Interest cools during wait. Many never return after delay.</div>
+          <div class="fix">Automate sandbox provisioning to complete within 2 minutes maximum. Instant or near-instant access maintains excitement and momentum. Pre-provision environments if necessary to eliminate wait time.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Not monitoring usage for sales signals</h4>
+          <div class="why">Prospects use sandbox but sales has no visibility into engagement level or feature exploration. Hot leads get treated same as cold leads. Miss optimal follow-up timing.</div>
+          <div class="fix">Implement usage tracking and engagement scoring. Alert sales immediately when prospects show high-intent signals like deep feature exploration or team member invitations. Provide behavioural context for personalised follow-up.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Losing sandbox work on conversion</h4>
+          <div class="why">User invests time configuring sandbox and creating examples, but must start from scratch in paid version. Feels wasteful and creates friction exactly when they want to buy.</div>
+          <div class="fix">Preserve sandbox work when converting to paid account. Offer migration or conversion of sandbox instance to production. Respect time invested and make upgrade seamless continuation not restart.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Overly restrictive sandbox limits</h4>
+          <div class="why">Tight restrictions on time, features, or data volume prevent users from meaningfully evaluating product. They hit limits before experiencing full value. Frustration replaces excitement.</div>
+          <div class="fix">Set generous limits that allow thorough evaluation while preventing abuse. Better to give 14 days than 7, allow key features than lock too many. Balance security with evaluation completeness. Monitor actual usage to calibrate limits.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

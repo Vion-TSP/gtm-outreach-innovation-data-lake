@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 10.3 — AI Voice Agents | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 10.3 - AI-Powered</div>
+  <h1>AI Voice Agents</h1>
+  <p class="desc">Deploy AI voice agents to make outbound calls, qualify leads, answer questions, handle objections, and book meetings automatically. AI handles conversational phone outreach at scale while sounding natural and human-like.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Medium-High</span>
+    <span class="tag tag-icp">ICP: Founders, Sales Leaders, Operations Teams</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Phone conversations convert better than emails but do not scale economically. AI voice agents solve this by conducting human-quality phone conversations at machine scale and cost. You get phone channel effectiveness with email channel economics.
+      </div>
+      <h3>The psychology behind AI voice effectiveness</h3>
+      <ul>
+        <li><strong>Immediate engagement advantage</strong> - Phone conversation forces immediate attention. Cannot ignore or delay like email. Prospect must engage in real-time creating urgency</li>
+        <li><strong>Natural conversation builds trust</strong> - Voice conversation feels more personal and trustworthy than text. Tone and pacing convey warmth. Human connection happens faster</li>
+        <li><strong>Real-time objection handling</strong> - AI responds to objections immediately in conversation. No delay for follow-up email. Maintains momentum and addresses concerns before they solidify</li>
+        <li><strong>Qualification through dialogue</strong> - Conversational format lets AI ask clarifying questions naturally. Discovers true needs and pain points through back-and-forth that email cannot achieve</li>
+      </ul>
+      <h3>Why AI voice agents specifically</h3>
+      <p>Human SDRs making 50 calls per day is expensive and does not scale. Recordings and IVR feel robotic and impersonal. AI voice agents deliver natural conversation quality at infinite scale with zero incremental cost per call.</p>
+      <p><strong>The compounding effect:</strong> AI voice improves through machine learning. Every call trains the model. Objection handling gets better. Tone becomes more natural. Quality increases as volume scales.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-email">C</div><div class="wf-label">Configure</div><div class="wf-action">Voice & script</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-linkedin">U</div><div class="wf-label">Upload</div><div class="wf-action">Call list</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-phone">D</div><div class="wf-label">Dial</div><div class="wf-action">Auto calling</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-video">C</div><div class="wf-label">Converse</div><div class="wf-action">AI responds</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">Q</div><div class="wf-label">Qualify</div><div class="wf-action">Ask questions</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-video">B</div><div class="wf-label">Book</div><div class="wf-action">Set meeting</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Configure AI Voice Agent</td>
+          <td>Choose platform like 11x.ai, Bland.ai, or Air AI. Select voice persona and tone. Configure conversation script with branches for different responses. Define qualification criteria and booking logic</td>
+          <td>6-8 hours initial setup</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Upload Call List</td>
+          <td>Provide list of prospects with phone numbers and context data. Include company name, role, recent triggers, or pain points. AI uses this context to personalise each call</td>
+          <td>1 hour list preparation</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>AI Initiates Calls</td>
+          <td>AI agent dials numbers automatically respecting time zones and do-not-call lists. Handles voicemail detection. Leaves personalised voicemail if no answer. Retries based on configuration</td>
+          <td>Automated, no manual time</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>AI Conducts Conversation</td>
+          <td>When prospect answers, AI introduces itself and purpose of call. Engages in natural conversation adapting to prospect responses. Handles interruptions, questions, and objections in real-time</td>
+          <td>Automated, 2-8 min per call</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>AI Qualifies Prospect</td>
+          <td>Through conversation, AI asks qualifying questions to determine fit, budget, authority, timeline. Adapts questions based on responses. Scores prospect qualification level automatically</td>
+          <td>Automated during call</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>AI Books Meeting or Takes Action</td>
+          <td>If prospect qualified and interested, AI offers to book meeting with human sales rep. Accesses shared calendar and schedules directly. Sends confirmation. If not qualified, categorises lead for future nurture</td>
+          <td>Automated, instant booking</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Start with AI calling warm leads who filled out forms or showed intent signals. Higher conversion rate builds confidence in channel before expanding to cold calling.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>11x.ai</strong></td>
+          <td>£££</td>
+          <td>Enterprise-grade conversational AI with highest quality</td>
+          <td>Most natural sounding voice AI. Handles complex conversations and objections. Integrates with CRM and calendar. Enterprise support and reliability. Best-in-class conversation quality</td>
+          <td>Premium pricing. Requires significant call volume to justify cost. Complex setup requiring dedicated implementation support</td>
+        </tr>
+        <tr>
+          <td><strong>Bland.ai</strong></td>
+          <td>££</td>
+          <td>Mid-market balance of quality and affordability</td>
+          <td>Good voice quality at accessible price point. Flexible scripting. Easy integration with common tools. Good for companies new to AI calling wanting to test channel</td>
+          <td>Slightly less natural than 11x. More limited objection handling. Requires more script refinement to handle edge cases</td>
+        </tr>
+        <tr>
+          <td><strong>Air AI</strong></td>
+          <td>££</td>
+          <td>Startups wanting simple setup and quick deployment</td>
+          <td>Fast implementation. Simple interface. Affordable entry point to AI calling. Good for validating channel before bigger investment in premium tools</td>
+          <td>Basic conversation capabilities. Struggles with complex objections. Voice quality acceptable but not impressive. Best as starter tool</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> For enterprise with established SDR team and high call volume, invest in <strong>11x.ai</strong> (£££) for best quality. For mid-market testing channel, <strong>Bland.ai</strong> (££) offers good balance of quality and cost.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Script and Voice Configuration sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Script and Voice Configuration - Sounding Natural</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Script quality determines conversation quality</h3>
+            <p>AI can only work within the script you provide. Rigid scripting produces robotic conversations. Good scripting creates natural dialogue with flexibility to adapt to prospect responses.</p>
+
+            <h3>Script structure best practices</h3>
+            <ul>
+              <li><strong>Conversational opening</strong> - Start naturally like human would. "Hi James, this is Sarah calling from Acme. Do you have a quick minute?" Not formal script reading</li>
+              <li><strong>Clear value proposition early</strong> - State why you are calling within first 15 seconds. "Calling about X because companies like yours often struggle with Y." Give reason to stay on call</li>
+              <li><strong>Question-based flow</strong> - Use questions to guide conversation not monologue. "What are you currently using for X?" AI adapts responses based on answers</li>
+              <li><strong>Branching logic for responses</strong> - Script multiple paths for different objections and responses. "If they say not interested, say X. If they ask about pricing, say Y." Handles variations</li>
+            </ul>
+
+            <h3>Voice persona selection</h3>
+            <table>
+              <tr><th>Voice Type</th><th>Best For</th><th>Characteristics</th></tr>
+              <tr>
+                <td>Professional female</td>
+                <td>General B2B outbound to executives</td>
+                <td>Warm but professional tone. Clear articulation. Perceived as trustworthy and competent. Good general purpose choice</td>
+              </tr>
+              <tr>
+                <td>Professional male</td>
+                <td>Technical products or male-dominated industries</td>
+                <td>Authoritative tone. Good for technical discussions. May be preferred in certain industries or cultures</td>
+              </tr>
+              <tr>
+                <td>Friendly casual</td>
+                <td>SMB outreach or less formal industries</td>
+                <td>More relaxed tone. Approachable. Works well for small business owners who prefer casual conversation</td>
+              </tr>
+              <tr>
+                <td>Custom voice clone</td>
+                <td>Founder-led sales or when brand voice matters</td>
+                <td>Clone of actual team member voice. Most authentic. Requires voice samples to train. Best for relationship-driven sales</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Iteration mindset:</strong> Initial script will not be perfect. Review call recordings weekly. Identify where AI struggles or sounds unnatural. Refine script iteratively based on real conversations.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Qualification Logic sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Qualification Logic - Efficient Lead Scoring</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>AI must know what questions to ask</h3>
+            <p>Qualification separates interested prospects from poor fits. Configure AI to ask right questions in natural conversation flow to determine fit, budget, authority, need, and timeline.</p>
+
+            <h3>Qualification framework questions</h3>
+            <ul>
+              <li><strong>Fit questions</strong> - "How many people on your sales team?" or "What CRM are you currently using?" Confirms they match ICP profile</li>
+              <li><strong>Pain point questions</strong> - "What is your biggest challenge with X right now?" Validates problem you solve exists for them</li>
+              <li><strong>Authority questions</strong> - "Are you the person who makes decisions about X?" or "Who else would be involved in evaluating solutions?" Identifies decision making process</li>
+              <li><strong>Timeline questions</strong> - "When are you looking to have this solved by?" or "Are you actively evaluating options now?" Gauges urgency</li>
+            </ul>
+
+            <h3>Scoring and routing logic</h3>
+            <table>
+              <tr><th>Qualification Level</th><th>Criteria</th><th>AI Action</th></tr>
+              <tr>
+                <td>Hot lead</td>
+                <td>ICP fit, active pain, decision maker, urgent timeline</td>
+                <td>Book meeting immediately. Route to senior sales rep. Send instant notification to team</td>
+              </tr>
+              <tr>
+                <td>Warm lead</td>
+                <td>ICP fit, identified pain, some authority, 3-6 month timeline</td>
+                <td>Book discovery call. Add to nurture sequence. Assign to SDR for follow-up</td>
+              </tr>
+              <tr>
+                <td>Cool lead</td>
+                <td>ICP fit but no immediate pain or timeline</td>
+                <td>Add to long-term nurture. Send educational content. Re-engage in 6 months</td>
+              </tr>
+              <tr>
+                <td>Disqualified</td>
+                <td>Wrong company size, no budget, wrong industry</td>
+                <td>Politely end call. Mark as disqualified in CRM. Do not re-contact</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Adaptive questioning:</strong> AI should ask different depth of questions based on engagement level. Interested prospects get full qualification. Hesitant prospects get lighter touch to avoid overwhelming them.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Objection Handling sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Objection Handling - Preparing AI Responses</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Common objections need scripted responses</h3>
+            <p>Prospects will raise predictable objections. AI must have prepared responses that sound natural and address concerns without sounding defensive or salesy.</p>
+
+            <h3>Standard objections and responses</h3>
+            <ul>
+              <li><strong>Not interested</strong> - "I completely understand. Can I ask what specifically does not fit? Many companies initially think that but find X once they learn more about Y."</li>
+              <li><strong>No time right now</strong> - "Totally get it. This will only take 2 minutes. I am calling because companies like yours often struggle with X. Does that resonate?"</li>
+              <li><strong>Send me information</strong> - "Happy to send materials. Before I do, let me ask one quick question so I send the right info. Are you currently using anything for X?"</li>
+              <li><strong>Already have solution</strong> - "Great that you have something in place. What made you choose that tool? Most of our customers came from X and found they were missing Y."</li>
+            </ul>
+
+            <h3>Objection response frameworks</h3>
+            <table>
+              <tr><th>Objection Type</th><th>Response Framework</th><th>Goal</th></tr>
+              <tr>
+                <td>Timing objection</td>
+                <td>Acknowledge + Reframe urgency</td>
+                <td>I understand timing is tight. Quick question - is X challenge costing you time or money right now? Often waiting costs more than acting</td>
+              </tr>
+              <tr>
+                <td>Budget objection</td>
+                <td>Acknowledge + ROI reframe</td>
+                <td>Budget is always a consideration. Our customers typically see X return within Y months. Would you be open to seeing how the economics work?</td>
+              </tr>
+              <tr>
+                <td>Authority objection</td>
+                <td>Qualify decision process</td>
+                <td>Makes sense. Who else would be involved in evaluating this? Would it be helpful if I spoke with them as well or sent materials you can share?</td>
+              </tr>
+              <tr>
+                <td>Competitor objection</td>
+                <td>Acknowledge + differentiate</td>
+                <td>We work with many companies who use X. The main difference is Y. Would it be worth 10 minutes to see if that applies to your situation?</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Graceful exit:</strong> If prospect clearly not interested after objection handling, AI should exit politely. "No problem. If anything changes in future, feel free to reach out." Do not push past clear rejection.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transparency and Disclosure sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Transparency and Disclosure - Ethics of AI Calling</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Should AI identify itself as AI</h3>
+            <p>Voice AI quality is now good enough to pass as human in many conversations. This raises ethical question of whether AI should disclose its nature or attempt to pass as human caller.</p>
+
+            <h3>Disclosure approaches and trade-offs</h3>
+            <ul>
+              <li><strong>No disclosure</strong> - AI presents as human caller. Maximises engagement. Risk of backlash if discovered. May violate regulations in some jurisdictions</li>
+              <li><strong>Upfront disclosure</strong> - "Hi, this is Sarah, an AI assistant from Acme." Fully transparent but may cause immediate hang-ups from people uncomfortable with AI</li>
+              <li><strong>Disclosure on request</strong> - AI identifies as AI if directly asked but does not volunteer information. Balances transparency with effectiveness</li>
+              <li><strong>Hybrid approach</strong> - AI handles initial screening, hands off to human for substantive conversation. Transparent about AI doing initial qualification</li>
+            </ul>
+
+            <h3>Regulatory and ethical considerations</h3>
+            <table>
+              <tr><th>Factor</th><th>Guidance</th><th>Rationale</th></tr>
+              <tr>
+                <td>Legal requirements</td>
+                <td>Check local regulations. Some jurisdictions require AI disclosure</td>
+                <td>California and EU have stricter rules. Violating can result in fines and brand damage. Better safe than sorry</td>
+              </tr>
+              <tr>
+                <td>Brand positioning</td>
+                <td>Innovation-focused brands may embrace AI disclosure</td>
+                <td>Transparency reinforces innovative positioning. Can be differentiator rather than liability</td>
+              </tr>
+              <tr>
+                <td>Audience sophistication</td>
+                <td>Technical audiences more likely to spot AI. Disclose preemptively</td>
+                <td>Being caught in deception with technical buyers destroys trust. Transparency builds credibility</td>
+              </tr>
+              <tr>
+                <td>Relationship stage</td>
+                <td>New cold outreach versus existing relationships</td>
+                <td>People you already know will recognise AI voice. Disclosure prevents awkward conversations</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Recommendation:</strong> Disclosure on request balances ethics and effectiveness. AI does not volunteer that it is AI, but if asked directly responds honestly. Test both approaches and let conversion data inform decision while respecting regulations.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Overly scripted robotic conversations</h4>
+          <div class="why">Rigid script with no flexibility makes AI sound like IVR system. Prospects hang up immediately sensing automation.</div>
+          <div class="fix">Build conversational script with branching logic. Allow AI to adapt responses based on what prospect says. Sound natural not scripted.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. No objection handling preparation</h4>
+          <div class="why">AI encounters objection it was not trained for and fumbles response. Awkward pause or generic answer. Prospect hangs up.</div>
+          <div class="fix">Script responses to 10-15 most common objections. Review call recordings to identify objections AI struggles with. Iteratively improve objection library.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Calling poor quality lists</h4>
+          <div class="why">Wrong numbers, disconnected lines, or poor ICP fit wastes AI calling capacity on unproductive conversations.</div>
+          <div class="fix">Verify and clean phone lists before uploading to AI. Confirm ICP fit. Remove duplicates and bad numbers. Quality list quality improves AI performance.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. No qualification logic configured</h4>
+          <div class="why">AI books meetings with everyone regardless of fit. Sales team wastes time on unqualified leads. Efficiency destroyed.</div>
+          <div class="fix">Configure clear qualification criteria. AI asks specific questions to determine fit, budget, authority, timeline. Only qualified prospects get meetings booked.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Ignoring call recording insights</h4>
+          <div class="why">Sending AI to make calls without reviewing how conversations actually go means missing opportunities to improve script and handling.</div>
+          <div class="fix">Listen to random sample of calls weekly. Identify patterns where AI succeeds or struggles. Refine script based on real conversation data.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Not respecting time zones and calling hours</h4>
+          <div class="why">AI calling prospects at 8pm their time or 7am on Saturday creates terrible first impression. Damages brand.</div>
+          <div class="fix">Configure calling hours to respect time zones. Only call during business hours local to prospect. Include do-not-call list compliance. Professional timing matters.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

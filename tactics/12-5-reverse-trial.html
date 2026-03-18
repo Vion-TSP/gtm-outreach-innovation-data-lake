@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 12.5 — Reverse Trial | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 12.5 - Product-Led / Experience</div>
+  <h1>Reverse Trial</h1>
+  <p class="desc">Start users on full premium tier with all features unlocked, then automatically downgrade to free or basic tier after trial period unless they upgrade. Opposite of traditional freemium where users start limited and upgrade for more. Experience full value first, then choose to maintain or accept less.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low</span>
+    <span class="tag tag-icp">ICP: All Product-Led Users</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Loss aversion is psychologically stronger than gain seeking. Users feel pain of losing premium features they have grown accustomed to more intensely than desire to gain features they have never experienced. Reverse trial exploits this asymmetry by establishing dependency on premium capabilities before introducing downgrade threat.
+      </div>
+      <h3>The psychology behind reverse trials</h3>
+      <ul>
+        <li><strong>Loss aversion dominance</strong> - Research shows losing something hurts approximately twice as much as gaining equivalent thing feels good. Users fight harder to avoid losing premium features than they would to gain them initially</li>
+        <li><strong>Endowment effect</strong> - Once users possess premium features, they value them more highly than before ownership. The same capabilities feel more valuable after experiencing them than when merely contemplating them</li>
+        <li><strong>Status quo bias</strong> - Humans prefer maintaining current state over change. After establishing workflow with premium features, downgrade feels disruptive. Upgrading to maintain status quo easier decision than upgrading to change status quo</li>
+        <li><strong>Habit formation</strong> - Premium features become integrated into daily workflows during trial. Removing them breaks established habits, creating friction users pay to avoid</li>
+      </ul>
+      <h3>Why reverse specifically</h3>
+      <p>Traditional trials start limited and ask users to imagine value of premium features. Imagination is weak motivator. Reverse trials let users experience actual value, build dependency, then threaten removal. Concrete loss of proven value converts better than abstract promise of potential value.</p>
+      <p><strong>The compounding effect:</strong> Longer users spend with premium features, stronger the dependency and loss aversion. Each day of usage increases switching cost and makes downgrade more painful, steadily increasing conversion pressure throughout trial.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Sign Up</div><div class="wf-action">Simple onboarding</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">F</div><div class="wf-label">Full Access</div><div class="wf-action">All premium features</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">B</div><div class="wf-label">Build Dependency</div><div class="wf-action">Usage + habits</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">R</div><div class="wf-label">Reminders</div><div class="wf-action">Highlight value</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">U</div><div class="wf-label">Upgrade Prompt</div><div class="wf-action">Avoid loss</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">D</div><div class="wf-label">Downgrade or Pay</div><div class="wf-action">Decision point</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Grant Full Premium Access</td>
+          <td>All new signups start with complete access to premium tier features without payment. No feature restrictions or artificial limits. Trial length typically 7-30 days depending on product complexity and typical time-to-value</td>
+          <td>Instant automated provisioning</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Encourage Premium Feature Adoption</td>
+          <td>Actively guide users toward premium features during onboarding and usage. Highlight capabilities that differentiate premium from free tier. Goal is establishing dependency on features that will be removed at downgrade</td>
+          <td>Ongoing through trial period</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Track Feature Usage Patterns</td>
+          <td>Monitor which premium features each user adopts. Identify power users showing high engagement with premium capabilities. These users face greatest loss at downgrade and most likely to convert</td>
+          <td>Automated analytics</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Send Trial Progress Reminders</td>
+          <td>Periodic emails during trial highlighting premium features user has adopted and value received. Frame as "you have used X premium feature Y times, saving Z hours". Build awareness of dependency before trial ends</td>
+          <td>Automated email sequence</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Pre-Expiration Upgrade Prompts</td>
+          <td>As trial end approaches, show in-app messaging explaining upcoming downgrade. Detail exactly which features user will lose and impact on their workflows. Offer easy upgrade to maintain current access</td>
+          <td>Automated 3-7 days before expiration</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Execute Downgrade or Collect Payment</td>
+          <td>At trial expiration, automatically downgrade non-converting users to free tier with feature restrictions. Allow continued usage at reduced capacity rather than hard wall. Provide post-downgrade upgrade prompts when they hit limitations</td>
+          <td>Automated at expiration</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Offer one-click upgrade during trial with saved payment method. Remove friction from conversion decision. When trial expires and user faces losing premium features, ability to maintain access with single click dramatically improves conversion versus requiring form completion.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Stripe Billing</strong></td>
+          <td>$</td>
+          <td>SaaS products with standard subscription tiers</td>
+          <td>Native trial period support with automatic tier transitions. Handles upgrade, downgrade, and trial expiration logic. Strong payment processing and recurring billing. Webhooks for integration with product</td>
+          <td>Requires engineering to integrate with product feature flags. Not a complete solution alone, needs pairing with feature management system</td>
+        </tr>
+        <tr>
+          <td><strong>Chargebee</strong></td>
+          <td>$$</td>
+          <td>Products with complex pricing models and tier transitions</td>
+          <td>Advanced subscription management with flexible trial configurations. Proration handling for mid-cycle changes. Multiple pricing models supported. Revenue recognition and analytics built in</td>
+          <td>More expensive than Stripe for simple use cases. Steeper learning curve. May be overkill for straightforward subscription products</td>
+        </tr>
+        <tr>
+          <td><strong>LaunchDarkly</strong></td>
+          <td>$$</td>
+          <td>Feature flagging and progressive rollout of trial tiers</td>
+          <td>Control feature availability dynamically without deployments. Target specific user segments with different trial experiences. Gradual rollout reduces risk. Real-time feature toggling</td>
+          <td>Solves feature management not payment processing. Needs pairing with billing platform. Additional complexity in tech stack</td>
+        </tr>
+        <tr>
+          <td><strong>Custom Implementation</strong></td>
+          <td>$$$</td>
+          <td>Products with unique business models or tight integration needs</td>
+          <td>Complete control over trial logic, tier transitions, and feature access. Optimised for specific product needs. No external dependencies or constraints</td>
+          <td>High engineering investment to build and maintain. Must handle edge cases and state management. Ongoing maintenance burden as product evolves</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Stripe Billing</strong> for most SaaS products with standard subscription models. Add <strong>LaunchDarkly</strong> if you need sophisticated feature flag management for gradual rollout or A/B testing. Use <strong>Chargebee</strong> for complex pricing models with multiple currencies, proration, or advanced analytics. Build <strong>Custom</strong> only if business model truly unique or integration requirements extreme.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Trial Length Optimisation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Trial Length Optimisation - Balance Adoption and Urgency</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Trial duration affects both adoption and conversion</h3>
+            <p>Too short and users do not establish dependency on premium features. Too long and urgency dissipates with conversion rate declining. Optimal length depends on product complexity and time required to build habits around premium capabilities.</p>
+
+            <h3>Trial length decision factors</h3>
+            <ul>
+              <li><strong>Time-to-value speed</strong> - How quickly users experience benefit from premium features. Fast time-to-value supports shorter trials, complex products need longer evaluation</li>
+              <li><strong>Usage frequency</strong> - Daily-use products build dependency faster than weekly-use products. Match trial length to typical usage cadence</li>
+              <li><strong>Habit formation timeline</strong> - Research suggests 18-66 days for habit formation. Premium features need to become habitual for strong loss aversion. Minimum 14 days recommended</li>
+              <li><strong>Decision-making cycle</strong> - B2B products with budget approval processes need longer trials to accommodate buying committee timelines</li>
+            </ul>
+
+            <h3>Trial length recommendations by product type</h3>
+            <table>
+              <tr><th>Product Characteristics</th><th>Recommended Length</th><th>Rationale</th></tr>
+              <tr>
+                <td>Simple tool, daily use, fast value</td>
+                <td>7-14 days</td>
+                <td>Quick adoption and habit formation. Urgency maintains conversion pressure. Examples include productivity tools, communication apps</td>
+              </tr>
+              <tr>
+                <td>Moderate complexity, regular use</td>
+                <td>14-21 days</td>
+                <td>Allows exploring multiple use cases and establishing workflows. Balances adoption time with conversion urgency. Most common trial length</td>
+              </tr>
+              <tr>
+                <td>Complex product, weekly use patterns</td>
+                <td>21-30 days</td>
+                <td>Need multiple usage cycles to experience full value. Longer evaluation required for informed decision. Examples include analytics platforms, project management</td>
+              </tr>
+              <tr>
+                <td>Enterprise B2B with buying committees</td>
+                <td>30-60 days</td>
+                <td>Accommodate procurement processes and stakeholder approvals. Allow time for internal advocacy and business case building</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Experimentation approach:</strong> Test different trial lengths with cohort analysis. Track both activation rate during trial and conversion rate at expiration. Optimal length maximises product of activation multiplied by conversion. Some adoption loss acceptable if conversion rate increases significantly.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Premium Feature Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Premium Feature Selection - Choose High-Dependency Capabilities</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Not all features create equal loss aversion</h3>
+            <p>Reverse trial depends on users adopting features that become deeply integrated into workflows. Choose premium features that create strong dependency and painful removal. Features users can easily work around or forget about do not drive conversion.</p>
+
+            <h3>High-dependency feature characteristics</h3>
+            <ul>
+              <li><strong>Workflow integration</strong> - Features that become part of daily routine create strongest dependency. Users build processes around these capabilities making removal disruptive</li>
+              <li><strong>Data accumulation</strong> - Features that create valuable data over time such as history, analytics, or saved configurations. Users invest effort building this asset and resist losing it</li>
+              <li><strong>Collaboration enablement</strong> - Team features that multiple people depend on create social pressure to maintain access. Letting down team members drives conversion</li>
+              <li><strong>Efficiency multipliers</strong> - Automation, shortcuts, or time-saving features that once experienced make old manual approaches feel painfully slow</li>
+            </ul>
+
+            <h3>Feature dependency framework</h3>
+            <table>
+              <tr><th>Feature Type</th><th>Dependency Strength</th><th>Example</th><th>Why It Works</th></tr>
+              <tr>
+                <td>Historical data access</td>
+                <td>Very High</td>
+                <td>Unlimited history versus last 30 days</td>
+                <td>Users accumulate valuable historical data during trial. Losing access to that investment feels like data loss even though data preserved</td>
+              </tr>
+              <tr>
+                <td>Team collaboration</td>
+                <td>Very High</td>
+                <td>Shared workspaces, multi-user access</td>
+                <td>Removing collaboration features disappoints teammates. Social dynamics create pressure to maintain access</td>
+              </tr>
+              <tr>
+                <td>Automation and integrations</td>
+                <td>High</td>
+                <td>Workflow automation, API access</td>
+                <td>Once users automate processes, manual alternatives feel painfully inefficient. Removing automation creates regression</td>
+              </tr>
+              <tr>
+                <td>Advanced analytics</td>
+                <td>Medium-High</td>
+                <td>Custom reports, dashboards</td>
+                <td>Users build decision-making processes around insights. Loss reduces visibility and confidence in decisions</td>
+              </tr>
+              <tr>
+                <td>Aesthetic improvements</td>
+                <td>Low-Medium</td>
+                <td>Themes, customisation</td>
+                <td>Nice to have but rarely drive conversion. Users accept aesthetic downgrade to avoid payment</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Adoption encouragement:</strong> During trial, actively guide users toward high-dependency premium features through onboarding, tooltips, and suggested actions. If users never adopt premium capabilities, they experience no loss at downgrade. Successful reverse trial requires both access and usage of premium features.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Communication Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Communication Strategy - Frame as Loss Not Gain</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Messaging emphasises loss aversion psychology</h3>
+            <p>Communication throughout trial and at conversion moment should frame decision as avoiding loss rather than gaining features. Emphasise what user will lose, features they have grown accustomed to, and impact of downgrade on established workflows.</p>
+
+            <h3>Messaging framework by stage</h3>
+            <ul>
+              <li><strong>Trial start</strong> - Set expectation that full access is temporary. "Enjoy unlimited access to all premium features for 14 days." Clarity prevents confusion at downgrade</li>
+              <li><strong>Mid-trial</strong> - Highlight value being received. "You have used advanced analytics 23 times this week, saving 4 hours of manual work." Build awareness of dependency</li>
+              <li><strong>Pre-expiration</strong> - Warn about upcoming loss. "In 3 days, you will lose access to team collaboration and unlimited history." Make loss concrete and imminent</li>
+              <li><strong>Conversion moment</strong> - Frame upgrade as maintaining status quo. "Keep your premium features" not "Upgrade to premium." Emphasise continuity over change</li>
+            </ul>
+
+            <h3>Messaging examples by stage</h3>
+            <table>
+              <tr><th>Stage</th><th>Weak Messaging</th><th>Strong Messaging</th></tr>
+              <tr>
+                <td>Mid-trial reminder</td>
+                <td>You are enjoying premium features</td>
+                <td>You have created 15 automated workflows this week. In 7 days, these will stop running unless you upgrade</td>
+              </tr>
+              <tr>
+                <td>3 days before expiration</td>
+                <td>Your trial ends soon. Upgrade to get more features</td>
+                <td>In 3 days, you will lose team collaboration, unlimited history, and automation. Your workflows will break unless you take action</td>
+              </tr>
+              <tr>
+                <td>Expiration day</td>
+                <td>Upgrade now to unlock premium</td>
+                <td>Your premium access expires today. Upgrade now to keep the features you have been using and avoid workflow disruption</td>
+              </tr>
+              <tr>
+                <td>Post-downgrade</td>
+                <td>Upgrade to access locked features</td>
+                <td>You just hit your free tier limit. Restore unlimited access and recover your full history by upgrading</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Specificity matters:</strong> Generic warnings about losing "premium features" lack impact. Specific messaging like "you will lose access to your last 6 months of history and your 12 saved reports" creates concrete understanding of loss. Personalise based on actual feature usage when possible.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Downgrade Experience sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Downgrade Experience - Soft Landing Not Hard Wall</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Preserve relationship with non-converting users</h3>
+            <p>Users who do not convert at trial expiration should downgrade to functional free tier, not hit hard paywall blocking all access. Maintaining engagement on free tier allows future conversion opportunities when circumstances change. Hard walls burn relationships.</p>
+
+            <h3>Soft downgrade principles</h3>
+            <ul>
+              <li><strong>Preserve core functionality</strong> - Allow continued basic usage after downgrade. Users can still accomplish primary use case even if less efficiently or with limits</li>
+              <li><strong>Protect historical data</strong> - Never delete user data at downgrade. Limit access to older data but preserve everything. Users fear data loss more than feature restrictions</li>
+              <li><strong>Contextual upgrade prompts</strong> - When downgraded users hit free tier limits, show relevant upgrade prompts. "Upgrade to access your full history" when they try viewing old data</li>
+              <li><strong>Future conversion paths</strong> - Send periodic emails to downgraded users highlighting what they are missing. Changed circumstances or new use cases can trigger delayed conversion</li>
+            </ul>
+
+            <h3>Downgrade tier design</h3>
+            <table>
+              <tr><th>Aspect</th><th>Poor Approach</th><th>Better Approach</th></tr>
+              <tr>
+                <td>Data access</td>
+                <td>Delete all data created during trial</td>
+                <td>Preserve all data but limit access to recent 30 days. User knows historical data available if they upgrade</td>
+              </tr>
+              <tr>
+                <td>Feature availability</td>
+                <td>Lock out product entirely behind paywall</td>
+                <td>Allow basic functionality with limits. Show upgrade prompts when hitting limits with one-click upgrade</td>
+              </tr>
+              <tr>
+                <td>Collaboration</td>
+                <td>Immediately remove all team members</td>
+                <td>Maintain read-only access for team or allow one additional user. Clear path to restore full collaboration via upgrade</td>
+              </tr>
+              <tr>
+                <td>Automation</td>
+                <td>Delete all automations created during trial</td>
+                <td>Pause automations with option to resume by upgrading. User effort building automations preserved</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Long-term value:</strong> Some users downgrade but convert months later when needs or budget change. Maintaining positive free tier experience keeps them engaged and preserves conversion opportunity. Short-term conversion maximisation through aggressive paywalls sacrifices long-term revenue potential.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Trial too short for habit formation</h4>
+          <div class="why">Seven days insufficient for users to build workflows and dependency around premium features. No loss aversion without established habits. Conversion rates suffer.</div>
+          <div class="fix">Minimum 14 days for most products. Match trial length to usage frequency and time required to experience full premium value. Longer trials for complex products or infrequent usage patterns.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Premium features create no real dependency</h4>
+          <div class="why">Chosen premium features are nice-to-have but not critical to workflows. Users easily adapt to free tier limitations. No painful loss at downgrade means no conversion pressure.</div>
+          <div class="fix">Select premium features that integrate deeply into workflows such as automation, team collaboration, or historical data access. Features that become indispensable through usage create strongest dependency.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Hard paywall at trial expiration</h4>
+          <div class="why">Complete access cutoff at trial end destroys relationship with non-converting users. No future conversion opportunity. Perceived as bait-and-switch creating negative sentiment.</div>
+          <div class="fix">Downgrade to functional free tier allowing continued basic usage. Preserve all user data with limited access. Maintain engagement for future conversion when circumstances change.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Poor communication about impending loss</h4>
+          <div class="why">Users surprised by sudden downgrade because warnings were absent or ignored. No opportunity to make informed decision. Frustration damages brand perception.</div>
+          <div class="fix">Clear communication throughout trial about temporary nature of full access. Multiple reminders as expiration approaches with specific details about what will be lost. Email plus in-app messaging.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Users never adopt premium features during trial</h4>
+          <div class="why">No onboarding guidance toward premium capabilities. Users stick with basic features sufficient for needs. Experience no loss at downgrade because never used premium.</div>
+          <div class="fix">Actively guide users toward premium features through onboarding, tooltips, and email campaigns. Surface premium capabilities prominently. Track adoption and prompt users who have not explored premium features.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Deleting user data at downgrade</h4>
+          <div class="why">Historical data or configurations created during trial deleted when user downgrades. Feels punitive and creates fear of data loss. Burns relationship permanently.</div>
+          <div class="fix">Preserve all user data indefinitely. Restrict access to older data or limit functionality but never delete. Users should feel their investment is safe even if temporarily inaccessible.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

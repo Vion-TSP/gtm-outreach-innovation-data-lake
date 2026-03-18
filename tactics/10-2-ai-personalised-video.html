@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 10.2 — AI-Generated Personalised Video | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 10.2 - AI-Powered</div>
+  <h1>AI-Generated Personalised Video</h1>
+  <p class="desc">Use AI avatars to create personalised video messages at scale. Record one template video, AI generates thousands of variations with each prospect's name, company, and custom talking points. Video personalisation without recording burden.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low</span>
+    <span class="tag tag-cost">Cost: Medium</span>
+    <span class="tag tag-icp">ICP: All Buyer Personas</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Video outreach dramatically outperforms text-based outreach but traditionally does not scale. AI-generated video solves this by combining video's emotional impact and personalisation with automation's scale. You get both effectiveness and efficiency.
+      </div>
+      <h3>The psychology behind AI video effectiveness</h3>
+      <ul>
+        <li><strong>Visual novelty and attention</strong> - Video in inbox stands out from text emails. Thumbnail of person speaking captures attention and drives curiosity to click</li>
+        <li><strong>Perceived effort and reciprocity</strong> - Even AI-generated video feels like more effort than text email. Recipients feel obligation to watch and respond to apparent personalised effort</li>
+        <li><strong>Emotional connection through face</strong> - Seeing face and hearing voice creates stronger connection than text. Mirror neurons activate. Feels more human and trustworthy</li>
+        <li><strong>Information retention advantage</strong> - Video combines visual and auditory channels. People retain information better from video than text. Your message sticks longer</li>
+      </ul>
+      <h3>Why AI-generated video specifically</h3>
+      <p>Recording personal video for each prospect is impossible at scale. Generic batch video lacks personalisation punch. AI-generated video delivers true personalisation at infinite scale by synthesising custom videos from single template recording.</p>
+      <p><strong>The compounding effect:</strong> AI video quality improves rapidly. Early versions looked uncanny. Current generation is nearly indistinguishable from real recordings. As quality improves, effectiveness increases while cost decreases.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-video">R</div><div class="wf-label">Record</div><div class="wf-action">Template</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">C</div><div class="wf-label">Clone</div><div class="wf-action">Avatar</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-linkedin">U</div><div class="wf-label">Upload</div><div class="wf-action">Prospect data</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-video">G</div><div class="wf-label">Generate</div><div class="wf-action">Custom videos</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">D</div><div class="wf-label">Distribute</div><div class="wf-action">Email/LinkedIn</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">T</div><div class="wf-label">Track</div><div class="wf-action">Engagement</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Record Template Video</td>
+          <td>Record 30-60 second template with placeholders for personalisation. "Hi [Name], noticed [Company] is [Context]. Here is how we help companies like yours with [Value Prop]." Record once, use forever</td>
+          <td>30-60 min scripting and recording</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Create AI Avatar Clone</td>
+          <td>Platform analyses your template video and creates digital clone that can say anything in your voice and likeness. Takes 2-5 minutes of footage to train accurate clone</td>
+          <td>2-5 min video upload, automated processing</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Upload Prospect Data</td>
+          <td>Provide CSV with prospect names, companies, and personalisation variables. Could be pain points, recent news, job changes, or any contextual hook</td>
+          <td>15 min data preparation</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>AI Generates Custom Videos</td>
+          <td>Platform merges template with prospect data. AI avatar speaks each name, company, and context naturally. Generates hundreds or thousands of unique videos automatically</td>
+          <td>Automated, 1-5 min per video depending on platform</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Distribute Videos</td>
+          <td>Send via email with video thumbnail that plays inline or on landing page. Can also embed in LinkedIn messages or use in sales sequences. Video hosted on platform</td>
+          <td>15 min to set up campaign</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Track Engagement</td>
+          <td>Platform tracks who watched, how long they watched, and whether they replayed. Use engagement data to prioritise follow-up. High engagement signals strong interest</td>
+          <td>5 min daily monitoring</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Test multiple template variations. Record 3-4 different opening hooks and value propositions. AI generates variations for A/B testing to identify highest-performing messaging.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>HeyGen</strong></td>
+          <td>££</td>
+          <td>High-quality avatar cloning with best naturalness</td>
+          <td>Industry-leading avatar quality. Natural voice synthesis. Easy template creation with variables. Fast generation speed. Good integration options</td>
+          <td>Higher cost per video than competitors. Enterprise features require custom pricing. Best for quality-focused use cases</td>
+        </tr>
+        <tr>
+          <td><strong>Synthesia</strong></td>
+          <td>££</td>
+          <td>Enterprise teams needing multilingual support</td>
+          <td>Professional avatar creation. Support for 120+ languages and accents. Template library. Team collaboration features. SOC 2 compliant for enterprise</td>
+          <td>Avatars can feel slightly robotic compared to HeyGen. Higher price point. Overkill for small-scale use</td>
+        </tr>
+        <tr>
+          <td><strong>Tavus</strong></td>
+          <td>££</td>
+          <td>Sales teams integrating video into sequences</td>
+          <td>Built specifically for sales outreach. Deep CRM integrations. Automated video sending in sequences. Good deliverability. Sales-focused features like screen recording</td>
+          <td>Less polished avatars than HeyGen. Focused on sales use case limits other applications. Smaller template library</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> For highest quality avatar and naturalness, use <strong>HeyGen</strong> (££). For sales teams wanting tight CRM integration and sequence automation, <strong>Tavus</strong> (££) offers best sales-specific workflow.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Template Recording Quality sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Template Recording Quality - Foundation Matters</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Template quality determines all output quality</h3>
+            <p>AI can only work with what you give it. Poor lighting, bad audio, or awkward delivery in template means poor quality in every generated video. Invest in template recording quality upfront.</p>
+
+            <h3>Technical recording requirements</h3>
+            <ul>
+              <li><strong>Lighting setup</strong> - Face evenly lit from front. Avoid harsh shadows or backlighting. Natural daylight or ring light works well. Dark or unevenly lit footage produces poor clones</li>
+              <li><strong>Audio quality</strong> - Use external microphone not laptop mic. Clear voice without echo or background noise. AI voice cloning requires clean audio input</li>
+              <li><strong>Camera position</strong> - Eye level, centred framing. Look directly at camera not slightly off. Stable footage not handheld. Professional setup improves clone quality</li>
+              <li><strong>Background</strong> - Simple neutral background. Avoid busy patterns or movement. Plain wall or blurred background works best. Busy backgrounds distract from message</li>
+            </ul>
+
+            <h3>Delivery and performance tips</h3>
+            <table>
+              <tr><th>Element</th><th>Best Practice</th><th>Why It Matters</th></tr>
+              <tr>
+                <td>Energy and enthusiasm</td>
+                <td>Slightly elevated energy, warm smile, engaged tone</td>
+                <td>Video amplifies low energy. Need to over-deliver enthusiasm for it to feel natural on camera</td>
+              </tr>
+              <tr>
+                <td>Speaking pace</td>
+                <td>Moderate pace with clear enunciation. Not rushed</td>
+                <td>AI needs clear pronunciation to clone accurately. Fast mumbling produces poor synthesis</td>
+              </tr>
+              <tr>
+                <td>Natural pauses</td>
+                <td>Brief pauses between thoughts. Not continuous stream</td>
+                <td>Pauses make AI-generated speech sound more natural. Helps with variable insertion</td>
+              </tr>
+              <tr>
+                <td>Scripted versus conversational</td>
+                <td>Memorise key points, speak conversationally not reading</td>
+                <td>Reading script looks stiff. Conversational delivery feels authentic even when AI-cloned</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Multiple takes strategy:</strong> Record template 5-10 times. Pick best take for AI training. This is foundation for thousands of videos. Worth extra 30 minutes to get perfect source material.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personalisation Variable Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Personalisation Variable Strategy - Beyond Name</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Name personalisation is table stakes</h3>
+            <p>Simply saying prospect name is not enough differentiation. Everyone uses AI video now. Need deeper personalisation variables that demonstrate genuine research and relevance.</p>
+
+            <h3>Personalisation variable types</h3>
+            <ul>
+              <li><strong>Basic identifiers</strong> - Name, company, role. Foundation but not sufficient alone. Every AI video uses these</li>
+              <li><strong>Contextual hooks</strong> - Recent company news, funding, product launch, job posting. Shows you did research. More impactful than generic variables</li>
+              <li><strong>Pain point references</strong> - Specific challenge relevant to their role or industry. "Companies in fintech struggling with X." Demonstrates category understanding</li>
+              <li><strong>Mutual connections or customers</strong> - "Saw you know James at Acme, one of our customers." Social proof plus personalisation compound</li>
+            </ul>
+
+            <h3>Variable depth by tier</h3>
+            <table>
+              <tr><th>Tier</th><th>Variables Used</th><th>Research Time</th><th>Impact</th></tr>
+              <tr>
+                <td>Tier 1 - High-value accounts</td>
+                <td>Name, company, recent news, specific pain point, mutual connection</td>
+                <td>10-15 min research per prospect</td>
+                <td>Very high. Feels truly custom. Worth investment for strategic accounts</td>
+              </tr>
+              <tr>
+                <td>Tier 2 - Mid-market targets</td>
+                <td>Name, company, industry-specific challenge, recent funding or hire</td>
+                <td>5 min research per prospect</td>
+                <td>High. Good personalisation without excessive research burden</td>
+              </tr>
+              <tr>
+                <td>Tier 3 - Volume outreach</td>
+                <td>Name, company, generic industry hook</td>
+                <td>1 min lookup per prospect</td>
+                <td>Medium. Better than no personalisation. Acceptable at scale</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Variable sourcing automation:</strong> Use Clay or similar enrichment tools to automatically populate many personalisation variables. Pull recent news, funding, job changes from APIs rather than manual research.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery and Distribution sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Delivery and Distribution - Making Videos Easy to Watch</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Video must be frictionless to consume</h3>
+            <p>Requiring download or multiple clicks to watch kills engagement. Make video as easy as possible to play. Inline playback in email or single-click landing page maximises view rates.</p>
+
+            <h3>Distribution channel options</h3>
+            <ul>
+              <li><strong>Email with inline GIF thumbnail</strong> - Animated GIF shows first few seconds of video. Clicking plays full video on landing page. Works in all email clients. Highest engagement</li>
+              <li><strong>Video landing page link</strong> - Email contains link to dedicated landing page with video player. Allows tracking and calls-to-action around video. More control but extra click</li>
+              <li><strong>LinkedIn video message</strong> - Send video directly in LinkedIn message. Native playback. Good for LinkedIn-heavy prospects but limited tracking</li>
+              <li><strong>Embedded in email sequence</strong> - Video as touchpoint 2 or 3 in automated sequence. Escalates from text to video for non-responders. Good for warming up cold prospects</li>
+            </ul>
+
+            <h3>Landing page optimisation</h3>
+            <table>
+              <tr><th>Element</th><th>Best Practice</th><th>Purpose</th></tr>
+              <tr>
+                <td>Video player</td>
+                <td>Auto-play on page load with sound muted. Large clear player</td>
+                <td>Immediate engagement. No click required. Viewer controls sound</td>
+              </tr>
+              <tr>
+                <td>Call-to-action</td>
+                <td>Clear CTA below video. Calendar link or reply button</td>
+                <td>Give immediate next step while video message is fresh. Reduce friction to response</td>
+              </tr>
+              <tr>
+                <td>Additional context</td>
+                <td>Brief text summary of video content. Links to relevant resources</td>
+                <td>Supports different learning styles. Provides takeaway even if they skim video</td>
+              </tr>
+              <tr>
+                <td>Mobile optimisation</td>
+                <td>Responsive player that works on all devices</td>
+                <td>Many prospects watch on mobile. Poor mobile experience kills conversions</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Thumbnail importance:</strong> Custom thumbnail showing your face mid-smile with prospect company name overlay dramatically increases play rates. Generic play button thumbnail underperforms.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transparency and Ethics sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Transparency and Ethics - Disclosing AI Generation</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Deception versus enhancement debate</h3>
+            <p>AI video quality is now good enough that many recipients cannot tell it is synthetic. This raises ethical question: should you disclose AI generation or let it pass as real recording?</p>
+
+            <h3>Disclosure approaches</h3>
+            <ul>
+              <li><strong>No disclosure</strong> - Send AI video as if it were real recording. Maximises perception of effort. Risk of backlash if recipient discovers deception</li>
+              <li><strong>Subtle disclosure</strong> - Small text on landing page: "Video personalised using AI." Transparent but not prominently advertised. Balances honesty and effectiveness</li>
+              <li><strong>Prominent disclosure</strong> - Open about AI in email: "Created this AI video just for you." Positions as cool technology not deception. Some find it impressive</li>
+              <li><strong>Hybrid approach</strong> - Use AI for personalisation elements only. Record generic opening yourself, AI fills in name and company. Best of both worlds</li>
+            </ul>
+
+            <h3>Factors influencing disclosure decision</h3>
+            <table>
+              <tr><th>Factor</th><th>Disclosure Recommended</th><th>Rationale</th></tr>
+              <tr>
+                <td>Audience tech sophistication</td>
+                <td>High if technical audience</td>
+                <td>Technical buyers may spot AI and feel deceived if not disclosed. Better to be upfront</td>
+              </tr>
+              <tr>
+                <td>Brand positioning</td>
+                <td>High if innovation-focused brand</td>
+                <td>AI disclosure reinforces innovative positioning. Aligns with brand values</td>
+              </tr>
+              <tr>
+                <td>Regulatory environment</td>
+                <td>High if regulated industry</td>
+                <td>Some industries may have disclosure requirements. Better safe than sorry</td>
+              </tr>
+              <tr>
+                <td>Relationship stage</td>
+                <td>High for existing relationships</td>
+                <td>People you already know will recognise AI. Disclosure prevents awkwardness</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Recommendation:</strong> Subtle disclosure balances ethics and effectiveness. Small text on landing page "Personalised using AI technology" provides transparency without undermining impact. Test both approaches and let data guide decision.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Poor quality template recording</h4>
+          <div class="why">Bad lighting, poor audio, or low-energy delivery in template produces thousands of poor-quality videos. First impression damage at scale.</div>
+          <div class="fix">Invest in proper recording setup. Good lighting, external mic, stable camera. Record multiple takes and pick best one. Template quality is foundation.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Only personalising with name</h4>
+          <div class="why">Just saying prospect name is not enough differentiation. Every AI video tool does this. Feels generic despite being "personalised."</div>
+          <div class="fix">Include deeper variables like recent company news, role-specific pain points, or mutual connections. Demonstrate actual research beyond name lookup.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Videos too long</h4>
+          <div class="why">2-3 minute AI videos lose attention. Viewer drops off halfway through. Message diluted by rambling.</div>
+          <div class="fix">Keep videos 30-60 seconds maximum. One clear message and call-to-action. Shorter videos have higher completion rates and better retention.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Difficult viewing experience</h4>
+          <div class="why">Requiring download or multiple clicks to watch creates friction. Many prospects give up before watching.</div>
+          <div class="fix">Use inline GIF thumbnail in email that plays on single click. Or auto-play landing page. Make viewing frictionless. Every extra step loses viewers.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No tracking or follow-up strategy</h4>
+          <div class="why">Sending video without tracking who watched means missing engagement signals. High-intent viewers do not get prioritised.</div>
+          <div class="fix">Use platform tracking to see who watched and for how long. Follow up quickly with engaged viewers. Treat 100% view as hot lead signal.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Uncanny valley effect from poor clone</h4>
+          <div class="why">Cheap AI video platforms produce slightly off clones that feel creepy. Uncanny valley effect repels prospects.</div>
+          <div class="fix">Invest in quality platform like HeyGen or Synthesia. Test clone quality before sending at scale. Slightly robotic is worse than obviously synthetic.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

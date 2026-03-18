@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 10.6 — AI Conversational Chat | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 10.6 - AI-Powered</div>
+  <h1>AI Conversational Chat for Inbound Qualifying</h1>
+  <p class="desc">Replace static website forms with AI-powered conversational interfaces that qualify prospects through natural dialogue. Chat engages visitors instantly, asks contextual questions, and routes qualified leads to sales while answering common questions for unqualified visitors.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Medium-High</span>
+    <span class="tag tag-icp">ICP: All Inbound Segments</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Traditional forms create friction that kills inbound conversion. Asking prospects to fill out 8 fields before getting any value feels like work. Conversational AI removes friction by engaging visitors in natural dialogue, qualifying them through conversation rather than interrogation, and providing immediate value while capturing needed information.
+      </div>
+      <h3>The psychology behind conversational interfaces</h3>
+      <ul>
+        <li><strong>Immediate gratification</strong> - Visitors get instant responses instead of waiting for sales reply. This immediate engagement captures attention and builds momentum toward conversion</li>
+        <li><strong>Progressive disclosure</strong> - Conversation reveals one question at a time rather than overwhelming with full form upfront. Feels easier even when total questions asked is the same</li>
+        <li><strong>Reciprocity dynamic</strong> - Chat provides helpful information first, then asks for details. Visitors feel more willing to share information after receiving value</li>
+        <li><strong>Natural interaction</strong> - Humans prefer conversation to form-filling. Feels like talking to helpful person rather than completing administrative task</li>
+      </ul>
+      <h3>Why AI-powered specifically</h3>
+      <p>Basic chatbots follow rigid scripts that frustrate users. AI-powered chat understands intent, handles unexpected questions, maintains context across conversation, and adapts questions based on previous answers. This flexibility creates genuinely helpful experience rather than obvious automation.</p>
+      <p><strong>The compounding effect:</strong> AI chat learns from every conversation. Over time, it improves at identifying qualification signals, handling objections, and routing leads appropriately. Quality increases automatically without manual script updates.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">V</div><div class="wf-label">Visitor Arrives</div><div class="wf-action">Chat proactive</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">E</div><div class="wf-label">Engage</div><div class="wf-action">Ask intent</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">Q</div><div class="wf-label">Qualify</div><div class="wf-action">Natural questions</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">A</div><div class="wf-label">Answer + Assess</div><div class="wf-action">Provide value</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">R</div><div class="wf-label">Route Decision</div><div class="wf-action">Sales or self-serve</td></div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">H</div><div class="wf-label">Handoff</div><div class="wf-action">Rep or resource</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Define Qualification Criteria</td>
+          <td>Document what makes a lead sales-qualified versus marketing-qualified versus unqualified. Include criteria like company size, role, use case fit, budget authority, and buying timeline. AI uses these to route conversations</td>
+          <td>2-3 hours criteria definition</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Build Knowledge Base</td>
+          <td>Compile documentation about your product, common questions, pricing, use cases, integrations, and competitive positioning. AI pulls from this knowledge base to answer visitor questions accurately and consistently</td>
+          <td>4-6 hours initial content</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Configure Chat Personality</td>
+          <td>Define tone, style, and conversation approach. Decide whether chat should be casual or professional, proactive or reactive, and how persistent to be about qualification. Set guidelines for handling objections</td>
+          <td>1-2 hours configuration</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Design Qualification Flow</td>
+          <td>Map conversation paths that naturally uncover qualification criteria. Structure questions as helpful dialogue rather than interrogation. Include branches for different visitor types like evaluating, researching, or just browsing</td>
+          <td>3-4 hours flow design</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Set Up Routing Rules</td>
+          <td>Configure what happens when chat qualifies or disqualifies visitor. Options include booking meetings automatically, creating CRM leads, alerting sales reps, or directing to self-service resources like knowledge base or free trial</td>
+          <td>1-2 hours routing setup</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Launch and Monitor</td>
+          <td>Deploy chat on website with appropriate triggering rules such as time on page, scroll depth, or exit intent. Monitor conversations to identify gaps in knowledge base, improve qualification questions, and refine routing logic</td>
+          <td>30 min launch, ongoing review</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Start with chat available only on high-intent pages like pricing and product pages. Once you refine qualification flow and knowledge base, expand to broader site. This prevents overwhelming your team with low-quality conversations during initial learning phase.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Drift / Salesloft Converse</strong></td>
+          <td>$$-$$$</td>
+          <td>Sales-focused teams wanting conversational marketing platform</td>
+          <td>AI-powered chat with strong CRM integration. Automated meeting booking. Conversational landing pages. Playbooks for different visitor segments. Account-based chat routing for target accounts</td>
+          <td>Pricing increases significantly with scale. Best for companies with established inbound volume. Learning curve for building effective playbooks</td>
+        </tr>
+        <tr>
+          <td><strong>Intercom Fin</strong></td>
+          <td>$$</td>
+          <td>Teams wanting unified support and sales chat platform</td>
+          <td>AI answers from knowledge base with high accuracy. Seamless handoff to human agents. Conversation history and context maintained. Strong analytics on containment rates and satisfaction. Scales from support to sales use cases</td>
+          <td>More support-focused than pure sales qualifying. May require custom configuration for complex qualification logic. Resolution-oriented rather than conversion-oriented by default</td>
+        </tr>
+        <tr>
+          <td><strong>Qualified</strong></td>
+          <td>$$$</td>
+          <td>Enterprise B2B with high-value deals and complex qualification</td>
+          <td>AI chat designed specifically for pipeline generation. Deep Salesforce integration. Sophisticated routing based on account data and intent signals. Real-time rep alerts for high-value conversations. Meeting scheduling with rep availability</td>
+          <td>Expensive enterprise pricing. Requires Salesforce. Overkill for simple use cases. Best for teams with dedicated sales development function</td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot Chatbot</strong></td>
+          <td>$-$$</td>
+          <td>HubSpot users wanting integrated chat within existing stack</td>
+          <td>Native integration with HubSpot CRM and marketing automation. Free tier available. Easy visual bot builder. Good for basic qualification and routing. Included in Marketing Hub Professional</td>
+          <td>AI capabilities less advanced than dedicated platforms. Requires HubSpot ecosystem. Limited flexibility for complex conversation flows</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Intercom Fin</strong> for most teams seeking balance of AI quality and ease of use. Choose <strong>Drift</strong> if primary goal is pipeline generation and meeting booking. Use <strong>HubSpot Chatbot</strong> if already invested in HubSpot and want simple integrated solution. Reserve <strong>Qualified</strong> for enterprise with complex ABM programs.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Qualification Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Qualification Strategy - Balance Helpfulness and Discovery</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Qualify through conversation not interrogation</h3>
+            <p>The goal is discovering qualification information while providing genuine value to visitor. Pure interrogation like "What is your company size? What is your budget?" feels transactional. Good qualification blends helpful answers with smart discovery questions.</p>
+
+            <h3>Effective qualification question patterns</h3>
+            <ul>
+              <li><strong>Use case discovery</strong> - "What are you hoping to accomplish?" or "What challenge brought you here today?" uncovers fit better than direct "Are you a good fit?" questions</li>
+              <li><strong>Context-gathering questions</strong> - "How are you handling this today?" reveals current solutions, pain level, and readiness to change without asking "When do you plan to buy?"</li>
+              <li><strong>Role-based routing</strong> - "What is your role?" determines decision-making authority naturally. Follow with role-appropriate questions and content</li>
+              <li><strong>Progressive qualification</strong> - Ask easiest questions first to build momentum. Save harder questions like budget and timeline until after establishing value and rapport</li>
+            </ul>
+
+            <h3>Qualification criteria mapping</h3>
+            <table>
+              <tr><th>Criteria</th><th>Direct Question (Bad)</th><th>Conversational Discovery (Good)</th></tr>
+              <tr>
+                <td>Company size</td>
+                <td>How many employees does your company have?</td>
+                <td>Tell me about your team. Are you a startup, growing company, or established enterprise? (AI infers size from answer)</td>
+              </tr>
+              <tr>
+                <td>Budget authority</td>
+                <td>What is your budget for this purchase?</td>
+                <td>What is your role? Are you evaluating options or making the final decision? (AI determines authority level)</td>
+              </tr>
+              <tr>
+                <td>Timeline</td>
+                <td>When do you plan to make a purchase?</td>
+                <td>Is this something you are actively evaluating now or exploring for the future? (AI qualifies urgency without pressure)</td>
+              </tr>
+              <tr>
+                <td>Use case fit</td>
+                <td>Do you need feature X?</td>
+                <td>What are you trying to achieve? How are you handling it today? (AI assesses fit from description)</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Value-first approach:</strong> Provide helpful information before asking for anything. Answer their question, share relevant resource, or offer useful insight. Then naturally ask clarifying questions. This reciprocity dynamic increases willingness to share qualification information.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Knowledge Base Quality sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Knowledge Base Quality - Foundation of Good AI Chat</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>AI quality depends on knowledge base quality</h3>
+            <p>AI can only answer questions accurately if knowledge base contains correct information organised accessibly. Incomplete or poorly structured knowledge base leads to AI making up answers or saying "I don't know" too often.</p>
+
+            <h3>Essential knowledge base content</h3>
+            <ul>
+              <li><strong>Product capabilities</strong> - Detailed feature descriptions with use cases. Not just what features exist but what problems they solve and who they help</li>
+              <li><strong>Pricing information</strong> - Clear pricing tiers, what is included in each, and guidance on which tier fits which customer profile. Address common pricing objections</li>
+              <li><strong>Common questions</strong> - Document answers to top 20 questions your sales team fields repeatedly. Include technical questions, process questions, and comparison questions</li>
+              <li><strong>Competitive positioning</strong> - How you differ from competitors without badmouthing them. Focus on your strengths and ideal customer profile rather than tearing down alternatives</li>
+              <li><strong>Integration details</strong> - Which tools you integrate with and how those integrations work. Many prospects ask about specific integrations during evaluation</li>
+            </ul>
+
+            <h3>Knowledge base organisation best practices</h3>
+            <table>
+              <tr><th>Content Type</th><th>Structure Approach</th><th>Update Frequency</th></tr>
+              <tr>
+                <td>Product features</td>
+                <td>Organise by use case and persona, not just feature list. Include "if you want to accomplish X, use feature Y" guidance</td>
+                <td>Update with each product release</td>
+              </tr>
+              <tr>
+                <td>Pricing and plans</td>
+                <td>Separate public pricing from internal discount policies. Include decision trees for plan recommendations based on company size and needs</td>
+                <td>Update immediately when pricing changes</td>
+              </tr>
+              <tr>
+                <td>Common objections</td>
+                <td>Document objection and multiple response angles. Include examples and proof points. Let AI choose most relevant response</td>
+                <td>Update quarterly based on conversation logs</td>
+              </tr>
+              <tr>
+                <td>Process information</td>
+                <td>Step-by-step guides for common processes like implementation, onboarding, and support. Include timelines and resource requirements</td>
+                <td>Review quarterly</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Continuous improvement:</strong> Review chat transcripts monthly to identify questions AI answered poorly or could not answer. Add missing information to knowledge base immediately. Track AI answer accuracy as key performance metric.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Routing Logic sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Routing Logic - Right Lead to Right Experience</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Match qualification level to appropriate next step</h3>
+            <p>Not every visitor should talk to sales. High-fit prospects deserve immediate sales engagement. Low-fit visitors get better experience through self-service resources. Medium-fit prospects need nurturing before sales involvement.</p>
+
+            <h3>Routing decision framework</h3>
+            <ul>
+              <li><strong>Sales-qualified leads</strong> - Meet all qualification criteria such as right company size, budget authority, active evaluation, and clear use case fit. Route immediately to meeting booking or live sales rep</li>
+              <li><strong>Marketing-qualified leads</strong> - Show interest and partial fit but missing key criteria like timeline or authority. Route to email nurture and relevant content to progress qualification over time</li>
+              <li><strong>Self-service prospects</strong> - Good fit but prefer exploring independently. Direct to free trial, product tour, or detailed documentation. Follow up lightly without pressuring</li>
+              <li><strong>Unqualified visitors</strong> - Clear mismatch on firmographics or use case. Provide helpful answer to their question but do not waste sales resources. Route to community or public resources</li>
+            </ul>
+
+            <h3>Routing configuration by qualification level</h3>
+            <table>
+              <tr><th>Qualification Level</th><th>Criteria Example</th><th>Routing Action</th><th>Follow-Up</th></tr>
+              <tr>
+                <td>Hot SQL</td>
+                <td>Enterprise, decision-maker, active evaluation, strong fit</td>
+                <td>Book meeting immediately or alert sales rep for live chat takeover</td>
+                <td>Rep calls within 1 hour</td>
+              </tr>
+              <tr>
+                <td>Warm SQL</td>
+                <td>Good fit, active evaluation, but individual contributor not decision-maker</td>
+                <td>Book discovery call, send relevant case study</td>
+                <td>BDR follows up within 24 hours</td>
+              </tr>
+              <tr>
+                <td>MQL</td>
+                <td>Right profile, researching not evaluating, timeline unclear</td>
+                <td>Add to CRM, send nurture sequence, offer resources</td>
+                <td>Marketing nurture for 30 days then reassess</td>
+              </tr>
+              <tr>
+                <td>Self-serve</td>
+                <td>SMB, technical user, wants to try before talking</td>
+                <td>Direct to free trial or sandbox with onboarding emails</td>
+                <td>Product-led follow-up based on usage</td>
+              </tr>
+              <tr>
+                <td>Unqualified</td>
+                <td>Wrong size, wrong industry, or student researcher</td>
+                <td>Answer question helpfully, direct to public resources, no CRM record</td>
+                <td>No follow-up</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Feedback loop:</strong> Track conversion rates from each routing path to closed deals. If MQL routing path never converts, either criteria too strict or nurture insufficient. If SQL routing produces unqualified meetings, tighten qualification criteria.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conversation Monitoring sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Conversation Monitoring - Continuous Improvement</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Regular review improves AI performance</h3>
+            <p>AI chat is not set-and-forget. Performance improves through ongoing monitoring of conversations, identifying failure patterns, and refining knowledge base and qualification logic. Treat as continuous optimisation program.</p>
+
+            <h3>Key monitoring activities</h3>
+            <ul>
+              <li><strong>Failed question review</strong> - Weekly review of questions AI could not answer. Add missing information to knowledge base. Track AI containment rate as primary metric</li>
+              <li><strong>Qualification accuracy audit</strong> - Sample conversations monthly to verify routing decisions were appropriate. Check if SQLs were actually qualified and if MQLs were appropriately deprioritised</li>
+              <li><strong>Conversation satisfaction tracking</strong> - Monitor visitor ratings of conversation helpfulness. Follow up on low ratings to understand what went wrong and how to improve</li>
+              <li><strong>Drop-off analysis</strong> - Identify where visitors abandon conversations. High drop-off after specific questions suggests friction. Rephrase or reorder questions</li>
+            </ul>
+
+            <h3>Monthly review checklist</h3>
+            <table>
+              <tr><th>Review Area</th><th>What to Check</th><th>Improvement Action</th></tr>
+              <tr>
+                <td>AI answer quality</td>
+                <td>Sample 20 random conversations. Assess accuracy and helpfulness of AI responses</td>
+                <td>Update knowledge base for incorrect answers. Add missing topics for unanswered questions</td>
+              </tr>
+              <tr>
+                <td>Qualification accuracy</td>
+                <td>Compare chat qualification to sales feedback on lead quality. Calculate false positive and false negative rates</td>
+                <td>Adjust qualification criteria. Refine discovery questions to uncover missing signals</td>
+              </tr>
+              <tr>
+                <td>Conversion funnel</td>
+                <td>Track conversion rates from chat engagement to qualified lead to meeting to opportunity</td>
+                <td>Identify drop-off points. Test changes to qualification flow or routing logic</td>
+              </tr>
+              <tr>
+                <td>Common themes</td>
+                <td>Analyse frequently asked questions and objections. Identify patterns in visitor concerns</td>
+                <td>Create proactive content addressing common themes. Update website to preemptively answer questions</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Sales feedback integration:</strong> Schedule monthly sync with sales team to review lead quality from chat. Sales sees outcomes invisible to marketing like deal size, sales cycle length, and win rate. Use this feedback to refine qualification criteria continuously.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Interrogating instead of conversing</h4>
+          <div class="why">Chat immediately demands company size, budget, and timeline before providing any value. Feels like interrogation not conversation. Visitors abandon or provide fake information to get past gatekeeper.</div>
+          <div class="fix">Lead with helpfulness. Answer their question first, then naturally ask clarifying questions. Use conversational phrasing rather than form-like direct questions. Build rapport before qualification.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Thin knowledge base causing frequent failures</h4>
+          <div class="why">AI frequently says "I do not have information about that" because knowledge base missing common questions. Visitors lose confidence in chat and abandon for human contact or leave entirely.</div>
+          <div class="fix">Invest 10-15 hours building comprehensive knowledge base before launch. Document top 50 questions from sales team. Review transcripts weekly and add missing content immediately. Track containment rate.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Same chat experience for all visitors</h4>
+          <div class="why">Treating enterprise prospect same as SMB visitor or student researcher. Wastes sales time on unqualified conversations while under-serving high-value prospects with generic experience.</div>
+          <div class="fix">Configure routing logic with clear qualification tiers. High-fit prospects get immediate sales access. Low-fit visitors receive helpful self-service without creating low-quality leads. Match experience to qualification level.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. No human escalation path</h4>
+          <div class="why">When AI cannot help or visitor wants human, no clear way to connect. Frustration builds as visitor stuck in AI loop. Bad experience damages brand perception.</div>
+          <div class="fix">Always provide obvious escalation to human. Include "talk to sales" option in chat menu. Configure alerts for frustrated visitors based on sentiment or repeat questions. Make escalation easy and fast.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Set-and-forget after launch</h4>
+          <div class="why">Launch chat then never review conversations or update knowledge base. Performance degrades as product changes, common questions evolve, and gaps in content accumulate. ROI declines over time.</div>
+          <div class="fix">Schedule monthly conversation review. Update knowledge base with new product features and pricing changes immediately. Refine qualification criteria based on sales feedback. Treat as continuous optimisation not one-time setup.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Ignoring mobile experience</h4>
+          <div class="why">Chat works well on desktop but has usability issues on mobile such as covering too much screen or having clunky input. Half your visitors have poor experience.</div>
+          <div class="fix">Test chat experience thoroughly on mobile devices. Ensure chat widget is appropriately sized and positioned. Consider less aggressive triggering on mobile. Monitor mobile versus desktop engagement and satisfaction separately.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 10.7 — Predictive Lead Scoring | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 10.7 - AI-Powered</div>
+  <h1>Predictive Lead Scoring</h1>
+  <p class="desc">Machine learning models that analyse hundreds of firmographic, behavioural, and engagement signals to predict which leads will convert to customers. AI scores leads continuously based on patterns from historical conversion data, prioritising sales focus on highest-probability opportunities.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium-High</span>
+    <span class="tag tag-cost">Cost: Medium-High</span>
+    <span class="tag tag-icp">ICP: All Segments</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Sales teams waste time on leads that will never convert while missing high-intent prospects buried in the pipeline. Humans struggle to synthesise dozens of signals to identify best opportunities. Predictive AI analyses patterns across hundreds of closed deals to identify which combination of signals predict conversion, surfacing hot leads before competitors reach them.
+      </div>
+      <h3>The psychology behind predictive scoring</h3>
+      <ul>
+        <li><strong>Pattern recognition at scale</strong> - ML models identify non-obvious patterns humans miss. For example, combination of specific industry plus technology stack plus engagement timing might strongly predict conversion even though no single signal seems significant</li>
+        <li><strong>Removes human bias</strong> - Reps favour leads that fit their mental model of good prospects. Predictive scoring objectively evaluates all leads equally based on actual conversion patterns not assumptions</li>
+        <li><strong>Timing precision</strong> - Models detect when accounts enter buying mode based on behaviour changes. This temporal sensitivity lets you reach out at exactly right moment when interest peaks</li>
+        <li><strong>Continuous learning</strong> - As you close more deals, model learns what drove those conversions. Scoring accuracy improves automatically over time without manual rule updates</li>
+      </ul>
+      <h3>Why AI-powered specifically</h3>
+      <p>Traditional rule-based scoring assigns fixed points for attributes like company size or email opens. This oversimplifies reality where signal importance varies by context. AI-powered models understand that 5 email opens from enterprise prospect means something different than 5 opens from SMB, and weights signals contextually for accurate prediction.</p>
+      <p><strong>The compounding effect:</strong> Better scoring leads to more efficient sales follow-up. Reps focus on genuinely hot leads and close more deals. More closed deals provide more training data. Model accuracy improves. Cycle repeats with increasing returns.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">D</div><div class="wf-label">Data Integration</div><div class="wf-action">Connect sources</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">T</div><div class="wf-label">Train Model</div><div class="wf-action">Historical data</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">S</div><div class="wf-label">Score Leads</div><div class="wf-action">AI evaluation</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">P</div><div class="wf-label">Prioritise Queue</div><div class="wf-action">Rank by score</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">A</div><div class="wf-label">Alert Sales</div><div class="wf-action">Hot lead notify</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">R</div><div class="wf-label">Refine Model</div><div class="wf-action">Ongoing learning</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Integrate Data Sources</td>
+          <td>Connect predictive scoring platform to CRM, marketing automation, website analytics, and enrichment data sources. Platform needs access to firmographics, engagement behaviour, and historical conversion outcomes to train models</td>
+          <td>2-4 hours integration setup</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Define Conversion Events</td>
+          <td>Specify what constitutes successful conversion such as opportunity created, demo completed, or closed won. Model learns to predict these outcomes. Include negative examples of disqualified or churned leads for contrast</td>
+          <td>1 hour definition</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Train Initial Model</td>
+          <td>Platform analyses 6-12 months of historical lead data and conversion outcomes. ML identifies which attributes and behaviours correlate with conversion. Requires minimum 100 closed deals for statistical validity</td>
+          <td>Automated processing, 24-48 hours</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Review Model Insights</td>
+          <td>Examine which signals model weighted most heavily. Validate findings align with sales intuition. Identify surprising patterns worth investigating. Adjust if model learning from dirty data or outliers</td>
+          <td>2-3 hours review with sales leadership</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Configure Scoring Tiers</td>
+          <td>Define score ranges for hot, warm, and cold leads. Set routing rules and alert thresholds. Decide which score triggers immediate sales notification versus routine follow-up. Map scores to SLA expectations</td>
+          <td>1-2 hours configuration</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Launch and Monitor</td>
+          <td>Activate scoring on new and existing leads. Monitor score distribution to ensure reasonable spread. Track conversion rates by score tier to validate model accuracy. Retrain model monthly as more conversion data accumulates</td>
+          <td>30 min launch, ongoing monitoring</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Start with opportunity creation as conversion event rather than closed won. Opportunity creation provides faster feedback loop for model training since deals close months later. Once model performs well on opportunity prediction, layer in closed won prediction for prioritisation refinement.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>6sense</strong></td>
+          <td>$$$</td>
+          <td>Enterprise B2B with substantial inbound volume and ABM focus</td>
+          <td>Predictive scoring combined with intent data showing category research activity. Account-level and contact-level scores. Buying stage predictions. Deep integrations with CRM and marketing automation. Includes advertising and orchestration capabilities</td>
+          <td>Expensive enterprise pricing starting at tens of thousands annually. Requires high traffic volume for intent data accuracy. Complex platform with learning curve. Best for mature marketing operations</td>
+        </tr>
+        <tr>
+          <td><strong>Demandbase</strong></td>
+          <td>$$$</td>
+          <td>Account-based marketing programs needing account intelligence and scoring</td>
+          <td>Account-centric predictive models identify in-market accounts. Combines first-party engagement with third-party intent signals. Advertising and personalisation features bundled. Strong for ABM orchestration across channels</td>
+          <td>Expensive platform requiring significant commitment. Account focus may miss individual lead signals. Better for enterprise sales cycles than high-velocity SMB motions</td>
+        </tr>
+        <tr>
+          <td><strong>MadKudu</strong></td>
+          <td>$$</td>
+          <td>High-velocity sales teams needing fast, accurate lead scoring</td>
+          <td>Purpose-built for predictive lead scoring without bundled features. Fast implementation and model training. Clear explanations of score drivers. Focus on actionable outputs for sales teams. More affordable than full ABM platforms</td>
+          <td>Narrower feature set than enterprise platforms. Lacks intent data and orchestration capabilities. Best for teams wanting scoring specifically not full ABM stack</td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot Predictive Lead Scoring</strong></td>
+          <td>$$</td>
+          <td>HubSpot users wanting integrated scoring within existing platform</td>
+          <td>Native integration with HubSpot CRM and marketing automation. No additional platform to manage. Automatically available in Enterprise tier. Simple setup with minimal configuration. Good for HubSpot-native teams</td>
+          <td>Less sophisticated than dedicated platforms. Limited to HubSpot data ecosystem. Model transparency and customisation options constrained. Requires HubSpot Enterprise subscription</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>MadKudu</strong> for most teams wanting predictive scoring without full ABM platform complexity. Choose <strong>6sense</strong> if running sophisticated ABM program needing intent data and multi-channel orchestration. Use <strong>HubSpot</strong> scoring if already on HubSpot Enterprise and want simple integrated solution. Reserve <strong>Demandbase</strong> for enterprise with mature account-based strategies.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Data Quality Foundation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Data Quality Foundation - Garbage In, Garbage Out</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Model accuracy depends entirely on data quality</h3>
+            <p>Predictive models learn from historical patterns. If your CRM data is incomplete, inconsistent, or inaccurate, model learns wrong patterns and makes poor predictions. Clean data is prerequisite for effective predictive scoring.</p>
+
+            <h3>Critical data quality requirements</h3>
+            <ul>
+              <li><strong>Complete firmographic data</strong> - Company size, industry, and location must be populated for most records. Missing data means model cannot learn importance of these attributes</li>
+              <li><strong>Accurate conversion labelling</strong> - Won and lost outcomes must be correctly marked in CRM. Deals stuck in pipeline limbo or incorrectly classified corrupt training data</li>
+              <li><strong>Consistent engagement tracking</strong> - Email opens, website visits, and content downloads must be tracked reliably. Spotty tracking creates false negatives where engaged leads appear cold</li>
+              <li><strong>Proper lead lifecycle stages</strong> - Leads must progress through defined stages with clear entry criteria. Inconsistent stage management creates confusion about what conversion means</li>
+            </ul>
+
+            <h3>Pre-launch data hygiene checklist</h3>
+            <table>
+              <tr><th>Data Area</th><th>Quality Check</th><th>Minimum Standard</th></tr>
+              <tr>
+                <td>Company size</td>
+                <td>Percentage of leads with employee count populated</td>
+                <td>At least 80% coverage</td>
+              </tr>
+              <tr>
+                <td>Industry classification</td>
+                <td>Percentage of leads with industry field filled</td>
+                <td>At least 70% coverage</td>
+              </tr>
+              <tr>
+                <td>Engagement data</td>
+                <td>Verify tracking pixels firing and data flowing to CRM</td>
+                <td>100% tracking functionality</td>
+              </tr>
+              <tr>
+                <td>Conversion outcomes</td>
+                <td>Audit sample of closed deals to confirm accurate won/lost marking</td>
+                <td>95%+ accuracy on outcomes</td>
+              </tr>
+              <tr>
+                <td>Lifecycle stages</td>
+                <td>Review stage definitions and progression logic with sales operations</td>
+                <td>Clear documented criteria</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Cleanup investment:</strong> Expect to spend 2-4 weeks cleaning data before launching predictive scoring. Use enrichment services to backfill missing firmographics. Audit closed deals to correct misclassified outcomes. This upfront investment dramatically improves model accuracy.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Signal Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Signal Selection - Feed Model Right Inputs</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>More signals do not always mean better predictions</h3>
+            <p>Predictive models can ingest hundreds of attributes. However, including too many low-quality or redundant signals adds noise that degrades accuracy. Focus on high-signal attributes that genuinely predict conversion.</p>
+
+            <h3>High-value signal categories</h3>
+            <ul>
+              <li><strong>Firmographic fit</strong> - Company size, industry, location, and funding stage. These static attributes indicate whether prospect matches your ICP profile</li>
+              <li><strong>Engagement intensity</strong> - Frequency and recency of interactions such as email opens, website visits, content downloads, and event attendance. Recent concentrated engagement signals active interest</li>
+              <li><strong>Engagement quality</strong> - Which specific pages visited and content consumed. Visiting pricing page signals higher intent than reading blog posts</li>
+              <li><strong>Role and seniority</strong> - Job title indicating decision-making authority. Directors and VPs convert differently than individual contributors</li>
+              <li><strong>Technology stack</strong> - Complementary or competitive tools currently used. Tech stack indicates sophistication level and integration opportunities</li>
+            </ul>
+
+            <h3>Signal priority framework</h3>
+            <table>
+              <tr><th>Signal Type</th><th>Examples</th><th>Predictive Power</th><th>Data Availability</th></tr>
+              <tr>
+                <td>Explicit fit</td>
+                <td>Company size, industry, budget mentioned</td>
+                <td>High for initial qualification</td>
+                <td>Usually good from enrichment</td>
+              </tr>
+              <tr>
+                <td>Behavioural intent</td>
+                <td>Pricing page visits, demo requests, repeat visits</td>
+                <td>Very high for conversion prediction</td>
+                <td>Requires proper tracking setup</td>
+              </tr>
+              <tr>
+                <td>Role authority</td>
+                <td>C-level, VP, Director, Manager</td>
+                <td>High for B2B sales</td>
+                <td>Good from LinkedIn enrichment</td>
+              </tr>
+              <tr>
+                <td>Technology indicators</td>
+                <td>Current tools, tech stack sophistication</td>
+                <td>Medium to high depending on product</td>
+                <td>Varies, may require paid data</td>
+              </tr>
+              <tr>
+                <td>Social signals</td>
+                <td>LinkedIn connections, Twitter followers</td>
+                <td>Low direct predictive power</td>
+                <td>Easy to get but limited value</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Feature engineering:</strong> Work with your scoring platform to create composite signals like engagement velocity (rate of interaction increase), recency-weighted engagement (recent actions valued higher), and fit-adjusted engagement (engagement from good-fit companies weighted more heavily). These derived signals often predict better than raw inputs.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score Interpretation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Score Interpretation - Turn Numbers Into Action</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Scores mean nothing without clear action frameworks</h3>
+            <p>Predictive models output numerical scores like 0-100 or letter grades like A-F. These numbers only drive value when paired with clear rules about what sales should do with each score tier. Define explicit workflows for each tier.</p>
+
+            <h3>Score tier definitions</h3>
+            <ul>
+              <li><strong>Hot leads (A tier, 80-100 score)</strong> - Strong firmographic fit plus recent high-intent behaviour like multiple pricing page visits or demo request. Immediate sales follow-up required within 1 hour</li>
+              <li><strong>Warm leads (B tier, 60-79 score)</strong> - Good fit with moderate engagement or excellent engagement from okay fit. Sales follow-up within 24 hours with personalised outreach</li>
+              <li><strong>Nurture leads (C tier, 40-59 score)</strong> - Partial fit or early-stage engagement. Not ready for sales yet. Route to marketing automation for education and nurturing until score increases</li>
+              <li><strong>Cold leads (D-F tier, 0-39 score)</strong> - Poor fit or minimal engagement. Deprioritise or disqualify. Optionally include in low-touch nurture but do not consume sales resources</li>
+            </ul>
+
+            <h3>Action framework by score tier</h3>
+            <table>
+              <tr><th>Score Tier</th><th>Sales Action</th><th>Response SLA</th><th>Outreach Approach</th></tr>
+              <tr>
+                <td>Hot (80-100)</td>
+                <td>Direct call attempt plus email</td>
+                <td>Within 1 hour</td>
+                <td>Reference specific high-intent behaviour. Offer immediate meeting or demo</td>
+              </tr>
+              <tr>
+                <td>Warm (60-79)</td>
+                <td>Personalised email plus LinkedIn connection</td>
+                <td>Within 24 hours</td>
+                <td>Acknowledge engagement. Offer relevant resource or conversation</td>
+              </tr>
+              <tr>
+                <td>Nurture (40-59)</td>
+                <td>Marketing automation sequence</td>
+                <td>Automated immediate</td>
+                <td>Educational content series. Wait for score increase before sales touch</td>
+              </tr>
+              <tr>
+                <td>Cold (0-39)</td>
+                <td>Minimal or no proactive outreach</td>
+                <td>None or very low priority</td>
+                <td>Generic newsletter only. Focus resources on higher tiers</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Dynamic thresholds:</strong> Review score distribution monthly. If 80% of leads score above 60, you are not getting enough separation. Adjust tier thresholds or work with platform to increase model sensitivity. Goal is roughly 10-15% hot, 25-30% warm, 40-50% nurture, 15-20% cold for balanced prioritisation.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Continuous Model Refinement sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Continuous Model Refinement - Learning From Outcomes</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Models degrade without ongoing retraining</h3>
+            <p>Initial model learns from historical data. As your ICP evolves, product changes, or market shifts, old patterns become less predictive. Regular retraining on recent data keeps model accurate and relevant.</p>
+
+            <h3>Model monitoring activities</h3>
+            <ul>
+              <li><strong>Conversion rate by score tier</strong> - Track what percentage of hot, warm, and nurture leads actually convert. If hot leads converting at same rate as warm, scoring is not effectively prioritising</li>
+              <li><strong>Score distribution</strong> - Monitor percentage of leads in each tier over time. Dramatic shifts may indicate data quality issues or market changes requiring model adjustment</li>
+              <li><strong>False positive analysis</strong> - Review high-scoring leads that did not convert. Identify common patterns in these misses. Adjust signal weighting to reduce similar false positives</li>
+              <li><strong>False negative analysis</strong> - Examine low-scoring leads that unexpectedly converted. Understand what model missed. Add signals or adjust weights to catch similar opportunities</li>
+            </ul>
+
+            <h3>Retraining schedule and triggers</h3>
+            <table>
+              <tr><th>Retraining Trigger</th><th>Timing</th><th>Reason</th></tr>
+              <tr>
+                <td>Routine refresh</td>
+                <td>Monthly</td>
+                <td>Incorporate latest closed deals as training examples. Model learns from most recent patterns</td>
+              </tr>
+              <tr>
+                <td>Conversion rate degradation</td>
+                <td>When hot lead conversion drops 20%+ from baseline</td>
+                <td>Indicates model predictions becoming less accurate. Urgent retrain needed</td>
+              </tr>
+              <tr>
+                <td>Major product or ICP change</td>
+                <td>Immediately after significant change</td>
+                <td>Historical patterns may no longer apply. Model needs to learn new success profile</td>
+              </tr>
+              <tr>
+                <td>New data source integration</td>
+                <td>After integrating new signals</td>
+                <td>Model cannot use new signals until retrained to understand their predictive value</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Feedback loop creation:</strong> Schedule quarterly joint review between sales, marketing, and operations. Compare model predictions against actual outcomes. Surface insights about what model gets right and wrong. Use findings to prioritise data quality improvements and signal additions.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Launching with insufficient historical data</h4>
+          <div class="why">Attempting to train model with only 50 closed deals or 3 months of history. Not enough data for statistically significant patterns. Model overfits to noise and makes poor predictions.</div>
+          <div class="fix">Wait until you have minimum 100 closed deals and 6-12 months of engagement data before training model. More data means more reliable patterns. Better to wait than launch with inaccurate model.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Dirty data creating false patterns</h4>
+          <div class="why">Training model on CRM data with missing fields, incorrect outcomes, and inconsistent tracking. Model learns from errors and perpetuates bad prioritisation.</div>
+          <div class="fix">Invest 2-4 weeks cleaning data before model training. Enrich missing firmographics, audit closed deal outcomes, verify tracking functionality. Data quality determines model quality.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. No clear action framework for scores</h4>
+          <div class="why">Model produces scores but sales team does not know what to do with them. High scores ignored because no defined workflow. Investment in scoring delivers zero ROI.</div>
+          <div class="fix">Define explicit actions and SLAs for each score tier before launch. Document in sales playbook. Train team on score interpretation. Enforce follow-up discipline through management oversight.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Set-and-forget without retraining</h4>
+          <div class="why">Launch model then never retrain as new deals close and patterns evolve. Model accuracy degrades over time as it drifts from current reality.</div>
+          <div class="fix">Schedule automatic monthly retraining to incorporate latest conversion data. Monitor conversion rates by score tier. Trigger urgent retrain if hot lead conversion drops significantly.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Ignoring false positive and false negative analysis</h4>
+          <div class="why">Not reviewing which predictions were wrong and why. Miss opportunities to improve model by adding signals or adjusting weights. Repeat same mistakes indefinitely.</div>
+          <div class="fix">Monthly review sample of high-scoring leads that did not convert and low-scoring leads that did convert. Identify patterns in misses. Adjust signals and thresholds based on learnings.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Over-trusting scores without sales judgment</h4>
+          <div class="why">Treating scores as absolute truth rather than decision support. Ignoring low-scoring leads with obvious buying signals that model missed. Losing deals due to rigid score adherence.</div>
+          <div class="fix">Position scores as prioritisation guidance not gospel. Train sales to use scores plus judgment. Allow reps to override scores with justification. Track overrides to identify model blind spots.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>
