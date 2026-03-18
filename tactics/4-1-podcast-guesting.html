@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 4.1 — Podcast Guesting Strategy | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 4.1 - Content-Led Outreach</div>
+  <h1>Podcast Guesting Strategy</h1>
+  <p class="desc">Get booked as a guest on podcasts your ICP listens to. Builds authority, generates inbound leads, and creates evergreen content assets. AI search tools make it easy to find podcasts that frequently book guests in your domain.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#d29922;background:#d2992222">
+      <div class="hero-ch-icon" style="background:#d29922">Co</div>
+      <div class="hero-ch-name">Content (Primary)</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low</span>
+    <span class="tag tag-icp">ICP: Founders, C-suite, Technical Buyers</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Decision-makers consume podcasts during commutes, workouts, and downtime. Unlike cold emails or LinkedIn posts they scroll past, they actively listen to full podcast episodes. A 45-minute appearance gives you more attention than months of standard outreach. Plus, the host's endorsement transfers trust instantly.
+      </div>
+      <h3>The psychology of podcast authority</h3>
+      <ul>
+        <li><strong>Borrowed credibility</strong> - When a respected host interviews you, their audience assumes you're worth listening to. You bypass cold skepticism</li>
+        <li><strong>Passive lead generation</strong> - Listeners hear you share insights for 30-60 minutes. Those who resonate seek you out. No hard sell required</li>
+        <li><strong>Long-tail asset</strong> - Episodes stay online forever. People discover them months or years later via search. One great episode generates leads for years</li>
+        <li><strong>Multi-touchpoint effect</strong> - Prospects might hear your episode, then see your LinkedIn post, then get your cold email. Multi-channel presence compounds credibility</li>
+      </ul>
+      <h3>Why podcast guesting beats other content strategies</h3>
+      <p>Creating your own podcast requires consistent production effort. Writing blog posts reaches only people who actively search for content. Podcast guesting gives you distribution to an existing engaged audience without the overhead of building your own. The host does the promotion. You just show up and share value.</p>
+      <p><strong>The compounding effect:</strong> Each podcast appearance expands your network. Hosts introduce you to their connections. Other podcasters discover your episodes and invite you on their shows. One appearance leads to three more invitations.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-phone">D</div><div class="wf-label">Define Expertise</div><div class="wf-action">3-5 topics</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-phone">R</div><div class="wf-label">Research Podcasts</div><div class="wf-action">ICP audiences</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-email">P</div><div class="wf-label">Pitch Hosts</div><div class="wf-action">Personalised value</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-phone">Pr</div><div class="wf-label">Prepare</div><div class="wf-action">Talking points</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-video">Re</div><div class="wf-label">Record</div><div class="wf-action">45-60 min</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-linkedin">Pm</div><div class="wf-label">Promote</div><div class="wf-action">Multi-channel</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 7</div><div class="wf-node ch-phone">T</div><div class="wf-label">Track Inbound</div><div class="wf-action">Lead attribution</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Define your expertise topics</td>
+          <td>List 3-5 topics you can speak about with authority. These should align with ICP pain points. Examples: scaling sales operations, GTM strategy for early-stage startups, outbound playbooks that work in 2026</td>
+          <td>30 min brainstorming</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Research target podcasts</td>
+          <td>Use tools like PodMatch, Podchaser, or Listen Notes to find podcasts where your ICP listens. Filter by topic, audience size, and guest format. Prioritise shows that interview experts vs product demos</td>
+          <td>1-2 hours per batch of 20 podcasts</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Pitch hosts with personalised value</td>
+          <td>Cold email podcast hosts explaining what value you bring to their audience. Reference specific episodes you enjoyed. Suggest 2-3 talking points relevant to recent themes on their show. Include links to previous media appearances or writing samples</td>
+          <td>10-15 min per pitch, send 10-20 pitches per week</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Prepare talking points</td>
+          <td>Once booked, research the podcast deeply. Listen to 3-5 recent episodes to understand tone and format. Prepare 5-7 stories and frameworks you can share. Anticipate common questions in your space</td>
+          <td>1-2 hours prep per appearance</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Record the episode</td>
+          <td>Most podcasts use Zoom, Riverside, or SquadCast for remote recording. Show up with good audio (headset or mic), stable internet, and quiet space. Be conversational, tell stories, avoid jargon. Aim for 45-60 min conversations</td>
+          <td>45-60 min recording</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Promote the episode</td>
+          <td>When episode goes live, share it on LinkedIn, Twitter, email newsletter, and in relevant communities. Tag the host and thank them. Create 2-3 short clips for social. Ask your team to share too</td>
+          <td>30-45 min per episode launch</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Track inbound leads</td>
+          <td>Add tracking parameters to links you share during the podcast. Monitor inbound traffic from the episode. Track which prospects mention hearing you on podcasts during sales calls. Attribute pipeline to specific episodes</td>
+          <td>Ongoing monitoring</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Create a one-pager guest bio with headshot, 3-sentence bio, suggested topics, and links to previous appearances. Send this with every pitch. Makes it easy for hosts to say yes and prep for your episode.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>PodMatch</strong></td>
+          <td>$49/mo</td>
+          <td>Automated podcast matching and booking</td>
+          <td>Algorithm matches you with relevant podcasts based on your topics and expertise. Hosts can discover and invite you. Saves hours of manual research. Includes pitch templates and booking calendar</td>
+          <td>Focuses on smaller to mid-size podcasts. Top-tier shows rarely use matching platforms. Quality varies across listed podcasts</td>
+        </tr>
+        <tr>
+          <td><strong>MatchMaker.fm</strong></td>
+          <td>Free</td>
+          <td>Free podcast guest/host matching</td>
+          <td>Submit your profile as a potential guest. Hosts browse profiles and reach out. No cost. Simple interface. Good for getting started without investment</td>
+          <td>Lower volume than paid platforms. Less sophisticated matching. Requires hosts to find you rather than you pitching them</td>
+        </tr>
+        <tr>
+          <td><strong>Podchaser</strong></td>
+          <td>Free (Pro: $9/mo)</td>
+          <td>Podcast research and database</td>
+          <td>Search podcasts by topic, guest, keywords. See episode lists, contact info, and listener stats. Free tier covers most needs. Pro adds advanced filters and alerts for new episodes</td>
+          <td>Contact info not always up to date. Requires manual outreach after research. No automated matching or pitching</td>
+        </tr>
+        <tr>
+          <td><strong>Riverside</strong></td>
+          <td>$15/mo</td>
+          <td>High-quality remote recording</td>
+          <td>Records video and audio locally on each participant's device (4K video, WAV audio). Protects against internet issues. Great if host uses Riverside. Automatic transcription included</td>
+          <td>Only useful if the podcast uses Riverside. Most shows use Zoom or other tools. Not a booking or research tool</td>
+        </tr>
+        <tr>
+          <td><strong>Descript</strong></td>
+          <td>$24/mo</td>
+          <td>Creating clips from full episodes</td>
+          <td>AI-powered editing. Upload full episode, edit by editing text transcript. Automatically generate short clips. Add captions. Export for social media. Saves hours of manual editing</td>
+          <td>Learning curve for advanced features. Occasional transcription errors require manual fixes. Not needed if host provides clips</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Podchaser (free)</strong> for research and manual outreach. Once you validate interest, upgrade to <strong>PodMatch ($49/mo)</strong> for automated matching and higher volume. Use <strong>Descript ($24/mo)</strong> only if you're repurposing episodes into social content yourself.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Finding Right Podcasts sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Finding the Right Podcasts (Audience Alignment Over Size)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Audience fit matters more than download numbers</h3>
+            <p>A podcast with 500 highly targeted listeners (all in your ICP) generates more leads than a show with 50,000 general business listeners. Prioritise shows where your ideal customers are concentrated, not vanity metrics.</p>
+
+            <h3>How to evaluate podcast fit</h3>
+            <ul>
+              <li><strong>Listen to 2-3 recent episodes</strong> - Does the host interview people in your space? Do guests share tactical insights or just high-level fluff? Is the tone conversational or overly produced?</li>
+              <li><strong>Check guest backgrounds</strong> - Who else appears on the show? If competitors or complementary companies have been guests, that's a green flag for ICP alignment</li>
+              <li><strong>Review audience signals</strong> - Read Apple Podcasts reviews, LinkedIn comments on episode announcements, or YouTube comments. What do listeners care about? Do they match your ICP?</li>
+              <li><strong>Analyse episode topics</strong> - Does the show cover pain points your product solves? If yes, listeners are pre-qualified prospects</li>
+            </ul>
+
+            <h3>Target podcast tiers</h3>
+            <table>
+              <tr><th>Tier</th><th>Characteristics</th><th>Strategy</th></tr>
+              <tr>
+                <td><strong>Tier 1: Niche expert shows</strong></td>
+                <td>Small audience but highly targeted. Host is a practitioner, not a professional podcaster. Informal format</td>
+                <td>Easiest to get booked. Start here to build reps and collect testimonials from hosts</td>
+              </tr>
+              <tr>
+                <td><strong>Tier 2: Established industry shows</strong></td>
+                <td>Medium audience. Recognised in your industry. Regular publishing cadence. Mix of tactical and strategic content</td>
+                <td>Target once you have 3-5 smaller podcast appearances. Reference those in your pitch</td>
+              </tr>
+              <tr>
+                <td><strong>Tier 3: High-profile shows</strong></td>
+                <td>Large audience. Professional production. Well-known host. Competitive guest booking</td>
+                <td>Requires warm intro or significant authority in your space. Use appearances on Tier 1 and 2 shows to build credibility for pitching Tier 3</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Search for podcasts by frequent guest, not just by topic. If someone in your space appears on multiple podcasts, research all of those shows. They clearly book guests in your domain and have audiences interested in your expertise.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Crafting Pitch sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Crafting Your Pitch (What Value You Bring, Not What You Sell)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What hosts care about</h3>
+            <p>Podcast hosts want great content for their audience. They don't care about your product, your company, or your personal goals. Lead with the value you provide to their listeners. Make it easy for them to say yes.</p>
+
+            <h3>Pitch structure that works</h3>
+            <ul>
+              <li><strong>Line 1: Personalisation</strong> - Reference a specific recent episode you listened to. Mention what you found valuable. Proves you're not mass emailing</li>
+              <li><strong>Line 2: Your credibility</strong> - One sentence stating your expertise and why you're qualified to speak on this topic. Include a notable credential or result</li>
+              <li><strong>Line 3-4: Value to their audience</strong> - Suggest 2-3 specific topics you could cover that align with recent themes on their show. Frame as listener benefits, not your talking points</li>
+              <li><strong>Line 5: Social proof</strong> - Mention 1-2 other podcasts you've appeared on (if applicable). Link to a previous episode or written content demonstrating your communication style</li>
+              <li><strong>Line 6: Easy next step</strong> - Offer to send more info or jump on a quick call. Include your calendar link or ask when works for them</li>
+            </ul>
+
+            <h3>Pitch examples</h3>
+            <div class="email-block">
+              <span class="label">Good pitch example</span>
+Subject: Guest idea for The GTM Show
+
+Hi Sarah,
+
+Just listened to your episode with James on scaling outbound teams. Loved the discussion on balancing automation with personalisation.
+
+I lead GTM operations at Acme and spend most of my time helping Series A/B companies fix broken sales processes. Previously scaled outbound at two companies from zero to consistent pipeline.
+
+A few topics I think would resonate with your audience:
+- Common mistakes that kill cold email deliverability (and how to fix them)
+- Building repeatable outbound motions without burning out your SDR team
+- How to prioritise which parts of GTM to automate first
+
+Happy to send over talking points or links to previous podcast appearances. Here's my calendar if you'd like to chat: [link]
+
+Best,
+James
+            </div>
+
+            <div class="highlight">
+              <strong>Common mistake:</strong> Pitching with "I'd love to come on your show to talk about..." instead of "Your audience would benefit from learning about..." The first is about you. The second is about them. Always frame value for the host's audience.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preparation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Preparation (Stories Over Stats, Specific Over Generic)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why preparation matters</h3>
+            <p>Great podcast guests make hosts look good. Boring guests with generic answers make hosts work harder to extract value. The more you prepare, the easier you make the host's job, and the better the episode turns out.</p>
+
+            <h3>Preparation checklist</h3>
+            <ul>
+              <li><strong>Listen to 3-5 recent episodes</strong> - Understand the host's style (conversational vs formal, tactical vs strategic, short vs long answers). Match their energy and format</li>
+              <li><strong>Prepare 5-7 stories</strong> - Real examples from your experience. Specific situations with stakes, actions, and outcomes. Stories engage listeners far more than abstract concepts</li>
+              <li><strong>Create a frameworks document</strong> - Visual or mental frameworks you use in your work. Hosts love when guests share repeatable models listeners can apply. Example: a 3-step process for qualifying outbound leads</li>
+              <li><strong>Anticipate common questions</strong> - What do people always ask you about your expertise? Prepare concise answers in advance so you're not rambling on the spot</li>
+              <li><strong>Research the host's background</strong> - Look at their LinkedIn, company, or previous work. Find connection points you can reference during the conversation to build rapport</li>
+            </ul>
+
+            <h3>During the recording</h3>
+            <table>
+              <tr><th>Do This</th><th>Not This</th></tr>
+              <tr>
+                <td>Share specific stories with names, numbers, and context</td>
+                <td>Give generic advice like "you should focus on quality over quantity"</td>
+              </tr>
+              <tr>
+                <td>Admit what you don't know or what hasn't worked for you</td>
+                <td>Present yourself as having all the answers. Listeners smell BS</td>
+              </tr>
+              <tr>
+                <td>Build on the host's questions and energy</td>
+                <td>Ignore their question to talk about what you want to talk about</td>
+              </tr>
+              <tr>
+                <td>Provide actionable takeaways listeners can use immediately</td>
+                <td>Speak in high-level platitudes without tactical details</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Prepare one surprising contrarian take or unpopular opinion in your space. Hosts love when guests challenge conventional wisdom. It creates memorable moments and clips for promotion. Example: "Most companies waste money on intent data. Here's why..."
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Being a Great Guest sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Being a Great Guest (Energy, Stories, Actionable Insights)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What separates great guests from forgettable ones</h3>
+            <p>Great guests leave the host thinking "I need to have them back" and listeners thinking "I need to learn more from this person." It's not about being the smartest person in the room. It's about being engaging, helpful, and memorable.</p>
+
+            <h3>Energy and presence</h3>
+            <ul>
+              <li><strong>Speak like you're talking to a friend</strong> - Conversational tone beats formal presentation. Pretend you're explaining this to a colleague over coffee</li>
+              <li><strong>Vary your pace and tone</strong> - Monotone voices lose listeners. Speed up during exciting parts, slow down for important points, pause for emphasis</li>
+              <li><strong>Show enthusiasm</strong> - If you sound bored talking about your expertise, why would anyone else care? Genuine excitement is contagious</li>
+              <li><strong>React to the host</strong> - Laugh at their jokes. Build on their insights. Treat it like a two-way conversation, not a one-way lecture</li>
+            </ul>
+
+            <h3>Content quality</h3>
+            <ul>
+              <li><strong>Stories over stats</strong> - "We increased reply rates" is boring. "Here's what happened when we tried X and it completely backfired..." is engaging. Stories stick. Stats don't</li>
+              <li><strong>Be specific</strong> - Instead of "segment your outbound list," say "we split our list into three tiers based on company revenue, tech stack, and recent funding. Here's why that mattered..."</li>
+              <li><strong>Give away your best stuff</strong> - Don't hold back insights to protect your competitive advantage. The more value you provide, the more people want to work with you</li>
+              <li><strong>Make it actionable</strong> - End answers with "here's what you can do starting today..." Listeners want practical next steps, not just concepts</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> After the recording, send the host a thank-you message highlighting your favourite part of the conversation. Most guests disappear after recording. Standing out with gratitude increases your chances of being invited back or recommended to other hosts.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repurposing sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Repurposing Content (Audiograms, Quotes, Blog Posts, LinkedIn)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why repurposing matters</h3>
+            <p>Only a small fraction of the podcast's audience listens to every episode. Repurposing surfaces your insights to people who missed the episode, don't have time to listen, or prefer different content formats. One 45-minute episode can fuel weeks of content.</p>
+
+            <h3>Repurposing formats</h3>
+            <ul>
+              <li><strong>Short video clips (60-90 sec)</strong> - Pull the best moments from the episode. Add captions. Share on LinkedIn, Twitter, and your website. These clips often get more views than the full episode</li>
+              <li><strong>Audiograms</strong> - Animated waveform video with a short audio snippet. Great for Instagram Stories and LinkedIn. Tools like Headliner or Descript make these easy</li>
+              <li><strong>Quote graphics</strong> - Pull memorable lines from the transcript. Design simple quote cards with your photo and the podcast logo. Share on social</li>
+              <li><strong>Blog post recap</strong> - Turn the transcript into a written article. "10 Insights from My Appearance on The GTM Show." Embed the episode audio. Drives SEO and gives non-podcast listeners access</li>
+              <li><strong>LinkedIn carousel</strong> - Extract 5-7 key takeaways. Create a carousel post walking through each point. Link to full episode in comments</li>
+              <li><strong>Email newsletter feature</strong> - Share the episode with your email list. Include 2-3 key points discussed and why they matter. Easy content for your newsletter</li>
+            </ul>
+
+            <h3>Repurposing timeline</h3>
+            <table>
+              <tr><th>Timing</th><th>Content Type</th><th>Platform</th></tr>
+              <tr>
+                <td>Day of launch</td>
+                <td>LinkedIn post announcing episode with 1 key takeaway</td>
+                <td>LinkedIn, Twitter</td>
+              </tr>
+              <tr>
+                <td>Day 3</td>
+                <td>First short video clip with caption</td>
+                <td>LinkedIn video post</td>
+              </tr>
+              <tr>
+                <td>Day 7</td>
+                <td>Quote graphic with memorable line from episode</td>
+                <td>LinkedIn, Instagram</td>
+              </tr>
+              <tr>
+                <td>Day 10</td>
+                <td>Blog post recap with embedded episode</td>
+                <td>Company blog, Medium, LinkedIn article</td>
+              </tr>
+              <tr>
+                <td>Day 14</td>
+                <td>Second video clip or carousel post</td>
+                <td>LinkedIn</td>
+              </tr>
+              <tr>
+                <td>Day 21</td>
+                <td>Email newsletter feature</td>
+                <td>Email list</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Create a guest appearance page on your website listing all podcasts you've appeared on with links and short descriptions. This becomes a credibility asset you can share in pitches, on your LinkedIn profile, and in sales conversations.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Building Relationships sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Building Relationships with Hosts for Repeat Appearances</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why relationships matter</h3>
+            <p>Podcast hosts are connectors. They know other hosts, potential customers, investors, and industry leaders. A strong relationship with one host can open doors to dozens of other opportunities. Treat every podcast appearance as the start of a long-term relationship, not a one-off transaction.</p>
+
+            <h3>How to stay on hosts' radar</h3>
+            <ul>
+              <li><strong>Promote their show genuinely</strong> - Share other episodes you enjoyed, not just yours. Tag them when you see relevant content. Show you care about their success, not just your appearance</li>
+              <li><strong>Introduce them to potential guests</strong> - When you meet someone who'd be great for their show, make the intro. Hosts remember people who help them find great content</li>
+              <li><strong>Engage with their content</strong> - Comment on their LinkedIn posts, share their articles, respond to their emails. Stay visible without being pushy</li>
+              <li><strong>Offer to return for updates</strong> - Six months after your first appearance, reach out with new insights or developments in your space. "Hey Sarah, remember we talked about X? Here's what's changed since then. Would love to do a follow-up episode."</li>
+            </ul>
+
+            <h3>Building a guest network</h3>
+            <p>Connect with other guests who've appeared on the same shows. These are people in adjacent or complementary spaces to yours. Comment on their episodes, DM them with thoughts, explore collaboration opportunities. Guest networks compound your podcast opportunities.</p>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> After a great episode, ask the host: "Who else should I talk to in this space?" Hosts know dozens of other podcasters and are usually happy to make intros if you were a good guest. One warm intro beats 20 cold pitches.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Pitching podcasts that don't match your ICP</h4>
+          <div class="why">You appear on shows with large audiences, but none of the listeners are in your target market. Generates awareness but zero leads.</div>
+          <div class="fix">Research who actually listens to the show. Check guest backgrounds and episode topics. Prioritise tight ICP alignment over download numbers.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Generic pitch emails that could be sent to anyone</h4>
+          <div class="why">Hosts get dozens of guest pitches per week. Generic emails ("I'd love to share my expertise on your show") get ignored immediately.</div>
+          <div class="fix">Reference specific episodes. Suggest topics aligned with recent themes. Show you've done your homework. Make it personal.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Talking about your product instead of sharing insights</h4>
+          <div class="why">Listeners tune out the moment they feel sold to. Podcast audiences expect education, not pitches. Product talk kills credibility.</div>
+          <div class="fix">Focus 100% on providing value. Share frameworks, stories, and lessons. Mention your company only in bio. Let insights sell for you.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. No preparation before recording</h4>
+          <div class="why">You show up without listening to previous episodes or preparing stories. Give rambling answers. Make the host work hard to extract value.</div>
+          <div class="fix">Listen to 3-5 recent episodes. Prepare 5-7 stories and frameworks. Anticipate common questions. Make the host's job easy.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Not promoting the episode after it goes live</h4>
+          <div class="why">The episode launches and you post once on LinkedIn then forget about it. Miss the opportunity to drive traffic and extract maximum value.</div>
+          <div class="fix">Create clips, quote graphics, blog recap. Share multiple times across channels over 2-3 weeks. Repurpose into newsletter content.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Treating it as a one-off transaction</h4>
+          <div class="why">You do the episode, say thanks, then disappear. Waste the relationship opportunity with the host and their network.</div>
+          <div class="fix">Stay in touch. Promote other episodes. Introduce potential guests. Offer to return for follow-up episode. Build long-term relationship.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 9.5 — Office Lunch Drop | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 9.5 - Creative / Guerrilla</div>
+  <h1>Office Lunch Drop</h1>
+  <p class="desc">Cater lunch to a target office with a branded note. Gets your brand literally on their table and creates a memorable positive experience. Works especially well for teams of 10-50 people where you can create impact without overspending.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low</span>
+    <span class="tag tag-cost">Cost: Medium</span>
+    <span class="tag tag-icp">ICP: Sales Leaders, Founders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Food creates instant positive associations. When you deliver lunch to an entire office, you're not just reaching one decision-maker - you're creating brand awareness across the whole team. People talk about the lunch ("Who sent this?"), share photos on Slack, and remember your name because you fed them.
+      </div>
+      <h3>The psychology behind lunch drops</h3>
+      <ul>
+        <li><strong>Reciprocity at scale</strong> - Feeding a team creates collective obligation. Multiple people feel appreciative, increasing the chances someone takes action</li>
+        <li><strong>Positive emotional anchoring</strong> - Food = happiness. Your brand gets associated with the positive feeling of a free meal, especially during busy workdays</li>
+        <li><strong>Social proof internally</strong> - When 20 people eat lunch from your company, they talk about it. Your target sees colleagues discussing you, creating social proof before you even pitch</li>
+        <li><strong>Multi-stakeholder reach</strong> - You reach decision-makers and influencers simultaneously. The VP might not respond to cold email, but their team definitely remembers who bought them lunch</li>
+      </ul>
+      <h3>Why this works for mid-sized teams</h3>
+      <p>Lunch drops are most effective for offices of 10-50 people. Small enough that your budget can cover everyone (creating fairness and goodwill), large enough that you reach multiple stakeholders including the decision-maker. Bigger than 50 gets expensive fast, smaller than 10 feels less impactful.</p>
+      <p><strong>The format advantage:</strong> Unlike one-to-one gifts (which can feel transactional), feeding a team feels generous and community-minded. It's harder to say no to someone who just fed your entire team.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-email">I</div><div class="wf-label">Identify Office</div><div class="wf-action">Target company</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-phone">C</div><div class="wf-label">Confirm Address</div><div class="wf-action">Size/location</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-phone">O</div><div class="wf-label">Order Catering</div><div class="wf-action">Deliveroo/UberEats</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">I</div><div class="wf-label">Include Note</div><div class="wf-action">Branded message</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">E</div><div class="wf-label">Email Same Day</div><div class="wf-action">Reference lunch</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-email">F</div><div class="wf-label">Follow Up</div><div class="wf-action">Next day</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify Target Office</td>
+          <td>Choose a company where you have a warm lead or high-value prospect. Ideal office size: 10-50 people. Check LinkedIn for team size and office location</td>
+          <td>10 min (research)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Confirm Office Address and Size</td>
+          <td>Verify office address (Google, LinkedIn company page). Confirm they're not fully remote. Estimate team size to order the right amount of food (call reception if unsure)</td>
+          <td>5-10 min</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Order Catering</td>
+          <td>Use Deliveroo for Business, Just Eat for Business, or UberEats for Business. Order enough for the full team plus some extra. Schedule delivery for lunch time (12-1 PM). Choose crowd-pleasers (pizza, sandwiches, salads with variety)</td>
+          <td>15-20 min (ordering)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Include Branded Note</td>
+          <td>Add a printed note or card with delivery. Message: "Lunch is on us today. Hope you enjoy! - The team at Acme." Keep it light and non-salesy. No hard pitch</td>
+          <td>5 min (note creation)</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Email Contact Same Day</td>
+          <td>Email your target contact same day lunch arrives: "Hey Sarah, we sent lunch for your team today. Hope you all enjoy it. No strings attached, but I'd love to chat about X if you have 15 min this week."</td>
+          <td>5 min</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Follow Up Next Day</td>
+          <td>Send follow-up email or LinkedIn message: "Hope the team enjoyed lunch yesterday. Would love to connect this week to discuss how we can help with X. Let me know when works for you."</td>
+          <td>5 min</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Coordinate lunch drop with a relevant trigger event (new funding, product launch, team expansion). This makes the gesture feel timely and thoughtful rather than random. Example: "Congrats on the Series B! We wanted to help fuel your growth - lunch is on us."
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Deliveroo for Business</strong></td>
+          <td>Variable (per order + service fee)</td>
+          <td>UK market, variety of restaurants</td>
+          <td>Wide restaurant selection. Group ordering features. Invoicing for business expenses. Fast delivery in urban areas. Can schedule in advance</td>
+          <td>Limited to UK and select European cities. Higher service fees than consumer app. Minimum order requirements for some areas</td>
+        </tr>
+        <tr>
+          <td><strong>Just Eat for Business</strong></td>
+          <td>Variable (per order)</td>
+          <td>UK coverage, budget-conscious teams</td>
+          <td>Good coverage across UK including smaller towns. Business invoicing. Loyalty rewards for frequent orders. Often cheaper than competitors</td>
+          <td>Slower delivery times vs Deliveroo in some areas. Smaller restaurant selection in major cities. Interface less polished</td>
+        </tr>
+        <tr>
+          <td><strong>UberEats for Business</strong></td>
+          <td>Variable (per order + fee)</td>
+          <td>Global coverage, US focus</td>
+          <td>Best for US-based prospecting. Voucher system for sending credits. Group orders. Integration with Uber for Business account for expense tracking</td>
+          <td>UK selection weaker than Deliveroo. Higher fees in some markets. Delivery times can be unpredictable</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> For UK prospects, use <strong>Deliveroo for Business</strong> (best selection and speed in cities) or <strong>Just Eat for Business</strong> (better coverage in smaller towns). For US prospects, use <strong>UberEats for Business</strong>. Budget $150-300 for a team of 20-30 people.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Food Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Food Selection (Variety, Dietary Restrictions, Crowd-Pleasers)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why food choice matters</h3>
+            <p>Order the wrong food and people can't eat it (dietary restrictions), don't like it (too niche), or it arrives cold/stale (poor quality). The gesture falls flat. Order crowd-pleasers with variety and accommodate common dietary needs.</p>
+
+            <h3>Safe food choices for office catering</h3>
+            <table>
+              <tr><th>Food Type</th><th>Why It Works</th><th>What to Order</th></tr>
+              <tr>
+                <td>Pizza</td>
+                <td>Universal appeal, easy to share, stays warm</td>
+                <td>Mix of meat and veggie options. At least one vegan pizza. Avoid overly niche toppings. Estimate 2-3 slices per person</td>
+              </tr>
+              <tr>
+                <td>Sandwich platters</td>
+                <td>Variety, accommodates dietary needs, individually wrapped</td>
+                <td>Mix of meat, veggie, and vegan options. Label clearly. Include sides (crisps, fruit, dessert)</td>
+              </tr>
+              <tr>
+                <td>Salad boxes</td>
+                <td>Health-conscious, customizable, travels well</td>
+                <td>Mixed protein options (chicken, falafel, tofu). Dressing on the side. Include non-salad option for variety</td>
+              </tr>
+              <tr>
+                <td>Asian food (sushi, poke bowls, Chinese)</td>
+                <td>Modern, shareable, Instagram-able</td>
+                <td>Mix of vegetarian and meat options. Avoid anything too spicy or unusual. Include rice/noodle bases for variety</td>
+              </tr>
+            </table>
+
+            <h3>Dietary accommodation checklist</h3>
+            <ul>
+              <li><strong>Vegetarian options</strong> - At least 30% of order should be vegetarian (higher in cities)</li>
+              <li><strong>Vegan options</strong> - Include at least 2-3 clearly labeled vegan items</li>
+              <li><strong>Gluten-free</strong> - One GF option if possible (salads, GF pizza base)</li>
+              <li><strong>Allergen labeling</strong> - Include note listing common allergens if possible (nuts, dairy, gluten)</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> Order 10-15% more than estimated headcount. Better to have leftovers than run out - running out makes you look cheap and kills the goodwill. Leftovers can be taken home or eaten later, maintaining positive impression.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timing and Logistics sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Timing and Logistics (Schedule for Lunchtime, Confirm Delivery)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Optimal delivery timing</h3>
+            <p>Deliver too early (10 AM) and it sits around getting cold. Too late (2 PM) and people already ate. Sweet spot is 12-12:30 PM when people are getting hungry but haven't ordered food yet.</p>
+
+            <h3>Delivery coordination tips</h3>
+            <ul>
+              <li><strong>Schedule in advance</strong> - Book delivery 24h ahead when possible. Day-of ordering risks delays or unavailable restaurants</li>
+              <li><strong>Add delivery instructions</strong> - "Lunch delivery for Acme team. Please bring to reception and ask for Sarah." Helps driver navigate office buildings</li>
+              <li><strong>Get phone contact</strong> - Provide recipient's phone number so driver can call if lost. Prevents food sitting outside or being sent back</li>
+              <li><strong>Track delivery</strong> - Most platforms show live tracking. Monitor to ensure it arrives on time. Be ready to troubleshoot if delayed</li>
+            </ul>
+
+            <h3>Pre-delivery verification</h3>
+            <table>
+              <tr><th>What to Verify</th><th>Why It Matters</th><th>How to Check</th></tr>
+              <tr><td>Office is open</td><td>No point delivering if office is closed (holiday, all-remote day)</td><td>Check company LinkedIn for mentions of office closure, or call reception day before</td></tr>
+              <tr><td>Address is correct</td><td>Wrong address = wasted money and missed opportunity</td><td>Cross-reference Google Maps, LinkedIn company page, and website footer</td></tr>
+              <tr><td>Team is actually there</td><td>Many teams are hybrid. Delivering on remote day wastes the gesture</td><td>Check LinkedIn for posts about in-office days, or ask your contact casually</td></tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Call reception 15 min before delivery to give heads-up: "A lunch delivery is arriving for your team shortly. Can you make sure someone's available to receive it?" This ensures smooth delivery and builds anticipation.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Note and Messaging sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Note and Messaging (Light Touch, No Hard Sell)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What to include in the note</h3>
+            <p>The note delivered with food should be simple, warm, and non-salesy. This is a goodwill gesture, not a pitch. Save the pitch for the follow-up email.</p>
+
+            <h3>Good vs bad note examples</h3>
+            <table>
+              <tr><th>Bad (Too Salesy)</th><th>Good (Light Touch)</th></tr>
+              <tr>
+                <td>"Lunch from Acme! We automate workflows for companies like yours. Book a demo: acme.com/demo"</td>
+                <td>"Enjoy lunch on us! Hope your team has a great day. - The team at Acme"</td>
+              </tr>
+              <tr>
+                <td>"Fuel up and check out how we can save you 10 hours per week. Visit our website to learn more!"</td>
+                <td>"Congrats on the recent funding! Lunch is on us to celebrate. Enjoy! - Acme"</td>
+              </tr>
+            </table>
+
+            <h3>Note format options</h3>
+            <ul>
+              <li><strong>Printed card</strong> - Include a small branded card with the delivery. Simple message, logo, maybe QR code to website (no hard CTA)</li>
+              <li><strong>Delivery note</strong> - Add note in delivery platform's "special instructions" field. Driver delivers it with food</li>
+              <li><strong>Separate letter</strong> - If you can coordinate, have someone drop off a handwritten note separately (more personal, but higher effort)</li>
+            </ul>
+
+            <h3>Follow-up email same day</h3>
+            <p><strong>Subject:</strong> "Lunch should be arriving any minute"</p>
+            <p><strong>Body:</strong> "Hi Sarah, we sent lunch for your team today - should arrive around 12:30. Hope you all enjoy it! I know you're busy scaling sales right now, and thought your team deserved a break. No strings attached, but I'd love to chat about how we're helping teams like yours with X. Let me know if you have 15 min this week. Enjoy the meal! - James"</p>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> The note on the food should be 100% warm and generous. The follow-up email can include a soft CTA (calendar link, request for meeting), but still keep it light. Hard selling after a lunch drop feels transactional and destroys goodwill.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Budget and ROI sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Budget and ROI (Right-Size Team, Track Results)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Cost estimation by team size</h3>
+            <table>
+              <tr><th>Team Size</th><th>Estimated Cost</th><th>Cost per Person</th><th>Worth It If ACV Is...</th></tr>
+              <tr><td>10-15 people</td><td>$100-150</td><td>$10/person</td><td>$10,000+ ACV</td></tr>
+              <tr><td>20-30 people</td><td>$200-300</td><td>$10/person</td><td>$20,000+ ACV</td></tr>
+              <tr><td>40-50 people</td><td>$400-500</td><td>$10/person</td><td>$40,000+ ACV</td></tr>
+              <tr><td>50+ people</td><td>$500+</td><td>$10/person</td><td>Probably not worth it (too expensive, less impact per person)</td></tr>
+            </table>
+
+            <h3>When NOT to use this tactic</h3>
+            <ul>
+              <li><strong>Fully remote teams</strong> - No office = nowhere to deliver. Waste of money</li>
+              <li><strong>Teams over 50 people</strong> - Too expensive, impact gets diluted across too many people who won't remember who sent it</li>
+              <li><strong>Low ACV accounts</strong> - If account is worth less than $10,000 annually, lunch drop ROI doesn't justify cost</li>
+              <li><strong>No decision-maker in office</strong> - If your target contact doesn't work from that office, the gesture doesn't reach them effectively</li>
+            </ul>
+
+            <h3>How to measure success</h3>
+            <ul>
+              <li><strong>Response rate</strong> - Track how many lunch drops lead to replies or meetings within 7 days</li>
+              <li><strong>Internal sharing</strong> - Monitor if team posts about the lunch on LinkedIn or internal Slack (sign of positive reception and extended reach)</li>
+              <li><strong>Deal conversion</strong> - Track long-term if lunch drop accounts convert at higher rates than cold outreach accounts</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> Spend no more than 2% of expected account value on lunch drop. A $20,000 ACV justifies $200-400 spend. A $100,000 enterprise deal could justify $1,000+ (but at that point, consider more targeted gifts vs team lunch).
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Wrong address (they work remotely or moved offices)</h4>
+          <div class="why">You send food to company HQ but the team works hybrid or from a different office. Food arrives to an empty office or wrong location. Money wasted, zero impact.</div>
+          <div class="fix">Verify office location and confirm team is actually there that day. Check LinkedIn for hybrid work mentions. For high-value accounts, call reception beforehand: "Is the sales team in office on Thursday?"</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Dietary restrictions not considered (no veg/vegan options)</h4>
+          <div class="why">You order only meat options. Half the team can't eat it. Instead of goodwill, you create frustration and make people feel excluded.</div>
+          <div class="fix">Always include 30% vegetarian and 2-3 clearly labeled vegan options. Add gluten-free if possible. Order variety so everyone can eat something. When in doubt, pizza with veggie options is safest.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Note too salesy (kills the generous gesture)</h4>
+          <div class="why">Your note includes product pitch, demo links, or hard CTA. Recipients see it as a marketing stunt, not a genuine gift. Goodwill evaporates.</div>
+          <div class="fix">Keep note simple and warm: "Enjoy lunch on us! - The team at Acme." No pitch, no CTAs, no links. Save the ask for follow-up email. Let the food do the talking.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Food quality issues (arrives cold, wrong items, poor quality)</h4>
+          <div class="why">You order from unreliable restaurant or cheap options to save money. Food arrives cold, wrong items, or tastes bad. Creates negative brand association instead of positive.</div>
+          <div class="fix">Order from well-rated restaurants on platform. Check reviews. Don't cheap out - better to send great food to fewer people than mediocre food to more people. Quality over quantity.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No follow-up (send lunch and wait passively)</h4>
+          <div class="why">You send lunch but never email or call afterward. Team enjoys the food, but no one takes action because you didn't create a next step.</div>
+          <div class="fix">Email same day lunch arrives: "Hope your team enjoyed lunch! Would love to chat about X if you have 15 min this week." Follow up next day if no response. The lunch opens the door; follow-up walks through it.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Targeting too-large offices (50+ people, cost balloons, impact dilutes)</h4>
+          <div class="why">You send lunch to a 100-person office. Costs $800, most people don't know who sent it or why, decision-maker doesn't notice. Money wasted, minimal impact.</div>
+          <div class="fix">Target offices of 10-50 people max. Sweet spot is 20-30. Small enough to be memorable and create real goodwill, large enough to reach multiple stakeholders. Over 50 people, use targeted gifts instead.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 2.1 — LinkedIn Live AMA Sessions | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 2.1 - LinkedIn-Native</div>
+  <h1>LinkedIn Live AMA Sessions</h1>
+  <p class="desc">Host Ask Me Anything sessions on LinkedIn Live focused on ICP pain points. High engagement format that positions you as a thought leader and generates inbound leads from attendees and viewers.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#0a66c2;background:#0a66c222">
+      <div class="hero-ch-icon" style="background:#0a66c2">Li</div>
+      <div class="hero-ch-name">LinkedIn (Primary)</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Free-Low</span>
+    <span class="tag tag-icp">ICP: Founders, Technical Buyers, Sales Leaders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> LinkedIn Live is massively underutilised. Most companies focus on posts and articles, ignoring the native video format that LinkedIn actively promotes in the algorithm. AMAs combine thought leadership with real-time engagement, creating both immediate leads and long-tail content assets.
+      </div>
+      <h3>The psychology behind Live AMAs</h3>
+      <ul>
+        <li><strong>Authority positioning</strong> - Hosting a Live session signals expertise. You're not just talking about your space, you're teaching others in it</li>
+        <li><strong>Real-time interaction</strong> - Live Q&A creates reciprocity. Attendees ask questions, you provide value immediately. This builds trust faster than any static content</li>
+        <li><strong>FOMO amplification</strong> - Live events create urgency. People join because they don't want to miss the conversation happening now</li>
+        <li><strong>Content multiplication</strong> - One 45-minute AMA generates 10-15 short clips, a full recording, a blog recap, and potentially a podcast episode. Maximum ROI per hour invested</li>
+      </ul>
+      <h3>Why LinkedIn specifically</h3>
+      <p>LinkedIn Live has algorithmic privilege. The platform notifies your entire network when you go live, not just people who follow you closely. This reach amplification makes LinkedIn Live 5-10x more effective than standard posts for the same content. Plus, LinkedIn's professional context means attendees are in work mode, not scrolling casually like on other platforms.</p>
+      <p><strong>The format advantage:</strong> AMAs remove the pressure of perfect presentation. Unlike webinars where you need polished slides, AMAs are conversational. Questions guide the content. This makes them easier to produce and more authentic to consume.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">T</div><div class="wf-label">Choose Topic</div><div class="wf-action">ICP pain point</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-linkedin">P</div><div class="wf-label">Promote</div><div class="wf-action">2 weeks before</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">S</div><div class="wf-label">Setup</div><div class="wf-action">StreamYard/Restream</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-video">L</div><div class="wf-label">Go Live</div><div class="wf-action">45-60 min</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-linkedin">E</div><div class="wf-label">Engage</div><div class="wf-action">Real-time comments</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-linkedin">F</div><div class="wf-label">Follow Up</div><div class="wf-action">DM attendees</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 7</div><div class="wf-node ch-video">R</div><div class="wf-label">Repurpose</div><div class="wf-action">Clips & content</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Choose ICP topic</td>
+          <td>Pick a topic your ICP actively struggles with. Pain points, not product pitches. Examples: "How to fix broken sales ops processes" or "GTM strategy for Series A startups"</td>
+          <td>15 min (research topics in communities, LinkedIn polls)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Promote 2 weeks before</td>
+          <td>Create LinkedIn event, post daily teasers, send DMs to key connections inviting them, post in relevant LinkedIn groups. Build anticipation</td>
+          <td>10 min/day for 14 days</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Set up streaming tool</td>
+          <td>Use StreamYard, Restream, or Riverside to broadcast to LinkedIn Live. Test audio, video, lighting 24h before. Prepare 5-7 seed questions in case live Q&A is slow</td>
+          <td>30 min setup, 15 min test run</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Go live (45-60 min)</td>
+          <td>Start with 5 min intro (who you are, what you'll cover). Open Q&A. Answer live questions. If no questions, use seed questions. Keep energy high, speak to camera like talking to a friend</td>
+          <td>45-60 min live</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Engage real-time comments</td>
+          <td>Read out commenter names. "Great question from Sarah." "James asks about X." This personalisation keeps people watching and commenting more</td>
+          <td>Built into live session</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Follow up with attendees</td>
+          <td>Pull list of everyone who attended or commented. Send personalised DM within 24h: "Thanks for joining the AMA. What's your biggest challenge with X right now?"</td>
+          <td>30-45 min (10-15 DMs)</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Repurpose content</td>
+          <td>Download recording. Create 5-10 short clips (30-90 sec each) for LinkedIn posts. Write blog recap. Share recording as gated content or public video</td>
+          <td>1-2 hours editing & posting</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Panel format beats solo format. Invite 1-2 guests (customers, partners, industry experts) to join the AMA. This diversifies perspectives, reduces pressure on you to carry the full session, and expands reach (guests promote to their networks too).
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn Live (native)</strong></td>
+          <td>Free</td>
+          <td>Solo live streaming from mobile or desktop</td>
+          <td>No third-party tool needed. Direct broadcast from LinkedIn app. Algorithmic boost from native format</td>
+          <td>Requires LinkedIn Live access approval (application process, 150+ connections). Limited production features</td>
+        </tr>
+        <tr>
+          <td><strong>StreamYard</strong></td>
+          <td>$25/mo</td>
+          <td>Multi-guest panels, screen sharing, branded overlays</td>
+          <td>Invite up to 10 guests via browser link. Custom branding, lower thirds, screen share. Broadcasts to LinkedIn + other platforms simultaneously</td>
+          <td>Browser-based only (no mobile). Requires stable internet connection for all participants</td>
+        </tr>
+        <tr>
+          <td><strong>Restream</strong></td>
+          <td>$19/mo</td>
+          <td>Multi-platform streaming (LinkedIn, YouTube, Twitch, etc.)</td>
+          <td>Broadcast to 30+ platforms at once. Built-in chat aggregation from all platforms. Recording included</td>
+          <td>Basic plan limits to 2 destinations. Full multi-streaming requires higher tier ($41/mo)</td>
+        </tr>
+        <tr>
+          <td><strong>Riverside</strong></td>
+          <td>$15/mo</td>
+          <td>High-quality recording with local backup</td>
+          <td>Records locally on each participant's device (4K video, WAV audio). No quality loss from internet issues. Best for repurposing content later</td>
+          <td>Live streaming to LinkedIn requires paid plan. More podcast-focused than live event focused</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>LinkedIn Live native</strong> (free) for solo AMAs to test the format. Once validated, upgrade to <strong>StreamYard</strong> ($25/mo) to add guests and better production quality. Use <strong>Restream</strong> ($19/mo) if you want to simulcast to YouTube or other platforms for broader reach.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Topic Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Topic Selection (Pain Points Not Product Pitches)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>How to pick a topic that attracts your ICP</h3>
+            <p>Your topic determines who shows up. A product-focused topic ("How Acme solves X") attracts existing customers. A pain-focused topic ("How to solve X without Y") attracts prospects actively struggling with that pain.</p>
+
+            <h3>Topic research process</h3>
+            <ul>
+              <li><strong>Mine LinkedIn comments</strong> - Look at popular posts in your space. What questions appear repeatedly in comments? Those are your topics</li>
+              <li><strong>Check community forums</strong> - Browse relevant Slack communities, Reddit threads, or industry forums. What do people ask about most?</li>
+              <li><strong>Run a LinkedIn poll</strong> - Post: "Planning an AMA. Which topic would be most valuable?" with 3-4 options. Let your audience choose</li>
+              <li><strong>Analyse customer support tickets</strong> - What questions do your support team answer most often? Those indicate widespread pain</li>
+            </ul>
+
+            <h3>Good vs bad AMA topics</h3>
+            <table>
+              <tr><th>Bad (Product-Focused)</th><th>Good (Pain-Focused)</th></tr>
+              <tr>
+                <td>"How Acme automates your workflow"</td>
+                <td>"How to automate manual workflows without breaking existing systems"</td>
+              </tr>
+              <tr>
+                <td>"Why you should use sales engagement platforms"</td>
+                <td>"How to scale outbound when your team is drowning in manual work"</td>
+              </tr>
+              <tr>
+                <td>"Product demo and Q&A"</td>
+                <td>"Common mistakes killing your cold email deliverability (and how to fix them)"</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> If your product name appears in the title, it's a bad AMA topic. If a competitor could host the same AMA and it would still be valuable, it's a good topic.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Promotion Cadence sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Promotion Cadence (2 Weeks, Daily Posts, Invite DMs)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why 2 weeks matters</h3>
+            <p>Most people don't see your first announcement. They see the third or fifth reminder. Two weeks gives you enough time to build awareness without annoying your network. One week is too short for busy people to plan around. Three weeks dilutes urgency.</p>
+
+            <h3>Promotion schedule</h3>
+            <table>
+              <tr><th>Timeline</th><th>Content Type</th><th>Example</th></tr>
+              <tr>
+                <td>Day 1 (2 weeks before)</td>
+                <td>Announcement post + LinkedIn event</td>
+                <td>"Hosting an AMA on [topic] in 2 weeks. Drop your questions in the comments."</td>
+              </tr>
+              <tr>
+                <td>Day 3-4</td>
+                <td>Teaser post (share a key insight)</td>
+                <td>"One mistake I see constantly: [insight]. I'll cover this + more in the AMA next week."</td>
+              </tr>
+              <tr>
+                <td>Day 7 (1 week before)</td>
+                <td>Reminder post + guest reveal (if panel format)</td>
+                <td>"1 week until the AMA. Joined by Sarah from Datadog to talk about [topic]."</td>
+              </tr>
+              <tr>
+                <td>Day 10-11</td>
+                <td>DM invitations to key connections</td>
+                <td>Personalised DMs to 20-30 key connections: "I'm hosting an AMA on [topic]. Thought you'd find it relevant given your work at [company]."</td>
+              </tr>
+              <tr>
+                <td>Day 13 (1 day before)</td>
+                <td>Final reminder post + agenda preview</td>
+                <td>"Tomorrow at 3 PM. Here's what we'll cover: [3-4 bullet points]. Link to register in comments."</td>
+              </tr>
+              <tr>
+                <td>Day 14 (2 hours before)</td>
+                <td>Day-of reminder</td>
+                <td>"Going live in 2 hours. See you there!"</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>DM strategy:</strong> Personally invite 20-30 people via DM. These invites convert at 30-50% (much higher than post engagement). Target: customers, warm connections, people who've engaged with your content recently, and ICP profiles you want to connect with.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Format Tips sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Format Tips (Panel vs Solo, Q&A Structure)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Solo vs panel format</h3>
+            <table>
+              <tr><th>Format</th><th>Best For</th><th>Pros</th><th>Cons</th></tr>
+              <tr>
+                <td><strong>Solo</strong></td>
+                <td>Established authority, narrow topic, testing the format</td>
+                <td>Full control. Easier scheduling. Lower production complexity</td>
+                <td>More pressure on you. Less diverse perspectives. Smaller promotional reach</td>
+              </tr>
+              <tr>
+                <td><strong>Panel (2-3 people)</strong></td>
+                <td>Broader topics, building credibility, expanding reach</td>
+                <td>Shared pressure. More engaging (conversation vs monologue). Each panelist promotes to their network</td>
+                <td>Scheduling complexity. Need strong moderation. Risk of one person dominating</td>
+              </tr>
+            </table>
+
+            <h3>Q&A structure best practices</h3>
+            <ul>
+              <li><strong>Seed questions ready</strong> - Prepare 5-7 questions in advance in case live Q&A is slow at the start. Don't announce these are pre-written; just answer them naturally</li>
+              <li><strong>Acknowledge commenters by name</strong> - "Great question from James." "Sarah asks about X." This encourages more people to comment</li>
+              <li><strong>Batch similar questions</strong> - If 3 people ask about the same topic, say "Several people asking about X. Here's my take..."</li>
+              <li><strong>Timebox answers</strong> - 2-3 min per question max. Longer answers lose audience attention. If complex, say "I'll follow up with a post on this."</li>
+              <li><strong>Use screen share strategically</strong> - Show examples, frameworks, or data visualisations when relevant. Screen share increases retention</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Moderation tip for panels:</strong> Designate one person as moderator (can be you or a third person). Moderator reads questions, directs them to specific panelists, and keeps things moving. Without a moderator, panels devolve into cross-talk.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post-Event Follow-Up sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Post-Event Follow-Up (DM Attendees, Share Recording, Create Clips)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Follow-up sequence (first 48 hours)</h3>
+            <table>
+              <tr><th>Timeline</th><th>Action</th><th>Details</th></tr>
+              <tr>
+                <td>Within 1 hour</td>
+                <td>Post thank-you + recording link</td>
+                <td>"Thanks to everyone who joined the AMA! Recording here: [link]. Drop your questions in the comments if we didn't get to yours live."</td>
+              </tr>
+              <tr>
+                <td>Within 24 hours</td>
+                <td>DM attendees & active commenters</td>
+                <td>Personalised DMs: "Thanks for joining the AMA, Sarah! You asked about [topic]. Would love to continue the conversation. What's your biggest challenge with X right now?"</td>
+              </tr>
+              <tr>
+                <td>Within 48 hours</td>
+                <td>Post first clip</td>
+                <td>Pull the best 60-90 sec segment. Post on LinkedIn with: "From yesterday's AMA: [insight]." Link to full recording in comments</td>
+              </tr>
+            </table>
+
+            <h3>Content repurposing checklist</h3>
+            <ul>
+              <li><strong>5-10 short clips</strong> - Extract key moments (60-90 sec each). Post over next 2-3 weeks</li>
+              <li><strong>Blog recap</strong> - Transcribe key Q&As. Publish as blog post: "Top 10 Questions from Our Recent AMA"</li>
+              <li><strong>Carousel post</strong> - Turn top insights into a LinkedIn carousel (10 slides). Visual content gets 2x engagement</li>
+              <li><strong>Podcast episode</strong> - If you have a podcast, repackage the AMA as an episode</li>
+              <li><strong>Gated asset</strong> - Offer full recording as downloadable content in exchange for email</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Lead qualification tip:</strong> Prioritise follow-up with people who: (1) attended live, (2) asked multiple questions, or (3) work at target accounts. These signals indicate high intent. DM them within 24h while you're still top of mind.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repurposing sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Repurposing (Clips for Posts, Blog Recap, Podcast Episode)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why repurposing matters</h3>
+            <p>Most of your network won't attend the live AMA (typical attendance: 2-5% of your connections). But 60-80% of your network will see at least one piece of repurposed content over the next 2-3 weeks. Repurposing multiplies reach without additional effort.</p>
+
+            <h3>Clip creation process</h3>
+            <ol>
+              <li><strong>Watch full recording</strong> - Note timestamps of strong moments (clear insights, surprising stats, good questions)</li>
+              <li><strong>Extract 5-10 segments</strong> - Aim for 60-90 sec per clip. Each clip should stand alone (context-independent)</li>
+              <li><strong>Add captions</strong> - 85% of video on LinkedIn is watched without sound. Use tools like Descript or Kapwing for auto-captions</li>
+              <li><strong>Post schedule</strong> - One clip every 2-3 days over next 2-3 weeks. Include link to full recording in first comment</li>
+            </ol>
+
+            <h3>Blog recap structure</h3>
+            <ul>
+              <li><strong>Intro</strong> - Context: "Last week we hosted an AMA on [topic]. Here are the top 10 questions we answered."</li>
+              <li><strong>Q&A format</strong> - Each section: Question as heading, answer in 2-3 paragraphs, optional screenshot or quote</li>
+              <li><strong>CTA</strong> - End with: "Missed the live session? Watch the full recording here." Plus link to book a call if relevant</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Efficiency hack:</strong> Use AI transcription (Descript, Otter.ai) to generate transcript. Feed transcript to ChatGPT with prompt: "Extract 10 best Q&As from this AMA transcript and format as blog post." Edit for accuracy and tone, but save 60% of writing time.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Pitching product instead of teaching</h4>
+          <div class="why">Attendees joined for insights, not a sales pitch. The moment you pivot to product features, they tune out or leave.</div>
+          <div class="fix">Focus 100% on education. Mention your product only if directly asked. Build trust first; sales conversations come later via follow-up DMs.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. No promotion beforehand</h4>
+          <div class="why">You announce the AMA 2 days before and wonder why only 5 people show up. Most of your network didn't see the announcement.</div>
+          <div class="fix">Promote for 2 weeks minimum. Daily posts + DM invitations to key connections. Repetition drives attendance.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Bad audio or video setup</h4>
+          <div class="why">Grainy video and echo-y audio scream unprofessional. Attendees leave within 5 minutes.</div>
+          <div class="fix">Test setup 24h before. Use external mic (not laptop mic). Natural light or ring light facing you. Stable internet (wired if possible). Run a test stream to check quality.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Not engaging with comments during live</h4>
+          <div class="why">You ignore live comments and questions. Attendees feel like they're watching a recording, not participating in a live event.</div>
+          <div class="fix">Read every comment aloud. Acknowledge people by name. Pause between answers to check for new questions. Make it conversational, not a monologue.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No follow-up with attendees</h4>
+          <div class="why">You hosted a great AMA, then never reached out to people who attended. They forget about you within 48 hours.</div>
+          <div class="fix">Pull attendee list within 24h. Send personalised DMs thanking them and asking about their specific challenges. This is where the sales conversations start.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Going too long (over 60 min)</h4>
+          <div class="why">You planned 45 min but kept going for 90 min. Attendance drops by 60-70% after the first hour.</div>
+          <div class="fix">Cap at 60 min max. Announce at the start: "We'll run for 45-60 min." Use a visible timer. If more questions, offer to continue in a follow-up post or DM.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

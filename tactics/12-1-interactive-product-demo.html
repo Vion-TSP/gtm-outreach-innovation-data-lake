@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 12.1 - Interactive Product Demo (Self-Serve) | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 12.1 - Product-Led / Experience</div>
+  <h1>Interactive Product Demo (Self-Serve)</h1>
+  <p class="desc">Clickable demo on website. Most buyers want to see the product before booking a call. Let them explore key workflows independently.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Medium</span>
+    <span class="tag tag-icp">ICP: Technical Buyers, Ops Leaders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Modern buyers research independently before engaging sales. They want to see the product, not hear about it. Interactive demos let prospects explore at their own pace without pressure. Prospects who complete demos arrive pre-qualified and educated, shortening sales cycles.
+      </div>
+      <h3>The psychology of self-serve demos</h3>
+      <ul>
+        <li><strong>Control and autonomy</strong> - Prospects control the experience. No sales pressure. They can revisit sections, skip irrelevant parts, and explore at their pace</li>
+        <li><strong>Learning by doing</strong> - Clicking through a demo creates muscle memory. Prospects understand the product better than watching a video or reading docs</li>
+        <li><strong>Reduced friction</strong> - No calendar booking, no waiting for sales availability. Instant gratification for curious prospects</li>
+        <li><strong>Pre-qualification signal</strong> - Prospects who complete full demo are signaling high intent. They invested time exploring your product</li>
+      </ul>
+      <h3>Why video demos aren't enough</h3>
+      <p>Video demos are passive. Prospects watch but don't engage. Interactive demos are active. Prospects click buttons, fill forms, navigate workflows. Active engagement creates stronger product understanding and higher conversion to sales conversations.</p>
+      <p><strong>The modern buying journey:</strong> Most B2B buyers want to evaluate products anonymously before talking to sales. Interactive demos serve this need. They get product education without commitment, and you get engagement data showing who's interested.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-phone">I</div><div class="wf-label">Identify Flow</div><div class="wf-action">Key workflow</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-video">B</div><div class="wf-label">Build Demo</div><div class="wf-action">Interactive</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-phone">P</div><div class="wf-label">Place on Site</div><div class="wf-action">Homepage/pricing</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-phone">T</div><div class="wf-label">Track Usage</div><div class="wf-action">Engagement data</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">F</div><div class="wf-label">Follow Up</div><div class="wf-action">High engagers</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-video">I</div><div class="wf-label">Iterate</div><div class="wf-action">Based on drop-off</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify Key Product Flows</td>
+          <td>Choose 1-2 core workflows that showcase product value. Not every feature, just the highest-impact use case. Example: creating a campaign, building a dashboard, setting up automation. Focus on workflows that solve the main pain point</td>
+          <td>1-2 hours (product team + sales alignment)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Build Interactive Demo</td>
+          <td>Use Navattic, Storylane, or similar tool. Capture screenshots of your product. Add click hotspots, tooltips, and guided narrative. Keep demo to 3-5 minutes. Test on real users before launch</td>
+          <td>8-12 hours (first demo), 2-3 hours (updates)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Place on Website (Homepage/Pricing)</td>
+          <td>Embed demo prominently. Best placements: Homepage hero section, dedicated demo page linked from nav, pricing page above plans. Make it visible and accessible. No login required initially</td>
+          <td>1-2 hours (embed + test)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Track Engagement</td>
+          <td>Demo platform tracks who viewed, how far they progressed, where they dropped off, time spent. Connect to your analytics. Set up alerts for high-engagement visitors</td>
+          <td>30 min (initial setup), ongoing automatic</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Follow Up with Engaged Visitors</td>
+          <td>Visitors who complete full demo or spend significant time get prioritised outreach. Email or call: "Saw you explored our demo. What questions can I answer?" Warm lead, not cold call</td>
+          <td>10-15 min per high-engagement follow-up</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Iterate Based on Drop-Off Points</td>
+          <td>Review analytics monthly. Where do visitors drop off? Simplify that section or add better explanation. Continuous improvement based on real user behavior</td>
+          <td>2-3 hours quarterly (analysis + updates)</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Create role-specific demo variations. One demo for technical buyers showing integrations and setup. Different demo for business buyers showing ROI and dashboards. Personalized demos increase completion rates.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Navattic</strong></td>
+          <td>$500+/mo (custom pricing)</td>
+          <td>Enterprise-grade interactive demos with personalization</td>
+          <td>Screen capture tool makes creating demos easy. Advanced features like dynamic variables, branching paths based on user choices, lead capture forms mid-demo. Analytics show exactly where prospects drop off</td>
+          <td>Expensive for early-stage companies. Minimum commit typically required. Overkill if you only need basic demo</td>
+        </tr>
+        <tr>
+          <td><strong>Storylane</strong></td>
+          <td>$40/mo (Starter), $200/mo (Growth)</td>
+          <td>Affordable interactive demos for SMB and mid-market</td>
+          <td>Chrome extension captures product flows. Click-through hotspots with tooltips. Lead capture at end. Basic analytics. Much cheaper than enterprise tools. Fast setup</td>
+          <td>Less sophisticated than Navattic. No branching paths or advanced personalization. Limited customization of look and feel</td>
+        </tr>
+        <tr>
+          <td><strong>HowdyGo</strong></td>
+          <td>$40/mo</td>
+          <td>Simple screen recording turned interactive</td>
+          <td>Record your screen walking through product. Tool adds interactive elements on top. Easy for non-technical users. Fast iteration. Good for first demo</td>
+          <td>Screen-recording-based approach feels less polished. Limited interactivity compared to purpose-built demos. Best for simple products</td>
+        </tr>
+        <tr>
+          <td><strong>Tourial</strong></td>
+          <td>Custom pricing (typically $300+/mo)</td>
+          <td>Demo centers with multiple demo types (tours, sandboxes, videos)</td>
+          <td>Create demo library with multiple product tours for different use cases. Prospects choose their own path. Integrates video, interactive tours, and live sandbox. Comprehensive solution</td>
+          <td>Complex setup. Requires ongoing maintenance. Best for products with many use cases requiring multiple demos</td>
+        </tr>
+        <tr>
+          <td><strong>Reprise</strong></td>
+          <td>Custom pricing (enterprise)</td>
+          <td>High-fidelity product replicas and demo environments</td>
+          <td>Creates full product replica for demos, not just screenshots. Highly customizable. Data personalization. Works for complex enterprise software. Used by major SaaS companies</td>
+          <td>Very expensive. Requires significant setup and engineering involvement. Overkill for simple products. Long implementation time</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Storylane</strong> ($40/mo) to prove the concept with your first interactive demo. Once you see conversion lift, upgrade to <strong>Navattic</strong> ($500+/mo) for advanced personalization and analytics. Only consider <strong>Reprise</strong> if you have complex enterprise product requiring full sandbox replication.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Demo Length and Focus sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Demo Length and Focus (Keep to 3-5 Minutes, One Workflow)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why short demos win</h3>
+            <p>Long demos lose attention. Prospects are browsing your website, not committing to a 20-minute product tour. If your demo takes more than 5 minutes, most visitors abandon before completing it. Short, focused demos have much higher completion rates.</p>
+
+            <h3>Demo length sweet spots</h3>
+            <table>
+              <tr><th>Demo Length</th><th>Completion Rate</th><th>Best For</th></tr>
+              <tr>
+                <td><strong>2-3 minutes</strong></td>
+                <td>Highest completion rate</td>
+                <td>Single specific workflow. Example: Create a report, Send a campaign, Build a dashboard</td>
+              </tr>
+              <tr>
+                <td><strong>4-5 minutes</strong></td>
+                <td>Good completion rate</td>
+                <td>Two connected workflows. Example: Import data + Generate insights</td>
+              </tr>
+              <tr>
+                <td><strong>6-8 minutes</strong></td>
+                <td>Moderate completion rate</td>
+                <td>Complex product requiring more context. Still risky, most drop off</td>
+              </tr>
+              <tr>
+                <td><strong>Over 10 minutes</strong></td>
+                <td>Very low completion rate</td>
+                <td>Avoid. Break into multiple shorter demos instead</td>
+              </tr>
+            </table>
+
+            <h3>How to keep demos focused</h3>
+            <ul>
+              <li><strong>One workflow only</strong> - Don't try to show every feature. Pick the most compelling use case and nail it</li>
+              <li><strong>Start with the outcome</strong> - Show the end result first. "By the end of this demo, you'll see how to generate a weekly performance dashboard." Set expectations</li>
+              <li><strong>Skip setup and admin</strong> - Don't show account creation, settings configuration, or onboarding. Jump straight to value</li>
+              <li><strong>Use realistic data</strong> - Generic sample data makes demos feel fake. Use realistic company names, numbers, and scenarios that match your ICP</li>
+              <li><strong>Include progress indicators</strong> - Show "Step 2 of 4" so visitors know how much remains. Reduces abandonment</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> If you can't explain and demo a workflow in 3-5 minutes, your product might be too complex for self-serve demos. Consider simplifying the workflow or creating role-specific demos that each focus on one persona's needs.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Where to Place Demos sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Where to Place Demos (Make Them Easy to Find)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Prime demo real estate</h3>
+            <p>You invested in creating a great demo. Don't hide it. Place demos where high-intent visitors naturally look. Visibility drives usage, usage drives pipeline.</p>
+
+            <h3>Best demo placements</h3>
+            <table>
+              <tr><th>Placement</th><th>Why It Works</th><th>CTA Example</th></tr>
+              <tr>
+                <td><strong>Homepage hero section</strong></td>
+                <td>First thing visitors see. Highest visibility. Signals product-first approach</td>
+                <td>"See it in action" button opening demo modal or dedicated page</td>
+              </tr>
+              <tr>
+                <td><strong>Dedicated demo page</strong></td>
+                <td>Link from main nav ("Demo"). Prospects actively looking for demos go here</td>
+                <td>Nav item: "Interactive Demo" or "See Product"</td>
+              </tr>
+              <tr>
+                <td><strong>Pricing page above plans</strong></td>
+                <td>Visitors on pricing page are high-intent. Demo helps them choose the right plan</td>
+                <td>"Explore the product before choosing a plan"</td>
+              </tr>
+              <tr>
+                <td><strong>Feature pages mid-content</strong></td>
+                <td>After describing a feature, let visitors see it in action</td>
+                <td>"See this feature live" opening demo to that specific workflow</td>
+              </tr>
+              <tr>
+                <td><strong>Blog post CTAs</strong></td>
+                <td>Educational content attracts researchers. Offer demo as next step</td>
+                <td>"See how this works in our product" at end of relevant blog posts</td>
+              </tr>
+            </table>
+
+            <h3>Don't gate initially</h3>
+            <p>Many companies hide demos behind forms. This kills engagement. Most visitors won't trade their email just to see a demo. Make demo fully accessible without registration. Capture email at the end for those who completed it and want to learn more.</p>
+
+            <h3>Optional gating strategy</h3>
+            <ul>
+              <li><strong>First half ungated</strong> - Let visitors start demo without email. Shows good faith and builds trust</li>
+              <li><strong>Mid-demo soft gate</strong> - After 2-3 minutes: "Want to see the advanced features? Drop your email to continue." Those who've invested time are more likely to convert</li>
+              <li><strong>End-of-demo CTA</strong> - "Want to try this in your own account? Sign up for free trial" or "Ready to discuss your use case? Book a call"</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>A/B test tip:</strong> Test ungated vs soft-gated demos. Track total demo views, completion rate, and lead capture rate. Ungated usually wins on volume, soft-gated on lead quality. Balance based on your funnel metrics.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Engagement Tracking sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Engagement Tracking (Know Who's Interested)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why engagement tracking matters</h3>
+            <p>Not all demo viewers are equal. Someone who completes the full demo and returns twice is much hotter than someone who drops off after 30 seconds. Tracking engagement lets you prioritize sales follow-up on highest-intent prospects.</p>
+
+            <h3>Key engagement metrics to track</h3>
+            <table>
+              <tr><th>Metric</th><th>What It Means</th><th>Follow-Up Priority</th></tr>
+              <tr>
+                <td><strong>Completion rate</strong></td>
+                <td>Percentage of visitors who finish full demo</td>
+                <td>High priority - they invested time understanding product</td>
+              </tr>
+              <tr>
+                <td><strong>Time spent</strong></td>
+                <td>Total minutes in demo (including replays)</td>
+                <td>High priority if over 5 minutes across sessions</td>
+              </tr>
+              <tr>
+                <td><strong>Return visits</strong></td>
+                <td>Visitor came back to demo multiple times</td>
+                <td>Very high priority - strong intent signal</td>
+              </tr>
+              <tr>
+                <td><strong>Drop-off point</strong></td>
+                <td>Where in demo they stopped</td>
+                <td>If dropped early, low priority. If dropped near end, medium priority</td>
+              </tr>
+              <tr>
+                <td><strong>CTA clicks</strong></td>
+                <td>Clicked "Start trial" or "Book demo" at end</td>
+                <td>Very high priority - explicit interest</td>
+              </tr>
+              <tr>
+                <td><strong>Company identified</strong></td>
+                <td>Reverse IP lookup or email provided</td>
+                <td>Check if target account. Prioritize ICP matches</td>
+              </tr>
+            </table>
+
+            <h3>Lead scoring based on demo engagement</h3>
+            <ul>
+              <li><strong>Hot lead (follow up within 24h)</strong> - Completed full demo + clicked CTA, or returned 2+ times, or spent over 8 minutes total</li>
+              <li><strong>Warm lead (follow up within 1 week)</strong> - Completed 75%+ of demo, or spent 5-8 minutes, or from target account</li>
+              <li><strong>Cold lead (add to nurture sequence)</strong> - Started demo but dropped off early, or spent under 2 minutes</li>
+            </ul>
+
+            <h3>Sales follow-up templates</h3>
+            <div class="email-block"><span class="label">High-Engagement Follow-Up</span>Subject: Quick question about what you saw in the demo
+
+Hi [Name],
+
+I noticed you spent some time exploring our interactive demo. Hope it was helpful in seeing how [product] works.
+
+Curious what questions came up while you were clicking through? Happy to jump on a quick call to discuss your specific use case.
+
+Also, if you're interested in trying this with your own data, I can set up a personalized sandbox for you.
+
+[Your Name]</div>
+
+            <div class="highlight">
+              <strong>Automation tip:</strong> Set up workflow in your CRM: When demo completion rate is over 75%, automatically create task for sales rep to follow up within 24 hours. Include notes on which sections they viewed and where they spent most time.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Iteration Based on Analytics sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Iteration Based on Analytics (Fix Drop-Off Points)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why continuous iteration matters</h3>
+            <p>Your first demo won't be perfect. Analytics show exactly where prospects lose interest. Regular updates based on real user behavior improve completion rates over time.</p>
+
+            <h3>Common drop-off points and fixes</h3>
+            <table>
+              <tr><th>Drop-Off Signal</th><th>Likely Problem</th><th>Solution</th></tr>
+              <tr>
+                <td><strong>High abandonment on step 1</strong></td>
+                <td>Boring or confusing intro. Visitors don't see value immediately</td>
+                <td>Skip the intro. Start with action. Show the outcome first, explain context after</td>
+              </tr>
+              <tr>
+                <td><strong>Drop-off mid-demo at specific screen</strong></td>
+                <td>That screen is confusing, too complex, or not interesting</td>
+                <td>Simplify that section, add more explanation, or skip it if not essential</td>
+              </tr>
+              <tr>
+                <td><strong>Many visitors replay the same section</strong></td>
+                <td>Something wasn't clear. They're trying to understand it better</td>
+                <td>Add tooltip, clearer narration, or zoom-in on that UI element</td>
+              </tr>
+              <tr>
+                <td><strong>Low overall completion despite high starts</strong></td>
+                <td>Demo is too long or not engaging enough</td>
+                <td>Cut length by 30-50%. Remove less critical steps. Focus on core value</td>
+              </tr>
+              <tr>
+                <td><strong>High completion but no CTA clicks</strong></td>
+                <td>Demo didn't create urgency or clear next step</td>
+                <td>Stronger CTA. End with clear value prop: "Start your free trial" or "See this live with your data"</td>
+              </tr>
+            </table>
+
+            <h3>Quarterly review checklist</h3>
+            <ul>
+              <li><strong>Review completion rate trend</strong> - Is it improving or declining over time? Goal: above 50% completion rate</li>
+              <li><strong>Analyze drop-off heatmap</strong> - Where do most people abandon? Focus improvements there first</li>
+              <li><strong>Check average time spent</strong> - Is demo too long? Aim for 3-5 minutes average time</li>
+              <li><strong>Survey demo completers</strong> - Send quick 2-question survey: "Was this helpful?" and "What questions do you still have?"</li>
+              <li><strong>Compare to product changes</strong> - Has your actual product UI changed since demo was created? Keep demos updated with current UI</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Measurement tip:</strong> Track demo completion rate as a key website metric alongside conversion rate. Set quarterly OKR to improve completion rate by specific percentage. Treat demo optimization as ongoing initiative, not one-time project.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Demo too long (over 60 min)</h4>
+          <div class="why">You try to show every feature. Demo takes 15 minutes. Most visitors abandon after 2-3 minutes. Low completion rate means few qualified leads.</div>
+          <div class="fix">Keep demo to 3-5 minutes. Show one compelling workflow, not every feature. Create multiple short demos if needed, don't make one long one.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Too many features (trying to show everything)</h4>
+          <div class="why">You want to impress by showing all capabilities. Demo feels overwhelming. Visitors can't remember what they saw. Fails to communicate clear value.</div>
+          <div class="fix">Pick ONE workflow that showcases your core value prop. Less is more. Focused demos convert better than comprehensive feature tours.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Not tracking who completes it</h4>
+          <div class="why">Demo lives on website but you don't track engagement. Sales has no visibility into who watched. Hot leads go unfollowed.</div>
+          <div class="fix">Connect demo tool to CRM. Alert sales when high-intent visitors complete demo. Follow up within 24 hours while interest is hot.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Broken or outdated demo</h4>
+          <div class="why">Product UI changed months ago. Demo still shows old interface. Visitors notice mismatch. Damages credibility and trust.</div>
+          <div class="fix">Quarterly review and update demos to match current product. Set calendar reminder to check demo after major product releases.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No CTA at the end</h4>
+          <div class="why">Visitor completes demo, feels interested, but no clear next step. They leave website without engaging further. Missed opportunity.</div>
+          <div class="fix">Strong CTA at demo end: "Start free trial," "Book personalized demo," or "See this with your data." Make next step obvious and easy.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Hiding it behind a form</h4>
+          <div class="why">You gate demo behind email capture. Most visitors won't trade email just to see demo. Traffic sees barrier and leaves. Low engagement.</div>
+          <div class="fix">Make demo freely accessible. Capture email at the end for those who completed and want more. Trust builds engagement, gates kill it.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

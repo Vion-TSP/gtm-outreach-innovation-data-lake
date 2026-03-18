@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 4.3 — Interactive ROI Calculator | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 4.3 - Content-Led Outreach</div>
+  <h1>Interactive ROI Calculator</h1>
+  <p class="desc">Free web-based calculator that quantifies potential ROI or cost savings for prospects. Converts abstract value propositions into concrete dollars and hours saved. Strong lead magnet that pre-qualifies buyers and arms sales teams with personalised business cases.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#d29922;background:#d2992222">
+      <div class="hero-ch-icon" style="background:#d29922">Co</div>
+      <div class="hero-ch-name">Content (Primary)</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium-High</span>
+    <span class="tag tag-cost">Cost: Medium</span>
+    <span class="tag tag-icp">ICP: Founders, Finance Leaders, Operations Leaders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Buyers struggle to quantify value before purchase. They know they have problems but can't articulate ROI to justify budget. A calculator does the math for them, turning vague pain into specific dollar impact. This self-discovery is far more persuasive than vendor claims.
+      </div>
+      <h3>The psychology of self-service value quantification</h3>
+      <ul>
+        <li><strong>Self-discovery beats being sold</strong> - When prospects input their own numbers and see personalised results, they believe it. They discovered the value themselves rather than being told by a vendor</li>
+        <li><strong>Concrete trumps abstract</strong> - "Save time on manual workflows" is abstract. "Save 127 hours per month across your 8-person team" is concrete and memorable. Calculators force specificity</li>
+        <li><strong>Internal selling tool</strong> - Prospects screenshot calculator results to share with stakeholders. You've armed them with data to build the business case internally. They become your champion</li>
+        <li><strong>Qualification mechanism</strong> - Calculator inputs reveal company size, team structure, current spend, and pain severity. Sales teams know exactly which leads are high-value before first call</li>
+      </ul>
+      <h3>Why calculators outperform static case studies</h3>
+      <p>Case studies show what worked for someone else. Calculators show what would work for this specific prospect. Personalisation drives conversion. Plus, interactive content keeps prospects engaged longer than static PDFs, increasing time on site and brand recall.</p>
+      <p><strong>The compounding effect:</strong> Once built, calculators require minimal maintenance but generate leads continuously. Share the link in cold emails, LinkedIn DMs, sales conversations, and marketing campaigns. One asset, multiple distribution channels.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-phone">D</div><div class="wf-label">Define Metrics</div><div class="wf-action">Value drivers</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-phone">B</div><div class="wf-label">Build Logic</div><div class="wf-action">Formulas</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">De</div><div class="wf-label">Design UI</div><div class="wf-action">Simple inputs</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">H</div><div class="wf-label">Host Online</div><div class="wf-action">Website embed</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-linkedin">Pr</div><div class="wf-label">Promote</div><div class="wf-action">Lead magnet</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-email">C</div><div class="wf-label">Capture Leads</div><div class="wf-action">Form + CRM</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 7</div><div class="wf-node ch-phone">U</div><div class="wf-label">Use in Sales</div><div class="wf-action">Personalised links</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Define value metrics</td>
+          <td>Identify 2-4 measurable outcomes your product delivers. Common categories: time saved, cost reduced, revenue increased, efficiency gained. Pick metrics your ICP cares about most. Example for sales tool: hours saved on prospecting, increase in qualified meetings booked, reduction in bad-fit outreach</td>
+          <td>2-3 hours mapping value drivers</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Build calculator logic</td>
+          <td>Create formulas that convert user inputs into ROI outputs. Use conservative assumptions so results feel believable. Include sources for industry benchmarks if possible. Example: if user has 5 SDRs spending 10 hours/week on manual research, and your tool saves 60% of that time, calculate total hours saved per month</td>
+          <td>4-6 hours for formula logic and validation</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Design simple UI</td>
+          <td>Keep inputs to 3-5 fields max. Use sliders or dropdowns instead of open text when possible (reduces friction). Show real-time results as user adjusts inputs (no submit button delay). Mobile-friendly design. Clear labels and tooltips explaining what each input means</td>
+          <td>1-2 weeks using tool like Outgrow or Calconic, or 3-4 weeks for custom build</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Host on website</td>
+          <td>Embed calculator on dedicated landing page. Include context above calculator explaining what it shows and why it's useful. Add trust signals: customer logos, testimonials, case study snippets. Below calculator, include CTA to book demo or download detailed ROI report</td>
+          <td>4-8 hours landing page setup</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Promote as lead magnet</td>
+          <td>Share calculator link in cold emails, LinkedIn posts and DMs, sales conversations, marketing emails, and paid ads. Frame as helpful resource, not sales pitch. Example: "Not sure if this is worth the investment? Try our ROI calculator to see potential impact for your team"</td>
+          <td>Ongoing promotion across channels</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Capture leads</td>
+          <td>Option 1: Show results immediately, then offer to email detailed report in exchange for contact info. Option 2: Require email to see results (higher friction but captures all users). Test both. Sync form submissions to CRM with calculator inputs as custom fields for sales context</td>
+          <td>2-4 hours form and CRM integration setup</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Use in sales conversations</td>
+          <td>Sales reps send personalised calculator links pre-populated with prospect's company size and estimated metrics based on discovery call. Prospect refines inputs to see custom results. Rep follows up referencing specific ROI shown. Calculator becomes anchor for value discussion</td>
+          <td>Ongoing sales enablement</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Add a "Compare to industry average" feature showing how the user's inputs stack up against benchmarks. This adds credibility and often reveals gaps that make your solution more compelling (e.g., "Your team spends 40% more time on manual tasks than similar companies").
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Outgrow</strong></td>
+          <td>$14/mo</td>
+          <td>No-code calculator builder with templates</td>
+          <td>Drag-and-drop builder. Pre-built calculator templates. Custom branding. Logic branching based on answers. Integrates with HubSpot, Salesforce, Marketo. Analytics dashboard showing completion rates and lead data. Fastest time to launch</td>
+          <td>Limited design customisation compared to custom build. Template-based can feel generic. Advanced logic requires higher tier ($95/mo)</td>
+        </tr>
+        <tr>
+          <td><strong>Calconic</strong></td>
+          <td>$19/mo</td>
+          <td>Flexible calculator with better design control</td>
+          <td>More design flexibility than Outgrow. Formula editor for complex calculations. Conditional logic and multi-step calculators. Embeds as inline, popup, or full page. Zapier integration for CRM syncing. Good middle ground between no-code and custom</td>
+          <td>Steeper learning curve than Outgrow. Smaller template library. Less mature platform (fewer integrations and support resources)</td>
+        </tr>
+        <tr>
+          <td><strong>Typeform</strong></td>
+          <td>$25/mo</td>
+          <td>Interactive forms with calculation logic</td>
+          <td>One-question-per-screen design increases completion rates. Calculator logic built with hidden fields and formulas. Integrates with 500+ tools. Professional design out of the box. Can show results on thank you page or via email</td>
+          <td>Not purpose-built for calculators. Less intuitive for complex math compared to Outgrow or Calconic. Results display less flexible</td>
+        </tr>
+        <tr>
+          <td><strong>Custom Build (Next.js/React + Vercel)</strong></td>
+          <td>Free hosting (Vercel), dev time cost</td>
+          <td>Full design control and advanced functionality</td>
+          <td>Complete customisation of UI, logic, and integrations. No platform limitations or branding. Fast load times. Can add features like PDF export, shareable result links, comparison charts. Scales infinitely. You own the code</td>
+          <td>Requires developer (freelance or in-house). 2-4 weeks build time. Ongoing maintenance responsibility. Higher upfront cost but no recurring platform fees</td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot (landing page + form)</strong></td>
+          <td>Free (basic tier)</td>
+          <td>Hosting calculator embed and capturing leads</td>
+          <td>Free landing page builder. Form captures leads directly into CRM. Email automation for follow-up. Track who uses calculator and their inputs. No additional cost if already using HubSpot</td>
+          <td>Not a calculator builder (just hosts the embed). Requires using another tool for actual calculator. Free tier has HubSpot branding</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Outgrow ($14/mo)</strong> to validate demand quickly with minimal dev effort. Once proven valuable and hitting limits, upgrade to <strong>custom build ($2,000-5,000 one-time)</strong> for full control and better UX. Host on <strong>Vercel (free)</strong> and capture leads via <strong>HubSpot (free tier)</strong> or your existing CRM.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Choosing Metrics sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Choosing the Right Metrics (Time Saved, Revenue Gained, Cost Reduced)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why metric selection matters</h3>
+            <p>The wrong metrics make your calculator irrelevant or unbelievable. Right metrics align with what your ICP actually cares about and can measure. CFOs care about cost reduction. Sales leaders care about pipeline and revenue. Ops teams care about time savings and efficiency. Pick metrics that resonate with your primary buyer.</p>
+
+            <h3>Common value metric categories</h3>
+            <ul>
+              <li><strong>Time savings</strong> - Hours per week/month saved on manual tasks. Best for operational efficiency tools. Example: "Calculate how much time your team wastes on manual data entry"</li>
+              <li><strong>Cost reduction</strong> - Direct cost savings from reducing spend, headcount needs, or waste. Best for procurement and finance buyers. Example: "Calculate savings from reducing tool sprawl"</li>
+              <li><strong>Revenue impact</strong> - Additional revenue generated or pipeline created. Best for sales and marketing tools. Example: "Calculate additional revenue from improved conversion rates"</li>
+              <li><strong>Risk mitigation</strong> - Cost of problems avoided (compliance fines, security breaches, customer churn). Best for compliance, security, or retention tools. Example: "Calculate cost of compliance violations you're preventing"</li>
+            </ul>
+
+            <h3>Metric selection framework</h3>
+            <table>
+              <tr><th>Question</th><th>Good Sign</th><th>Warning Sign</th></tr>
+              <tr>
+                <td>Can prospects measure this today?</td>
+                <td>They already track this metric or can estimate it easily</td>
+                <td>Metric requires data they don't have or can't access</td>
+              </tr>
+              <tr>
+                <td>Is it a top-3 priority for your ICP?</td>
+                <td>This metric appears in annual goals, OKRs, or board decks</td>
+                <td>Nice-to-have metric but not tied to executive priorities</td>
+              </tr>
+              <tr>
+                <td>Does your product directly impact this?</td>
+                <td>Clear causal link between product usage and metric improvement</td>
+                <td>Indirect or multi-hop logic required to connect product to outcome</td>
+              </tr>
+              <tr>
+                <td>Can you validate the math with customers?</td>
+                <td>Existing customers confirm they see these results</td>
+                <td>Metrics are theoretical or based on assumptions not proven with customers</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Survey 10-15 existing customers asking "What metric mattered most when evaluating our solution?" and "What measurable results have you seen?" Use their language and priorities to select calculator metrics. This ensures your calculator reflects real buyer decision criteria.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Keeping It Simple sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Keeping It Simple (3-5 Inputs Max)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why simplicity drives completion</h3>
+            <p>Every additional input reduces completion rate. Users want quick answers, not homework. Complex calculators with 10+ fields feel like work. Simple calculators with 3-5 inputs feel helpful. Completion rate matters more than precision. Better to get 200 people through a simple calculator than 20 through a complex one.</p>
+
+            <h3>Input reduction strategies</h3>
+            <ul>
+              <li><strong>Use smart defaults</strong> - Pre-fill industry averages or benchmark data. User can adjust if their situation differs, but most won't. Reduces cognitive load</li>
+              <li><strong>Combine related inputs</strong> - Instead of asking team size and average salary separately, ask "Total annual team cost" as one field. Fewer fields, same output</li>
+              <li><strong>Make some inputs optional</strong> - Core calculation works with 3 required fields. Optional fields refine accuracy for engaged users. Don't force everyone to complete optional fields</li>
+              <li><strong>Hide complexity with progressive disclosure</strong> - Start with 3 basic inputs. Show initial results. Offer "Refine your estimate" section with additional optional inputs for users who want more precision</li>
+            </ul>
+
+            <h3>Good vs bad input design</h3>
+            <table>
+              <tr><th>Bad (Too Complex)</th><th>Good (Simplified)</th></tr>
+              <tr>
+                <td>Number of SDRs, BDRs, AEs, CSMs, Managers (5 separate fields)</td>
+                <td>Total revenue team size (1 field with dropdown)</td>
+              </tr>
+              <tr>
+                <td>Average base salary, commission structure, benefits cost per rep</td>
+                <td>Estimated annual cost per rep (1 field, pre-filled with industry average)</td>
+              </tr>
+              <tr>
+                <td>Open text field requiring exact numbers user needs to look up</td>
+                <td>Slider or dropdown with reasonable ranges (e.g., 1-5, 6-10, 11-25 employees)</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> A/B test different input counts. Start with 5 fields. If completion rate is under 60%, reduce to 4, then 3. Find the minimum viable input set that produces useful results. Track completion rate as your key metric, not calculation precision.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Showing Results Instantly sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Showing Results Instantly (No Email Gate Before Results)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why instant results matter</h3>
+            <p>Gating results before someone sees them kills completion rates. Users want the answer first, then decide if it's worth providing contact info for more detail. Show core results immediately. Gate additional value (detailed report, comparison analysis, implementation guide) behind email capture. Trust drives conversion.</p>
+
+            <h3>Two-tier results strategy</h3>
+            <ul>
+              <li><strong>Instant results (ungated)</strong> - Show primary ROI metric immediately as user adjusts inputs. Example: "You could save $127,000 annually" with simple breakdown. No form required. Build trust and engagement</li>
+              <li><strong>Detailed report (gated)</strong> - Offer downloadable PDF with full analysis, comparison to industry benchmarks, implementation roadmap, and case studies. Require name, email, company for download. Users who want depth will convert</li>
+            </ul>
+
+            <h3>Result display best practices</h3>
+            <ul>
+              <li><strong>Show results in real-time</strong> - As user moves sliders or changes inputs, results update instantly. No "Calculate" button. Dynamic results feel magical and keep users engaged</li>
+              <li><strong>Use large, prominent numbers</strong> - The main ROI figure should be huge and impossible to miss. Example: "$127,000" in 48pt font, with "annual savings" in smaller text below</li>
+              <li><strong>Provide context and breakdown</strong> - Don't just show one number. Break it down: "That's 47 hours per week saved across your 8-person team, worth $127k based on average hourly cost"</li>
+              <li><strong>Make results shareable</strong> - Include "Email these results" or "Share with colleague" buttons. Some users want to forward without downloading. Easy sharing expands reach</li>
+            </ul>
+
+            <h3>Gating strategy options</h3>
+            <table>
+              <tr><th>Approach</th><th>Pros</th><th>Cons</th><th>Best For</th></tr>
+              <tr>
+                <td><strong>No gate at all</strong></td>
+                <td>Highest engagement and completion. Maximum sharing</td>
+                <td>Zero lead capture. Pure brand awareness play</td>
+                <td>Top-of-funnel traffic generation, not lead gen</td>
+              </tr>
+              <tr>
+                <td><strong>Results instant, detailed report gated</strong></td>
+                <td>Balances engagement with lead capture. Builds trust first</td>
+                <td>Some users take results and leave without converting</td>
+                <td>Most B2B calculators. Sweet spot for conversion and completion</td>
+              </tr>
+              <tr>
+                <td><strong>Email required to see results</strong></td>
+                <td>Captures every user. No leakage</td>
+                <td>Much lower completion rate. Users abandon before converting</td>
+                <td>Very high-value products where every lead counts. Warm traffic only</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> After showing instant results, display a prominent CTA: "Get a personalised ROI report + implementation guide emailed to you." The word "personalised" increases conversion because users have already seen their custom numbers and want to keep them.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Making Results Shareable sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Making Results Shareable</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why shareability multiplies reach</h3>
+            <p>Buyers rarely make decisions alone. They share calculator results with managers, finance teams, and colleagues to build consensus. If results aren't easily shareable, you lose those additional touchpoints. Make sharing frictionless and you multiply your reach without additional marketing spend.</p>
+
+            <h3>Shareability features to include</h3>
+            <ul>
+              <li><strong>Unique shareable URLs</strong> - Generate a unique link that preserves the user's inputs and results. They can share this link and recipients see the same calculations. Example: yourcalculator.com/results/abc123</li>
+              <li><strong>Email results button</strong> - One-click email with results summary and link back to calculator. Pre-fills email body with key numbers. User just adds recipient and sends</li>
+              <li><strong>Screenshot-friendly results</strong> - Design results page assuming it will be screenshotted. Clean layout, your branding visible, key stats prominent. Screenshots become your marketing asset in Slack channels and emails</li>
+              <li><strong>Download PDF option</strong> - Generate branded PDF with results, assumptions used, and next steps. Professional format for sharing with executives who prefer documents over links</li>
+            </ul>
+
+            <h3>Tracking shared results</h3>
+            <p>Use UTM parameters or unique IDs in shareable links to track viral coefficient. How many people use calculator via shared links vs direct visits? High sharing rate indicates product-market fit for the calculator. Low sharing suggests results aren't compelling enough or sharing is too hard.</p>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Add social proof to results page: "Join 2,847 companies who've calculated their potential ROI." Seeing that thousands have used the calculator builds credibility when someone shares results with skeptical colleagues.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Using in Sales Process sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Using Calculator in Sales Process</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why calculators accelerate sales cycles</h3>
+            <p>Sales reps spend hours creating custom ROI models in spreadsheets for each prospect. Calculators automate this and make it prospect-driven. Rep sends link, prospect explores scenarios independently, rep follows up with data-driven conversation anchored to the results. Buyers trust numbers they generated more than numbers you present to them.</p>
+
+            <h3>Sales playbook for calculator</h3>
+            <ul>
+              <li><strong>Discovery call</strong> - During discovery, gather inputs (team size, current process, time spent on X). After call, send personalised calculator link pre-populated with their data. "Based on our conversation, I ran the numbers. Take a look and let me know if these assumptions feel right"</li>
+              <li><strong>Follow-up</strong> - Reference specific calculator results in follow-up. "You mentioned your team spends 40 hours/week on manual research. The calculator shows that's costing you $83k annually. Here's how we'd help..."</li>
+              <li><strong>Multi-threading</strong> - Send calculator to economic buyer (CFO, VP) separate from champion. Financial decision-makers love data. Calculator gives them concrete numbers to evaluate, not just champion's enthusiasm</li>
+              <li><strong>Objection handling</strong> - When prospect says "not sure if ROI justifies cost," point back to calculator. "Let's adjust the assumptions. What would need to change for this to make sense?" Collaborative problem-solving beats defending your price</li>
+            </ul>
+
+            <h3>Advanced sales techniques</h3>
+            <table>
+              <tr><th>Scenario</th><th>How to Use Calculator</th></tr>
+              <tr>
+                <td>Prospect goes dark after demo</td>
+                <td>Send calculator with subject: "Quick question about your numbers." Re-engages by asking them to validate assumptions, not pushing for meeting</td>
+              </tr>
+              <tr>
+                <td>Competing with cheaper alternative</td>
+                <td>Show total cost of ownership (TCO) calculation including implementation time, training, opportunity cost. Make it about ROI, not just price</td>
+              </tr>
+              <tr>
+                <td>Champion needs to convince their boss</td>
+                <td>Create calculator link with their specific scenario. Champion shares this with decision-maker. Calculator does the selling for them</td>
+              </tr>
+              <tr>
+                <td>Prospect unsure about timing (buy now vs later)</td>
+                <td>Add time-based calculation: "Every month you wait costs $10k in continued inefficiency." Creates urgency with math, not pressure</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Track which prospects use calculator and their inputs via CRM integration. Sales reps see: "Sarah from Acme used calculator, estimated 15-person team, projected $240k savings." Rep has full context before first call. No cold discovery needed.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Benchmarking Against Industry sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Benchmarking Against Industry Averages</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why benchmarking adds credibility</h3>
+            <p>Standalone numbers lack context. Is saving 40 hours per month good or bad? Benchmarking answers this. "Your team spends 35% more time on manual tasks than similar companies" creates urgency. "You're already above average efficiency" provides validation. Either way, context makes results more meaningful and actionable.</p>
+
+            <h3>Benchmark data sources</h3>
+            <ul>
+              <li><strong>Your own customer data</strong> - Aggregate anonymised data from existing customers. "Companies your size typically see 25-30 hours saved per week." Most credible because it's your actual results</li>
+              <li><strong>Industry research reports</strong> - Cite third-party research (Gartner, Forrester, industry associations). "According to XYZ Research, average sales rep spends 22 hours/week on non-selling activities"</li>
+              <li><strong>Public benchmarks</strong> - Use widely accepted industry standards. Sales: average AE quota attainment, lead-to-opp conversion rates. Marketing: typical CAC, email open rates. Finance: standard cost per hire, employee turnover</li>
+              <li><strong>Survey your ICP</strong> - Run quick survey asking key metrics. "What's your team's current X?" Publish anonymised results as benchmarks. Benefits: original data you own, shows you understand the space</li>
+            </ul>
+
+            <h3>How to display benchmarks</h3>
+            <ul>
+              <li><strong>Visual comparison</strong> - Show user's input vs average as side-by-side bars or gauges. Make it instantly clear if they're above/below/at average</li>
+              <li><strong>Contextual messaging</strong> - If above average cost: "Your team's manual process costs are 28% higher than similar companies. Here's what top performers do differently..." If below: "You're already more efficient than average. Here's how to get to best-in-class..."</li>
+              <li><strong>Segment by company size or industry</strong> - Don't compare 10-person startup to 500-person enterprise. Let users select segment for relevant benchmarks. "Companies with 20-50 employees in SaaS typically..."</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Include "How we calculated this" link that expands to show data sources, methodology, and sample size. Transparency builds trust. Sophisticated buyers will click this. Having credible sources ready validates your benchmarks and increases belief in the calculator's accuracy.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Optimisation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Mobile Optimisation</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why mobile matters for calculators</h3>
+            <p>Significant traffic comes from mobile: LinkedIn DMs opened on phones, emails checked during commutes, Slack links clicked on tablets. If your calculator doesn't work on mobile, you lose those users immediately. Unlike long-form content where desktop is expected, calculators are often impulse interactions. Mobile-first design is essential.</p>
+
+            <h3>Mobile optimisation checklist</h3>
+            <ul>
+              <li><strong>Touch-friendly inputs</strong> - Sliders should be large enough to drag with thumb. Buttons need 44x44px minimum touch targets. Avoid tiny checkboxes or dropdowns that require precise tapping</li>
+              <li><strong>Vertical layout</strong> - Stack inputs vertically, not side-by-side. Single column is easier to scan and complete on narrow screens. Results displayed below inputs, not beside</li>
+              <li><strong>Minimal scrolling</strong> - Ideally, all inputs visible without scrolling. If multi-step, use progress indicator so users know how many steps remain. Long scrolls on mobile increase abandonment</li>
+              <li><strong>Fast load times</strong> - Mobile users often on slower connections. Optimise images, minimise JavaScript, use lazy loading. Target under 3 seconds load time. Slow calculators feel broken on mobile</li>
+              <li><strong>Readable typography</strong> - 16px minimum font size for body text. 24px+ for result numbers. Sufficient contrast for outdoor mobile use. Avoid light grey text on white backgrounds</li>
+            </ul>
+
+            <h3>Mobile vs desktop experience</h3>
+            <table>
+              <tr><th>Element</th><th>Desktop</th><th>Mobile</th></tr>
+              <tr>
+                <td>Input method</td>
+                <td>Dropdowns and text fields work well</td>
+                <td>Prefer sliders and segmented controls (iOS style)</td>
+              </tr>
+              <tr>
+                <td>Layout</td>
+                <td>Two-column possible (inputs left, results right)</td>
+                <td>Single column only. Inputs above results</td>
+              </tr>
+              <tr>
+                <td>Detailed explanations</td>
+                <td>Can show inline help text and tooltips</td>
+                <td>Hide behind "Learn more" accordions to reduce clutter</td>
+              </tr>
+              <tr>
+                <td>Results display</td>
+                <td>Show full breakdown and charts immediately</td>
+                <td>Show primary number prominently, secondary details in expandable sections</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Test your calculator on actual devices, not just browser dev tools. iOS Safari and Android Chrome behave differently. Input types trigger different mobile keyboards (type="number" brings up number pad). Small UX details have big impact on mobile completion rates.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Too many inputs (kills completion rate)</h4>
+          <div class="why">You ask for 10+ data points to get precise calculations. Users give up halfway through because it feels like homework.</div>
+          <div class="fix">Limit to 3-5 essential inputs. Use smart defaults and industry averages for everything else. Measure completion rate - if below 60%, simplify further.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Gating results behind email (people leave before seeing value)</h4>
+          <div class="why">You require email before showing any results. Users want to see if calculator is useful first. Upfront gate kills completion and trust.</div>
+          <div class="fix">Show core results immediately. Gate detailed report or comparison analysis. Build trust first, capture leads second.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Unrealistic projections (damages credibility)</h4>
+          <div class="why">Calculator shows prospect will save $500k annually. They know that's impossible. Lose all credibility. They dismiss calculator as marketing fluff.</div>
+          <div class="fix">Use conservative assumptions. Validate math with existing customers. Include sources for benchmarks. Show how calculation works (transparency builds trust).</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. No context for the numbers</h4>
+          <div class="why">Calculator spits out "$127,000" with no explanation. What does that number mean? How was it calculated? Is that good or bad?</div>
+          <div class="fix">Break down results. Show calculation logic. Compare to industry averages. Provide context that makes numbers meaningful and actionable.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Not using it in sales conversations</h4>
+          <div class="why">You built calculator for marketing but sales team doesn't know it exists or how to use it. Sits unused on website. Waste of investment.</div>
+          <div class="fix">Train sales team. Create playbook with examples. Send personalised calculator links during discovery. Track usage via CRM. Make it core sales tool.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Ugly or complex UI</h4>
+          <div class="why">Calculator looks like a spreadsheet or form. Unclear what to input. No visual hierarchy. Users confused and abandon.</div>
+          <div class="fix">Invest in design. Clear labels, intuitive inputs (sliders over text boxes), real-time results, mobile-friendly. Good UX directly impacts completion rate.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>7. No follow-up sequence for calculator users</h4>
+          <div class="why">Someone uses calculator, sees compelling ROI, then... nothing. No email follow-up. No sales outreach. Lead goes cold.</div>
+          <div class="fix">Automated email sequence: Day 1 - results summary, Day 3 - case study of similar company, Day 7 - invite to demo. Plus sales alert for high-value calculations.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

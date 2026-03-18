@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 4.4 — Mini Documentary Video Series | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+.ch-content{background:#d29922}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 4.4 - Content-Led Outreach</div>
+  <h1>Mini Documentary Video Series</h1>
+  <p class="desc">3-5 episode documentary series following real customer transformation stories. Premium brand content that builds trust through authentic storytelling rather than sales pitches.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#d29922;background:#9e6a0322">
+      <div class="hero-ch-icon" style="background:#d29922">C</div>
+      <div class="hero-ch-name">Content</div>
+    </div>
+    <span class="hero-ch-plus">+</span>
+    <div class="hero-ch" style="border-color:#bc8cff;background:#8957e522">
+      <div class="hero-ch-icon" style="background:#bc8cff">V</div>
+      <div class="hero-ch-name">Video</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: High</span>
+    <span class="tag tag-cost">Cost: High</span>
+    <span class="tag tag-icp">ICP: Founders, C-suite</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Customers trust customer stories more than any sales pitch. A documentary format removes the sales barrier entirely. Instead of you telling prospects why they should buy, existing customers show them the real transformation journey. This builds credibility impossible to achieve through traditional content.
+      </div>
+      <h3>The psychology behind documentary storytelling</h3>
+      <ul>
+        <li><strong>Authentic proof over marketing claims</strong> - When a customer tells their story unfiltered, prospects believe it. No marketing copy can match the authenticity of a real person describing their real experience</li>
+        <li><strong>Emotional connection through narrative</strong> - Documentaries follow a story arc: struggle, decision, transformation. This emotional journey resonates deeper than feature lists or case study PDFs</li>
+        <li><strong>Premium brand positioning</strong> - Most companies produce blog posts and webinars. Few invest in documentary-quality content. The production value alone signals you're a serious player</li>
+        <li><strong>Long-tail content asset</strong> - Unlike a webinar that's relevant for a month, a well-produced documentary stays valuable for years. Each episode generates leads continuously with minimal additional investment</li>
+      </ul>
+      <h3>Why the episodic format works</h3>
+      <p>Breaking the story into 3-5 episodes (instead of one long video) creates anticipation. Viewers come back week after week to see how the story unfolds. This repeated engagement builds a relationship with your brand. Plus, episodic content is easier to consume. A 7-minute episode beats a 30-minute documentary in completion rates.</p>
+      <p><strong>The distribution advantage:</strong> Each episode gives you fresh content to promote. One customer story becomes 3-5 LinkedIn posts, 3-5 email campaigns, and 3-5 opportunities to start conversations with prospects who engage. You're not promoting the same asset repeatedly; you're advancing a narrative.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-content">I</div><div class="wf-label">Identify Customer Story</div><div class="wf-action">Transformation</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-content">P</div><div class="wf-label">Plan Story Arc</div><div class="wf-action">3-5 episodes</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">F</div><div class="wf-label">Film on Location</div><div class="wf-action">2-3 days</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-video">E</div><div class="wf-label">Edit with Professional Quality</div><div class="wf-action">1-2 weeks</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-content">L</div><div class="wf-label">Launch Episode by Episode</div><div class="wf-action">Weekly cadence</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-linkedin">P</div><div class="wf-label">Promote Across Channels</div><div class="wf-action">LinkedIn, email, web</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 7</div><div class="wf-node ch-content">T</div><div class="wf-label">Track Engagement and Leads</div><div class="wf-action">Attribution</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify customer story</td>
+          <td>Look for transformation stories, not just success stories. Best candidates: customer faced significant pain before your solution, implemented successfully, achieved measurable outcomes, articulate and willing to be on camera</td>
+          <td>1-2 hours (review customer data, interviews)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Plan story arc</td>
+          <td>Break story into 3-5 episodes. Episode 1: The problem and why it mattered. Episode 2: The search for a solution. Episode 3: Implementation and early wins. Episode 4: Full transformation and results. Episode 5 (optional): Future vision and what's next</td>
+          <td>2-3 hours (scripting outline)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Film on location</td>
+          <td>Visit customer site. Film interviews with multiple stakeholders (executive sponsor, day-to-day users, team members). Capture B-roll of team working, office environment, product in use. Aim for 2-3 hours of raw footage across 2-3 days</td>
+          <td>2-3 days (includes travel, setup, filming)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Edit with professional quality</td>
+          <td>Hire editor or use tools like Descript or Premiere Pro. Each episode: 5-10 min runtime, captions, background music, brand graphics, smooth transitions. Export in 1080p or 4K</td>
+          <td>1-2 weeks (depending on editor availability)</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Launch episode by episode</td>
+          <td>Release one episode per week. Host on Wistia, YouTube, or Vimeo. Create dedicated landing page for the series. Build anticipation for next episode at end of each video</td>
+          <td>Weekly releases over 3-5 weeks</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Promote across channels</td>
+          <td>LinkedIn posts for each episode, email to list announcing new episodes, embed on website, share in communities, paid LinkedIn ads targeting ICP, outreach to prospects mentioning the series</td>
+          <td>2-3 hours per episode (promotion)</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Track engagement and leads</td>
+          <td>Use Wistia or YouTube analytics to see watch time, drop-off points, and completion rates. Track leads via UTM parameters, gated landing pages, or direct attribution from sales conversations</td>
+          <td>Ongoing (weekly review)</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Don't wait for a perfect customer story to start. Your second or third documentary will be better than your first. Start with a willing customer who has a decent story. Learn the process. Iterate. Perfection kills momentum.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Wistia</strong></td>
+          <td>$19/mo</td>
+          <td>Video hosting with lead generation</td>
+          <td>Embed videos on your site with email capture gates. Detailed analytics on who watched what. Integrates with CRM for lead tracking</td>
+          <td>More expensive than YouTube. Limited free tier</td>
+        </tr>
+        <tr>
+          <td><strong>YouTube</strong></td>
+          <td>Free</td>
+          <td>Maximum reach and SEO</td>
+          <td>Massive distribution platform. Videos rank in Google search. Free hosting with unlimited storage. Built-in audience discovery</td>
+          <td>No lead capture without external landing page. Competitors can advertise on your videos</td>
+        </tr>
+        <tr>
+          <td><strong>Vimeo</strong></td>
+          <td>$20/mo</td>
+          <td>Professional brand control</td>
+          <td>Clean player with no ads. Privacy controls. Better player customisation than YouTube. Good for embedding on corporate sites</td>
+          <td>Much smaller organic reach than YouTube. More expensive</td>
+        </tr>
+        <tr>
+          <td><strong>Video Production</strong></td>
+          <td>Varies</td>
+          <td>Professional quality filming</td>
+          <td>Hire freelance videographer or agency. Expect good equipment, lighting, sound. Can also DIY with DSLR camera and external mic for lower budget</td>
+          <td>Professional crew: expensive. DIY: steep learning curve</td>
+        </tr>
+        <tr>
+          <td><strong>Descript</strong></td>
+          <td>$24/mo</td>
+          <td>Video editing via transcript</td>
+          <td>Edit video by editing text transcript. Remove filler words automatically. Add captions. Overdub feature to fix audio mistakes without re-recording</td>
+          <td>Less powerful than Premiere Pro for complex editing. Best for interview-heavy content</td>
+        </tr>
+        <tr>
+          <td><strong>Frame.io</strong></td>
+          <td>$15/mo</td>
+          <td>Collaboration with editor and stakeholders</td>
+          <td>Cloud-based video review. Leave timestamped comments on video. Share drafts with team for feedback. Version control for edits</td>
+          <td>Requires team buy-in. Overkill if editing solo</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Host on <strong>Wistia</strong> ($19/mo) for lead capture and detailed analytics. Also publish to <strong>YouTube</strong> (free) for organic reach and SEO. Edit with <strong>Descript</strong> ($24/mo) if doing it in-house, or hire a freelance editor ($500-2000 per episode depending on complexity). Use <strong>Frame.io</strong> ($15/mo) for team collaboration during editing.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Story Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Story Selection (Transformation Stories, Not Testimonials)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What makes a great documentary story</h3>
+            <p>A great documentary story has three elements: a clear before state with real pain, a turning point (decision to change), and a measurable after state. Testimonials say "This product is great." Documentaries say "Here's what life was like before, here's why we decided to change, here's how we implemented, and here's where we are now."</p>
+
+            <h3>Identifying the right customer</h3>
+            <ul>
+              <li><strong>Transformation over satisfaction</strong> - Look for customers who experienced dramatic change, not just incremental improvement. The bigger the before-and-after contrast, the more compelling the story</li>
+              <li><strong>Multiple stakeholders</strong> - Best stories involve several people: the executive who sponsored the decision, the ops person who implemented it, the end user who benefits daily. Multiple perspectives create depth</li>
+              <li><strong>Articulate storytellers</strong> - Some customers are great but not great on camera. Test this in a pre-interview call. Can they explain their journey clearly? Do they speak in concrete examples rather than vague generalities?</li>
+              <li><strong>Willingness to be vulnerable</strong> - Great documentaries show struggle. The customer needs to be willing to talk about what wasn't working before, mistakes they made, internal resistance they faced</li>
+            </ul>
+
+            <h3>Questions to ask when vetting a customer story</h3>
+            <table>
+              <tr><th>Question</th><th>Why It Matters</th></tr>
+              <tr>
+                <td>What was the problem costing you before you found a solution?</td>
+                <td>Quantifiable pain creates urgency. Vague pain doesn't resonate</td>
+              </tr>
+              <tr>
+                <td>What other solutions did you evaluate?</td>
+                <td>Shows thoughtful decision-making. Prospects relate to evaluation process</td>
+              </tr>
+              <tr>
+                <td>What almost stopped you from moving forward?</td>
+                <td>Reveals objections prospects will have. Gives you a chance to address them through customer's voice</td>
+              </tr>
+              <tr>
+                <td>What surprised you during implementation?</td>
+                <td>Unexpected moments make stories memorable. Also surfaces hidden benefits</td>
+              </tr>
+              <tr>
+                <td>How would you quantify the impact?</td>
+                <td>Numbers validate the story. Specific metrics beat general statements</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Red flag:</strong> If a customer says everything was perfect from day one with no challenges, the story is too polished to be believable. Great documentaries show the real journey, including bumps along the way.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Episode Structure sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Episode Structure (Hook, Challenge, Journey, Result)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Anatomy of a compelling episode</h3>
+            <p>Every episode should follow a narrative arc, even if it's part of a larger series. Start with a hook that creates curiosity, introduce the challenge or question this episode addresses, show the journey or process, and conclude with a result or cliffhanger leading to the next episode.</p>
+
+            <h3>Episode structure breakdown</h3>
+            <table>
+              <tr><th>Section</th><th>Duration</th><th>Purpose</th></tr>
+              <tr>
+                <td><strong>Hook (first 15 seconds)</strong></td>
+                <td>15 sec</td>
+                <td>Grab attention immediately. Tease the outcome or ask a provocative question. Example: "We were losing customers faster than we could acquire them. Everything changed in one decision."</td>
+              </tr>
+              <tr>
+                <td><strong>Setup (context)</strong></td>
+                <td>1-2 min</td>
+                <td>Introduce the customer, their company, and the challenge they faced. Establish the stakes. Why did this problem matter?</td>
+              </tr>
+              <tr>
+                <td><strong>The journey (main content)</strong></td>
+                <td>3-5 min</td>
+                <td>Tell the story. What did they try? What worked and what didn't? Include B-roll footage of the team working, the product in action, real moments. This is the heart of the episode</td>
+              </tr>
+              <tr>
+                <td><strong>The result (resolution)</strong></td>
+                <td>1-2 min</td>
+                <td>Show the outcome. Quantify the impact. Let the customer explain what changed. Include visuals of data, dashboards, or results</td>
+              </tr>
+              <tr>
+                <td><strong>Next episode tease</strong></td>
+                <td>15-30 sec</td>
+                <td>End with a cliffhanger or question that the next episode will address. "But scaling this to the entire organisation presented a whole new challenge..."</td>
+              </tr>
+            </table>
+
+            <h3>Pacing tips</h3>
+            <ul>
+              <li><strong>Cut aggressively</strong> - If a segment doesn't advance the story, cut it. Viewers drop off when pacing slows</li>
+              <li><strong>Mix interview and B-roll</strong> - Don't show talking heads for more than 20-30 seconds at a time. Cut to B-roll of the product, the team, the environment. Keeps visual interest high</li>
+              <li><strong>Use music intentionally</strong> - Background music sets tone. Upbeat for wins, subtle tension for challenges, quiet for reflective moments</li>
+              <li><strong>Captions are mandatory</strong> - Most video is watched without sound, especially on LinkedIn. Captions make content accessible and increase watch time</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Length guidance:</strong> Episode 1 can be 7-10 min (setup takes time). Episodes 2-4 should be 5-7 min (story is already established). Final episode can be 8-10 min (wrap up and future vision). Total series runtime: 30-40 min across all episodes.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Production Quality sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Production Quality (Doesn't Need Hollywood, But Needs Good Audio)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What production quality actually means</h3>
+            <p>Production quality is not about expensive cameras or cinematic lighting. It's about clarity and professionalism. Viewers forgive average video quality. They do not forgive bad audio, shaky footage, or poor lighting that makes it hard to see faces.</p>
+
+            <h3>Minimum viable production standards</h3>
+            <ul>
+              <li><strong>Audio first</strong> - This is non-negotiable. Use an external microphone (lavalier or shotgun mic). Laptop or camera mics pick up too much room noise and sound hollow. Budget: $50-150 for a decent mic</li>
+              <li><strong>Stable footage</strong> - Use a tripod. Handheld footage looks amateurish unless you're intentionally going for documentary realism. Tripod: $30-100</li>
+              <li><strong>Lighting matters</strong> - Natural light from a window works great. If filming indoors without windows, use a simple ring light or softbox. You want the subject's face clearly lit, not backlit or shadowy. Budget: $50-200</li>
+              <li><strong>Background attention</strong> - Film in environments that reinforce the story. If it's a tech company, film in their office with screens and team visible. Don't film in generic conference rooms with blank walls</li>
+            </ul>
+
+            <h3>DIY vs hiring a pro</h3>
+            <table>
+              <tr><th>Approach</th><th>Cost</th><th>Best For</th><th>Limitation</th></tr>
+              <tr>
+                <td><strong>Full DIY</strong></td>
+                <td>$500-1000 (equipment)</td>
+                <td>Bootstrapped teams willing to learn. Testing the format before committing budget</td>
+                <td>Steep learning curve. Time-intensive. Quality ceiling lower than professional</td>
+              </tr>
+              <tr>
+                <td><strong>Hire freelance videographer</strong></td>
+                <td>$1000-3000 per shoot day</td>
+                <td>Most teams. Good balance of quality and cost</td>
+                <td>Still need to direct the story. Videographer executes, you shape narrative</td>
+              </tr>
+              <tr>
+                <td><strong>Hire video production agency</strong></td>
+                <td>$10000-50000 per series</td>
+                <td>Large budgets, high-stakes launches, premium brand positioning</td>
+                <td>Expensive. Longer timelines. May feel over-produced if not careful</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Budget guidance:</strong> For your first documentary series, aim for $2000-5000 total budget (freelance videographer for filming, freelance editor for post-production). This gets you professional quality without breaking the bank. As you learn what works, you can scale up or optimise down.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Distribution sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Distribution (One Episode Per Week, Build Anticipation)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why weekly releases beat all-at-once</h3>
+            <p>Releasing all episodes at once treats your documentary like a Netflix show. People binge it and forget about it. Weekly releases create ongoing engagement. Each episode becomes a reason to reach out, post on LinkedIn, and stay top of mind with prospects for 3-5 weeks straight.</p>
+
+            <h3>Weekly release promotion plan</h3>
+            <table>
+              <tr><th>Timeline</th><th>Action</th><th>Details</th></tr>
+              <tr>
+                <td>1 week before episode 1</td>
+                <td>Teaser campaign</td>
+                <td>Post trailer or behind-the-scenes clips. Announce the series. Build awareness</td>
+              </tr>
+              <tr>
+                <td>Episode 1 launch day</td>
+                <td>LinkedIn post, email, website</td>
+                <td>Introduce the customer and the challenge. Link to episode. Pin post to top of LinkedIn profile</td>
+              </tr>
+              <tr>
+                <td>Mid-week after episode 1</td>
+                <td>Engage with viewers</td>
+                <td>Reply to comments, DM people who watched, share pull quotes from the episode</td>
+              </tr>
+              <tr>
+                <td>Episode 2 launch day (1 week later)</td>
+                <td>Recap episode 1, promote episode 2</td>
+                <td>"Last week we covered X. This week, we dive into Y." Keep the narrative momentum</td>
+              </tr>
+              <tr>
+                <td>Repeat for episodes 3-5</td>
+                <td>Same cadence</td>
+                <td>Each episode gets its own launch moment. Build anticipation with cliffhangers</td>
+              </tr>
+              <tr>
+                <td>After final episode</td>
+                <td>Series recap + full binge link</td>
+                <td>"Missed any episodes? Watch the full series here." Now it becomes an evergreen asset</td>
+              </tr>
+            </table>
+
+            <h3>Multi-channel distribution</h3>
+            <ul>
+              <li><strong>LinkedIn</strong> - Primary channel. Post each episode natively (native video gets more reach than links). Use carousel posts to tease episodes</li>
+              <li><strong>Email</strong> - Send to your list each week. Include key takeaway, 1-2 sentence summary, and link to watch. Track who watches</li>
+              <li><strong>Website</strong> - Create a dedicated landing page for the series. Embed all episodes. Add CTA to book demo or download related resource</li>
+              <li><strong>Paid LinkedIn ads</strong> - Promote episodes to your ICP. Target job titles, industries, and companies. Video ads on LinkedIn perform well</li>
+              <li><strong>Outreach</strong> - Use the documentary in 1:1 outreach. "I thought you'd find this relevant given your role at Acme. We just released a documentary with a customer in a similar situation."</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Tracking tip:</strong> Use unique UTM parameters for each episode and each channel (LinkedIn, email, ads, etc.). This lets you see which episodes and channels drive the most engagement and pipeline. Most teams underestimate how much pipeline comes from content like this.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Promotion sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Promotion (LinkedIn, Email, Website, Paid)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Organic promotion tactics</h3>
+            <ul>
+              <li><strong>LinkedIn native video</strong> - Upload video directly to LinkedIn rather than linking to YouTube or Wistia. Native video gets 5x more reach in the algorithm</li>
+              <li><strong>Tag the customer</strong> - Tag the customer company and individuals featured in the documentary. They'll share it with their networks, expanding reach</li>
+              <li><strong>Employee amplification</strong> - Share the video in your internal Slack. Ask team members to like, comment, and share on their personal LinkedIn profiles. This multiplies reach significantly</li>
+              <li><strong>Community sharing</strong> - Post in relevant Slack communities, Reddit threads, or industry forums (without spamming). Frame it as valuable content, not self-promotion</li>
+              <li><strong>Pull quote graphics</strong> - Create quote cards from the best lines in the documentary. Post these as standalone LinkedIn posts linking back to the full episode</li>
+            </ul>
+
+            <h3>Paid promotion strategy</h3>
+            <p>Organic reach is great, but paid amplification ensures your target ICP actually sees the content. LinkedIn video ads are particularly effective for documentary content because the format feels native to the platform.</p>
+
+            <table>
+              <tr><th>Ad Format</th><th>Budget</th><th>Best For</th></tr>
+              <tr>
+                <td>LinkedIn video ads</td>
+                <td>$500-2000 per episode</td>
+                <td>Targeting specific job titles, industries, or company sizes. Track video views and engagement</td>
+              </tr>
+              <tr>
+                <td>Sponsored content (text post with video)</td>
+                <td>$300-1000 per episode</td>
+                <td>Boosting organic posts to reach beyond your immediate network. Good for retargeting</td>
+              </tr>
+              <tr>
+                <td>Retargeting ads</td>
+                <td>$200-500 per month</td>
+                <td>Show episodes to people who visited your website or engaged with previous content. Higher intent audience</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Budget allocation:</strong> For a 4-episode series, budget $2000-5000 for paid promotion across all episodes. Start with small test budgets ($500) on episode 1. Double down on the best-performing targeting and creative for episodes 2-4.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repurposing sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Repurposing (Clips, Quotes, Blog, Podcast)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why repurposing maximises ROI</h3>
+            <p>You invested significant time and budget into producing the documentary. Repurposing extends the value of that investment. One 30-minute documentary series can generate 50+ pieces of derivative content with minimal additional effort.</p>
+
+            <h3>Repurposing checklist</h3>
+            <ul>
+              <li><strong>Short clips (10-15 clips per episode)</strong> - Extract 30-90 second segments. Each clip should deliver one insight or moment. Post on LinkedIn, Twitter, and Instagram</li>
+              <li><strong>Quote cards</strong> - Pull 5-10 powerful quotes from customer interviews. Design as graphics. Post these with link back to full episode</li>
+              <li><strong>Blog recap</strong> - Write a 1000-1500 word blog post summarising the customer's story. Include embedded video. Publish on your blog and syndicate to Medium or LinkedIn articles</li>
+              <li><strong>Podcast episode</strong> - If you have a podcast, use the documentary audio as an episode. Add a brief intro explaining the documentary context</li>
+              <li><strong>Case study PDF</strong> - Convert the story into a traditional case study format for sales team to use. Include key stats, quotes, and screenshots from the documentary</li>
+              <li><strong>Email nurture sequence</strong> - Create a 3-5 email sequence dripping out episodes. Add this to your nurture campaigns for prospects</li>
+              <li><strong>Sales enablement</strong> - Equip sales team with clips and talking points. They can send relevant clips to prospects based on objections or interests</li>
+            </ul>
+
+            <h3>Clip creation workflow</h3>
+            <ol>
+              <li>Watch full episode and note timestamps of key moments</li>
+              <li>Export 10-15 clips per episode (30-90 sec each)</li>
+              <li>Add captions to every clip (essential for silent viewing)</li>
+              <li>Create a content calendar: post one clip every 2-3 days</li>
+              <li>Track which clips perform best (views, engagement, leads)</li>
+            </ol>
+
+            <div class="highlight">
+              <strong>Time-saving tip:</strong> Hire a video editor or VA to handle clip extraction and caption creation. This costs $200-500 per episode but saves 5-10 hours of your time. Focus your energy on promotion and lead follow-up, not manual video editing.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Making it a testimonial disguised as documentary</h4>
+          <div class="why">You script talking points for the customer and it comes across as a glorified sales pitch. Viewers tune out immediately because it feels inauthentic.</div>
+          <div class="fix">Let the customer tell their story in their own words. Prepare questions, not scripts. Embrace imperfect language and real emotion. Authenticity beats polish.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Poor audio quality</h4>
+          <div class="why">You film with camera mic in a noisy environment. Viewers can't hear what's being said. They leave within 30 seconds.</div>
+          <div class="fix">Invest in an external microphone (lavalier or shotgun mic, $50-150). Test audio levels before filming. Film in quiet locations or use noise reduction in post-production.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Releasing all episodes at once</h4>
+          <div class="why">You dump all 4 episodes at launch. People watch one or two and forget about it. You lose the opportunity for sustained engagement.</div>
+          <div class="fix">Release one episode per week. Build anticipation with cliffhangers. Each episode becomes a fresh reason to promote and engage with your audience.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. No promotion plan</h4>
+          <div class="why">You spend $5000 producing the documentary, post it once on LinkedIn, and wonder why only 50 people watched it.</div>
+          <div class="fix">Promote each episode across all channels: LinkedIn (organic + paid), email, website, communities. Repurpose into clips and quote cards. Keep promoting for weeks, not days.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Episodes too long (over 10 min)</h4>
+          <div class="why">Each episode is 15-20 minutes. Completion rates drop below 30%. Most viewers never finish.</div>
+          <div class="fix">Keep episodes under 10 minutes, ideally 5-7 min. Cut aggressively. If you have more content, add more episodes rather than making existing episodes longer.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Focusing on product features instead of human story</h4>
+          <div class="why">The documentary becomes a product demo. You show dashboards and features instead of the customer's emotional journey. Viewers don't connect.</div>
+          <div class="fix">Lead with the human story. Show the struggle, the decision, the transformation. Product features are secondary. The story is about the customer, not your product.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 7.1 — Personalised Landing Pages | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 7.1 - ABM Plays</div>
+  <h1>Personalised Landing Pages</h1>
+  <p class="desc">Create custom landing pages for high-value target accounts featuring their logo, industry-specific content, and tailored value propositions. Drive traffic via targeted ads or personalised emails to demonstrate relevance before first contact.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium-High</span>
+    <span class="tag tag-cost">Cost: Medium</span>
+    <span class="tag tag-icp">ICP: C-suite, VP-level Decision Makers</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Decision makers at enterprise accounts receive hundreds of generic pitches weekly. A personalised landing page with their company logo and industry-specific examples signals that you've done your homework and understand their unique context, dramatically increasing engagement and response rates.
+      </div>
+      <h3>The psychology behind personalised pages</h3>
+      <ul>
+        <li><strong>Pattern interruption</strong> - Seeing their own company logo on your page breaks the pattern of generic outreach. It forces them to pay attention because this is clearly custom-built for them</li>
+        <li><strong>Reciprocity trigger</strong> - When someone invests effort in personalising something for you, you feel obligated to reciprocate by at least engaging with it. The visible effort creates psychological debt</li>
+        <li><strong>Status validation</strong> - Being singled out for custom treatment signals importance. C-suite executives are accustomed to receiving VIP treatment; personalised pages tap into that expectation</li>
+        <li><strong>Relevance proof</strong> - Industry-specific case studies and use cases immediately answer the question "Does this apply to me?" without requiring them to extrapolate from generic examples</li>
+      </ul>
+      <h3>Why landing pages specifically</h3>
+      <p>Unlike cold emails that get deleted or LinkedIn messages that get ignored, a landing page is a destination you can drive traffic to through multiple channels. You can reference it in emails, link it from ads, share it in meetings, and track every interaction. It becomes a persistent asset that works for you long after the initial outreach.</p>
+      <p><strong>The compounding effect:</strong> Each personalised landing page also serves as proof of capability. When prospects see you can build custom experiences quickly, it demonstrates the kind of tailored approach they can expect if they become a customer.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Select Target</div><div class="wf-action">Top 20 accounts</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">R</div><div class="wf-label">Research</div><div class="wf-action">Pain points</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">B</div><div class="wf-label">Build Page</div><div class="wf-action">Custom content</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">A</div><div class="wf-label">Add Branding</div><div class="wf-action">Logo + industry</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">D</div><div class="wf-label">Drive Traffic</div><div class="wf-action">Email/ads</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">T</div><div class="wf-label">Track</div><div class="wf-action">Engagement data</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Select Target Account</td>
+          <td>Choose from your top 20 target accounts. Focus on companies where you have a warm connection or recent trigger event such as funding, leadership change, or expansion announcement</td>
+          <td>10 min account selection</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Research Pain Points</td>
+          <td>Deep dive into their industry challenges, recent company news, LinkedIn posts from their executives, and competitive pressures. Identify 2-3 specific pain points you can address</td>
+          <td>30-45 min per account</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Build Custom Page</td>
+          <td>Use landing page builder to create dedicated page. Include specific headlines addressing their pain points, relevant case studies from similar companies, and customised value propositions</td>
+          <td>1-2 hours first page, 30 min subsequent</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Add Their Logo and Industry Elements</td>
+          <td>Place target company logo at top of page. Add industry-specific imagery and terminology. Include data points relevant to their sector. Make it unmistakably built for them</td>
+          <td>15-20 min customisation</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Drive Traffic via Email or Ads</td>
+          <td>Send personalised email referencing the custom page: "Built this specifically for Sarah at Acme." Or run LinkedIn ads targeted only at employees of that company, driving them to the personalised page</td>
+          <td>10 min email or ongoing for ads</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Track Engagement</td>
+          <td>Monitor page visits, time on page, sections viewed, and form submissions. Follow up quickly with visitors based on their engagement level and which content they consumed</td>
+          <td>5 min daily monitoring</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Create a master template with modular sections that you can swap in and out. This lets you build new personalised pages in 30 minutes instead of 2 hours. Focus customisation on hero section, customer logos, and industry stats while reusing core value proposition sections.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Mutiny</strong></td>
+          <td>$$$</td>
+          <td>Enterprise accounts with high budgets</td>
+          <td>AI-powered personalisation at scale. Automatically customises website content based on visiting company. No-code editor. Robust analytics and multivariate testing</td>
+          <td>Expensive for small teams. Pricing starts at several thousand per month. Requires significant traffic volume to justify cost</td>
+        </tr>
+        <tr>
+          <td><strong>Intellimize</strong></td>
+          <td>$$-$$$</td>
+          <td>Marketing teams focused on conversion optimisation</td>
+          <td>Dynamic website personalisation with machine learning. Automatically tests variations and optimises based on visitor behaviour. Integrates with marketing automation platforms</td>
+          <td>Complex setup requiring technical resources. Best suited for high-traffic websites. Overkill for simple personalised landing pages</td>
+        </tr>
+        <tr>
+          <td><strong>Webflow</strong></td>
+          <td>$29/mo</td>
+          <td>Teams with design skills wanting full control</td>
+          <td>Professional designer tool with complete customisation flexibility. Create pixel-perfect pages. CMS allows dynamic content. Fast loading times and clean code output</td>
+          <td>Steeper learning curve than simple builders. Requires comfort with web design concepts. Best for teams with dedicated designer or design-savvy marketer</td>
+        </tr>
+        <tr>
+          <td><strong>Unbounce</strong></td>
+          <td>$99/mo</td>
+          <td>Marketing teams building many landing pages quickly</td>
+          <td>Drag-and-drop builder specifically for landing pages. Large template library. A/B testing built in. Dynamic text replacement for personalisation at scale via URL parameters</td>
+          <td>Templates can look generic if not heavily customised. Dynamic text replacement visible in URL which some prospects notice. Limited design flexibility compared to Webflow</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Unbounce</strong> ($99/mo) for quick deployment and testing the approach. Once validated with 5-10 successful pages, consider upgrading to <strong>Webflow</strong> ($29/mo but requires design time) for more unique, brand-differentiated pages. Reserve Mutiny for enterprise plays only.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Account Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Account Selection - Focus on Top 20</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why limit to top 20 accounts</h3>
+            <p>Personalised landing pages require significant investment of time and research. Building 100 mediocre personalised pages will underperform building 20 genuinely customised experiences. Quality over quantity is essential for this tactic to generate ROI.</p>
+
+            <h3>Account prioritisation criteria</h3>
+            <ul>
+              <li><strong>Deal size potential</strong> - Focus on accounts where average deal value justifies the 2-3 hour investment per page. If your ACV is under £10k, this tactic may not be worth it</li>
+              <li><strong>Trigger events</strong> - Recent funding rounds, leadership changes, expansion announcements, or tech stack changes signal buying intent. Target accounts showing active change</li>
+              <li><strong>Warm connections</strong> - Do you have a mutual connection, existing relationship with someone at the company, or warm intro path? Personalised pages work best when combined with relationship leverage</li>
+              <li><strong>Strategic importance</strong> - Some accounts are valuable beyond immediate revenue such as logo value, industry influence, or potential for large expansion. Include strategic accounts even if initial deal is smaller</li>
+            </ul>
+
+            <h3>Account research checklist</h3>
+            <table>
+              <tr><th>Research Area</th><th>Where to Find It</th><th>What to Look For</th></tr>
+              <tr>
+                <td>Company priorities</td>
+                <td>LinkedIn posts from executives, earnings calls, annual reports</td>
+                <td>Strategic initiatives, growth targets, transformation programmes mentioned repeatedly</td>
+              </tr>
+              <tr>
+                <td>Pain points</td>
+                <td>Job postings, Glassdoor reviews, industry reports</td>
+                <td>Roles they are hiring for signal gaps. Common complaints in reviews reveal process issues</td>
+              </tr>
+              <tr>
+                <td>Tech stack</td>
+                <td>BuiltWith, job postings mentioning tools, LinkedIn skill endorsements</td>
+                <td>Technologies they currently use and integrations you can highlight. Missing tools you complement</td>
+              </tr>
+              <tr>
+                <td>Competitive landscape</td>
+                <td>G2, Capterra, industry analyst reports</td>
+                <td>What solutions they might already be evaluating. Competitive positioning opportunities</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Time-saving tip:</strong> Build research profiles in a spreadsheet for all top 20 accounts before building any pages. This lets you identify patterns across accounts and create reusable content sections for companies in similar industries or with similar challenges.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Personalisation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Content Personalisation - Beyond Logo Placement</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Levels of personalisation depth</h3>
+            <p>Simply dropping a company logo on a generic page is not true personalisation. Effective personalised landing pages require multiple layers of customisation that demonstrate genuine understanding of the target account context.</p>
+
+            <h3>Personalisation layers to include</h3>
+            <ul>
+              <li><strong>Custom headline</strong> - Address their specific challenge. "James, here's how Acme can reduce customer churn by 30%" not "Reduce customer churn with our platform"</li>
+              <li><strong>Industry-specific examples</strong> - Show case studies and metrics from their exact industry. Financial services companies care about different outcomes than healthcare companies</li>
+              <li><strong>Relevant integrations</strong> - Highlight integrations with tools you know they use. If they use Salesforce and HubSpot, show those logos prominently</li>
+              <li><strong>Localised data</strong> - Include statistics and benchmarks specific to their geography or market segment. UK data for UK companies, enterprise benchmarks for enterprise accounts</li>
+              <li><strong>Personalised CTA</strong> - "See how companies like Acme use our platform" not generic "Book a demo" button</li>
+            </ul>
+
+            <h3>Content sections that work</h3>
+            <table>
+              <tr><th>Section</th><th>Purpose</th><th>Personalisation Element</th></tr>
+              <tr>
+                <td>Hero with target logo</td>
+                <td>Immediate pattern interrupt and attention capture</td>
+                <td>Their company logo plus personalised headline mentioning their specific challenge</td>
+              </tr>
+              <tr>
+                <td>Industry challenges overview</td>
+                <td>Demonstrate understanding of their context</td>
+                <td>2-3 pain points specific to their industry with supporting data from industry reports</td>
+              </tr>
+              <tr>
+                <td>Similar customer stories</td>
+                <td>Provide social proof and concrete examples</td>
+                <td>Case studies from companies in same industry, similar size, or same geography</td>
+              </tr>
+              <tr>
+                <td>Tailored solution overview</td>
+                <td>Connect your offering to their specific needs</td>
+                <td>Feature highlights mapped directly to pain points mentioned earlier. Show integrations with their tech stack</td>
+              </tr>
+              <tr>
+                <td>ROI calculator or assessment</td>
+                <td>Quantify potential value in their context</td>
+                <td>Pre-populated with estimates based on their company size and industry benchmarks</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Authenticity check:</strong> Before launching a personalised page, ask yourself: "If I removed the company logo, would it still be obvious this page was built for this specific account?" If the answer is no, add more contextual personalisation.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Traffic Generation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Traffic Generation - Email and Targeted Ads</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Multi-channel approach</h3>
+            <p>Building a brilliant personalised landing page delivers zero value if nobody visits it. Use a coordinated multi-channel approach to drive your target stakeholders to the page, with email and account-based advertising as primary channels.</p>
+
+            <h3>Personalised email approach</h3>
+            <ul>
+              <li><strong>Direct mention in subject line</strong> - "Sarah - built this for Acme" or "Acme-specific analysis inside" to drive opens</li>
+              <li><strong>Explain the effort</strong> - In email body, explicitly mention you built something custom: "I put together a personalised overview of how companies like Acme are solving X. Takes 3 minutes to review."</li>
+              <li><strong>Teaser content</strong> - Include one insight from the page in the email itself to demonstrate value before they click</li>
+              <li><strong>Clear CTA</strong> - Single button with copy like "View Your Custom Analysis" not generic "Click here"</li>
+            </ul>
+
+            <h3>Account-based advertising approach</h3>
+            <table>
+              <tr><th>Platform</th><th>Targeting Method</th><th>Best Use Case</th></tr>
+              <tr>
+                <td>LinkedIn Campaign Manager</td>
+                <td>Target by company name plus job titles</td>
+                <td>Reaching multiple stakeholders at target account simultaneously. Can run ads to 5-10 decision makers at same company driving them to personalised page</td>
+              </tr>
+              <tr>
+                <td>RollWorks or Demandbase</td>
+                <td>IP-based targeting of company office locations</td>
+                <td>Display ads that appear across the web when target account employees browse. Reinforces message across multiple touchpoints</td>
+              </tr>
+              <tr>
+                <td>Google Search Ads</td>
+                <td>Branded keywords for target company</td>
+                <td>When someone at Acme searches "Acme + your category," show ad driving to their personalised page. Captures active research behaviour</td>
+              </tr>
+            </table>
+
+            <h3>Timing and sequencing</h3>
+            <p>Launch personalised email and ads simultaneously for maximum impact. Email reaches named contacts while ads create ambient awareness across broader buying committee. Retarget page visitors with different messaging acknowledging they have seen the custom content.</p>
+
+            <div class="highlight">
+              <strong>Budget guidance:</strong> For LinkedIn ads targeting a single account, budget £500-£1000 per month to reach 10-20 decision makers with sufficient frequency. Test email-only approach first if ad budget is constrained.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Engagement Tracking sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Engagement Tracking - Know Who Visits</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What to track</h3>
+            <p>Personalised landing pages generate valuable intent signals when tracked properly. Go beyond basic page views to understand depth of engagement and follow up intelligently based on visitor behaviour.</p>
+
+            <h3>Essential tracking metrics</h3>
+            <ul>
+              <li><strong>Individual visitor identification</strong> - Use tools like Clearbit Reveal, 6sense, or LinkedIn Insight Tag to identify which individuals from target account visited the page</li>
+              <li><strong>Time on page</strong> - 30 seconds suggests they scanned it. 3 minutes suggests they read carefully. Prioritise follow-up with longer engagement</li>
+              <li><strong>Section scrolling</strong> - Did they scroll to case studies? Did they reach the ROI calculator? Different sections indicate different interests</li>
+              <li><strong>Return visits</strong> - Someone who visits 3 times over a week is signalling strong interest even if they have not filled out a form</li>
+              <li><strong>Content downloads or form fills</strong> - Explicit conversion actions demand immediate follow-up</li>
+            </ul>
+
+            <h3>Follow-up based on engagement level</h3>
+            <table>
+              <tr><th>Engagement Signal</th><th>Follow-Up Action</th><th>Timing</th></tr>
+              <tr>
+                <td>Page view under 30 seconds</td>
+                <td>Send follow-up email with different angle or additional resource</td>
+                <td>Wait 3-5 days</td>
+              </tr>
+              <tr>
+                <td>Page view 1-3 minutes, single visit</td>
+                <td>Email or LinkedIn message referencing they viewed it: "Saw you checked out the analysis. Questions on anything specific?"</td>
+                <td>Within 24 hours</td>
+              </tr>
+              <tr>
+                <td>Multiple visits or 3+ minutes engaged</td>
+                <td>Direct phone call or personalised video message: "You have spent time with the content. Let's talk about how this applies to Acme."</td>
+                <td>Within 12 hours</td>
+              </tr>
+              <tr>
+                <td>Form fill or content download</td>
+                <td>Immediate call or meeting request. They have raised their hand. Strike while interest is high</td>
+                <td>Within 2 hours</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Privacy consideration:</strong> Be thoughtful about how explicitly you reveal tracking. "I noticed you spent some time with the page" is less creepy than "I saw you visited 3 times for a total of 7 minutes and 23 seconds." Signal awareness without being invasive.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Personalisation only skin-deep - just logo swap</h4>
+          <div class="why">Adding target company logo to otherwise generic page feels lazy and inauthentic. Prospects immediately recognise superficial effort and disengage.</div>
+          <div class="fix">Personalise headline, case studies, industry data, pain points, and integrations. Every section should reflect understanding of their specific context. Aim for 5+ personalised elements beyond the logo.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Creating pages for too many accounts</h4>
+          <div class="why">Trying to build 50-100 personalised pages results in templated, shallow personalisation that does not move the needle. Quality degrades as volume increases.</div>
+          <div class="fix">Focus on top 20 highest-value target accounts. Invest 2-3 hours per page to make each genuinely custom. Better to have 20 excellent pages than 100 mediocre ones.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. No clear call-to-action</h4>
+          <div class="why">Visitor reads the page, finds it interesting, but has no clear next step. They close the tab and move on. Personalisation effort wasted.</div>
+          <div class="fix">Include prominent, specific CTA such as "Book 15 min with Sarah" or "Get your custom ROI analysis." Make next step frictionless and relevant to the content they just consumed.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Slow page load times</h4>
+          <div class="why">Heavy images, complex animations, or bloated code cause page to load slowly. Impatient executives close the tab before it finishes loading.</div>
+          <div class="fix">Optimise all images before uploading. Test page load speed on mobile and desktop. Aim for under 2 second load time. Use tools like Google PageSpeed Insights to identify issues.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Not tracking who visits</h4>
+          <div class="why">You send people to personalised page but have no idea if they visited, who visited, or what they engaged with. Flying blind on follow-up.</div>
+          <div class="fix">Implement visitor identification tools such as Clearbit Reveal or LinkedIn Insight Tag. Set up engagement alerts so you know immediately when target stakeholders visit. Track scroll depth and time on page.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Building pages but not driving traffic</h4>
+          <div class="why">You create beautiful personalised landing pages then passively hope people find them. Without active traffic generation, even the best page sits unused.</div>
+          <div class="fix">Always pair page creation with multi-channel promotion plan. Send personalised emails, run LinkedIn ads targeted at the account, mention in sales calls. Every page needs a distribution strategy.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 11.4 - Board / Advisory Network Leverage | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 11.4 - Warm Intro / Network</div>
+  <h1>Board / Advisory Network Leverage</h1>
+  <p class="desc">Map your board members' and advisors' networks. Ask for specific introductions with forwardable blurbs.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low</span>
+    <span class="tag tag-cost">Cost: Free</span>
+    <span class="tag tag-icp">ICP: Founders, C-suite</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Board members and advisors are typically senior operators with decades of relationships across industries. Their networks skew toward decision-makers. An intro from your board member to another executive carries significant weight because it comes from a peer, not a vendor.
+      </div>
+      <h3>The psychology of board-level introductions</h3>
+      <ul>
+        <li><strong>Peer-to-peer credibility</strong> - Executives trust other executives. When a board member introduces you, the recipient knows you've been vetted at the highest level</li>
+        <li><strong>Reputation staking</strong> - Board members only make intros when confident you'll perform. They protect their reputation. This implicit endorsement is powerful</li>
+        <li><strong>Network reciprocity at scale</strong> - Board members routinely make intros for each other's portfolio companies. It's part of the value they provide. Asking for intros is expected</li>
+        <li><strong>Access to closed networks</strong> - Board members have relationships that aren't findable on LinkedIn. Private networks, golf buddies, dinner circles. These relationships unlock doors impossible to reach via cold outreach</li>
+      </ul>
+      <h3>Why most companies underutilize their board</h3>
+      <p>Founders treat board members as governance and strategic advisors but forget they're also massive sales assets. Board members want portfolio companies to succeed. Making strategic introductions is one of the highest-leverage ways they can help. Most board members are underasked.</p>
+      <p><strong>The quality advantage:</strong> Board intros convert at significantly higher rates than even warm employee intros. Board members connect you directly to economic buyers, not mid-level managers. You skip layers of gatekeepers and get straight to decision-makers.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">M</div><div class="wf-label">Map Networks</div><div class="wf-action">Board/advisors</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-phone">C</div><div class="wf-label">Cross-Reference</div><div class="wf-action">Target accounts</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-email">P</div><div class="wf-label">Prepare Ask</div><div class="wf-action">Specific + blurb</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">R</div><div class="wf-label">Request Intro</div><div class="wf-action">Make it easy</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">F</div><div class="wf-label">Follow Up Fast</div><div class="wf-action">Within 24h</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-email">R</div><div class="wf-label">Report Back</div><div class="wf-action">Close the loop</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Map Your Board/Advisor Connections</td>
+          <td>Review LinkedIn profiles of all board members and advisors. Note where they currently sit on other boards, past executive roles, active investments. Create spreadsheet mapping their key relationships</td>
+          <td>1-2 hours (one-time mapping)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Cross-Reference with Target Accounts</td>
+          <td>Compare board member networks against your target account list. Look for current board overlap, past employment overlap, co-investments, industry connections. Identify highest-value matches</td>
+          <td>30 min (quarterly refresh)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Prepare Specific Ask + Forwardable Blurb</td>
+          <td>Don't ask "Do you know anyone at Acme Corp?" Ask "Would you be comfortable introducing me to Sarah at Acme Corp?" Include complete forwardable blurb explaining why this intro makes sense. Make it copy-paste ready</td>
+          <td>15 min per intro request</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Request Introduction</td>
+          <td>Send email to board member with specific ask, forwardable blurb, and context on why now. Give them easy out if timing isn't right. Respect their time and reputation</td>
+          <td>5 min (sending prepared request)</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Follow Up Promptly</td>
+          <td>When board member makes intro, respond within 24 hours. Thank them publicly (cc on reply). Move conversation forward immediately with specific next step. Make board member look good</td>
+          <td>15-20 min per intro follow-up</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Report Back to Introducer</td>
+          <td>After meeting or outcome, update board member. "Thanks for intro to Sarah. We had a great call and she's evaluating for Q2." Close the loop so they know their intro had impact</td>
+          <td>5 min per status update</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Ask board members at board meetings "Who should we be talking to this quarter?" This prompts them to think about their networks in service of your growth. Capture names in real-time and follow up individually after the meeting with forwardable blurbs.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn (manual research)</strong></td>
+          <td>Free</td>
+          <td>Basic network mapping and relationship research</td>
+          <td>View board member LinkedIn connections, current board seats, past roles. See mutual connections. Completely free. Start here for small boards (under 5 people)</td>
+          <td>Manual and time-consuming. Can't see full network without connecting. No automation or cross-referencing</td>
+        </tr>
+        <tr>
+          <td><strong>Crunchbase Pro</strong></td>
+          <td>$29/mo</td>
+          <td>Mapping board member current board seats and investments</td>
+          <td>Shows all current board positions and active investments for your board members. See portfolio overlap. Track when board members join new boards (potential new intro opportunities)</td>
+          <td>Focused on startup/VC world. Limited data on large enterprise boards. Doesn't show personal relationships beyond formal board roles</td>
+        </tr>
+        <tr>
+          <td><strong>Company websites (About/Team pages)</strong></td>
+          <td>Free</td>
+          <td>Finding board composition of target accounts</td>
+          <td>Most companies list board members on website. Cross-reference target account boards with your board members. Look for overlaps, past employment connections, shared investments</td>
+          <td>Not all companies publish full board lists. Data can be outdated. Requires manual checking of each target account website</td>
+        </tr>
+        <tr>
+          <td><strong>Spreadsheet (Google Sheets/Excel)</strong></td>
+          <td>Free</td>
+          <td>Tracking intro requests and outcomes</td>
+          <td>Simple tracking of: Board member, Target account, Target person, Date requested, Date introduced, Outcome. Ensures you don't over-ask same board member. Records what works</td>
+          <td>Manual data entry. No automation. Requires discipline to maintain. Works fine for small scale (under 50 intro requests/year)</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>LinkedIn manual research</strong> (free) to map networks. Add <strong>Crunchbase Pro</strong> ($29/mo) if your board members are active in startup/VC ecosystem. Track requests in <strong>Google Sheets</strong> (free). This covers 90% of use cases without expensive tools.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Specific vs Vague Asks sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Specific vs Vague Asks (Name the Person, Not the Company)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why vague asks fail</h3>
+            <p>When you ask "Do you know anyone at Acme Corp?" the board member has to do work. They have to think through their network, figure out who's relevant, assess relationship strength, craft the intro. This is friction. Most vague asks die from inertia.</p>
+
+            <h3>Specific vs vague comparison</h3>
+            <table>
+              <tr><th>Vague Ask (Bad)</th><th>Specific Ask (Good)</th></tr>
+              <tr>
+                <td>"Do you know anyone at Acme Corp?"</td>
+                <td>"Would you be comfortable introducing me to Sarah Chen, VP of Sales at Acme Corp?"</td>
+              </tr>
+              <tr>
+                <td>"We're trying to reach enterprise retailers. Any connections?"</td>
+                <td>"I saw you were on the board at RetailCo with James. Would you introduce me?"</td>
+              </tr>
+              <tr>
+                <td>"Looking for intros in the fintech space."</td>
+                <td>"Can you introduce me to the CEO of FinanceApp? I noticed you invested in their Series B."</td>
+              </tr>
+            </table>
+
+            <h3>How to make asks specific</h3>
+            <ul>
+              <li><strong>Research first</strong> - Use LinkedIn, Crunchbase, company websites to identify the exact person you want to meet</li>
+              <li><strong>Confirm the connection</strong> - Verify your board member actually knows this person (shared board, past employment, investment, mutual connection)</li>
+              <li><strong>Name the person and their role</strong> - "Sarah Chen, VP of Sales" not "someone in sales at Acme"</li>
+              <li><strong>Explain why this specific person</strong> - "Sarah owns the sales tech stack decision" not just "we want to sell to Acme"</li>
+              <li><strong>Make it yes/no</strong> - "Would you be comfortable making this intro?" forces simple decision, no ambiguity</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Response rate impact:</strong> Specific asks get responded to and actioned at significantly higher rates than vague asks. Do your homework before asking. Make it a simple yes/no decision for the board member.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forwardable Blurb Best Practices sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Forwardable Blurb Best Practices (Write It For Them)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why forwardable blurbs are critical</h3>
+            <p>Board members are extremely busy. If you make them write the intro email from scratch, it goes to the bottom of their to-do list. If you provide a complete, well-written blurb they can forward as-is, the intro happens within 24 hours.</p>
+
+            <h3>Forwardable blurb template</h3>
+            <div class="email-block"><span class="label">Template for Board Member</span>Hi [Board Member Name],
+
+Quick request: Would you be comfortable introducing me to [Target Name], [Target Title] at [Target Company]?
+
+I noticed you [specific connection: sit on board together, worked together at X, co-invested in Y].
+
+If you're open to it, here's a blurb you can forward:
+
+---
+
+[Target Name],
+
+I wanted to introduce you to [Your Name], [Your Title] at [Your Company].
+
+[Your Company] helps [specific ICP] with [specific problem]. Given [Target Company]'s focus on [relevant initiative you've researched], thought this could be timely.
+
+[Your Name], [Target Name] is [something complimentary and specific about them showing you've done research].
+
+Happy to let you two take it from here.
+
+---
+
+No pressure if the timing isn't right. Let me know if you need any other context.
+
+Thanks,
+[Your Name]</div>
+
+            <h3>Key elements of effective blurbs</h3>
+            <ul>
+              <li><strong>Short and scannable</strong> - Board members get hundreds of emails daily. Keep the full request under 150 words</li>
+              <li><strong>Explain the connection</strong> - "I noticed you sit on the board together" - shows you've done research and this isn't a random ask</li>
+              <li><strong>Make blurb copy-paste ready</strong> - Clearly marked with --- separators so board member knows exactly what to forward</li>
+              <li><strong>Include specific context</strong> - Reference something about target company that proves this intro is relevant, not generic</li>
+              <li><strong>Compliment the target</strong> - Show you've researched them specifically. "Saw your recent post on sales transformation" makes it personal</li>
+              <li><strong>Give easy out</strong> - "No pressure if timing isn't right" respects their judgment on relationship strength and timing</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Send the forwardable blurb in plain text, not formatted HTML. Board members often forward from mobile. Plain text ensures it renders correctly on any device.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Frequency and Relationship Management sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Frequency and Relationship Management (Don't Overask)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The risk of burning out board members</h3>
+            <p>Board members make intros as a favor. Their currency is their reputation. If you ask too frequently or for low-quality intros, you deplete their willingness to help. They'll start declining or ignoring requests.</p>
+
+            <h3>Healthy board intro frequency</h3>
+            <table>
+              <tr><th>Board Member Engagement Level</th><th>Max Intro Requests</th><th>Spacing</th></tr>
+              <tr>
+                <td><strong>Highly engaged (active board member)</strong></td>
+                <td>6-8 per year</td>
+                <td>At least 6 weeks between requests</td>
+              </tr>
+              <tr>
+                <td><strong>Moderately engaged (advisor, occasional involvement)</strong></td>
+                <td>3-4 per year</td>
+                <td>At least 3 months between requests</td>
+              </tr>
+              <tr>
+                <td><strong>Lightly engaged (strategic advisor, infrequent contact)</strong></td>
+                <td>1-2 per year</td>
+                <td>At least 6 months between requests</td>
+              </tr>
+            </table>
+
+            <h3>How to maintain board member goodwill</h3>
+            <ul>
+              <li><strong>Prioritise ruthlessly</strong> - Only ask for intros to truly high-value targets. Don't ask for intros to accounts that aren't ICP fit</li>
+              <li><strong>Always report back</strong> - After every intro, update the board member on outcome. "Intro to Sarah led to demo scheduled for next week. Thanks!" This positive reinforcement encourages future intros</li>
+              <li><strong>Acknowledge publicly when appropriate</strong> - If an intro leads to a deal, mention it in board meeting. "James's intro to Acme resulted in our biggest deal this quarter." Recognition matters</li>
+              <li><strong>Offer reciprocal value</strong> - When possible, make intros for your board members to people in your network. Help them recruit, connect them to potential investors, share relevant content</li>
+              <li><strong>Batch requests strategically</strong> - Instead of trickling requests, ask for 2-3 intros at once quarterly. This feels more strategic and less needy than constant one-off asks</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Warning sign:</strong> If a board member starts declining intro requests or taking weeks to respond, you've probably overasked. Pull back for 3-6 months and focus on other channels. Rebuild relationship equity before asking again.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post-Intro Follow-Up sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Post-Intro Follow-Up (Make the Board Member Look Good)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why follow-up matters for future intros</h3>
+            <p>Board members pay attention to what happens after they make intros. If you respond quickly and professionally, they'll keep making intros. If you're slow to respond or waste the intro, they stop helping. Your follow-up behavior determines whether they'll introduce you to others.</p>
+
+            <h3>Post-intro follow-up timeline</h3>
+            <table>
+              <tr><th>Timeline</th><th>Action</th><th>Purpose</th></tr>
+              <tr>
+                <td><strong>Within 4 hours</strong></td>
+                <td>Reply-all thanking board member and engaging with target</td>
+                <td>Show responsiveness. Move conversation forward immediately. Board member sees you valued the intro</td>
+              </tr>
+              <tr>
+                <td><strong>After first meeting</strong></td>
+                <td>Email board member with brief update</td>
+                <td>"Had a great call with Sarah. She's interested and we're following up with proposal." Closes the loop</td>
+              </tr>
+              <tr>
+                <td><strong>Monthly until outcome</strong></td>
+                <td>Brief status update if deal is progressing</td>
+                <td>Keep board member informed. Particularly important if it's a strategic account. No news makes them wonder if intro was wasted</td>
+              </tr>
+              <tr>
+                <td><strong>When deal closes (or dies)</strong></td>
+                <td>Final outcome update</td>
+                <td>"Sarah became a customer!" or "Sarah went with competitor because of budget." Either way, close the loop completely</td>
+              </tr>
+            </table>
+
+            <h3>How to make board members look good</h3>
+            <ul>
+              <li><strong>Be exceptionally professional</strong> - Your behavior reflects on the board member. Show up prepared, deliver on promises, communicate clearly</li>
+              <li><strong>Acknowledge them publicly in reply</strong> - "Thanks James for the intro." This credits them in front of the target</li>
+              <li><strong>Move fast</strong> - Respond to intro within hours, not days. Schedule meeting within a week. Speed signals respect for everyone's time</li>
+              <li><strong>Reference them during conversation</strong> - "James mentioned you two worked together at TechCo. What was that experience like?" Honors the relationship</li>
+              <li><strong>Report wins</strong> - When intro leads to something good, make sure board member knows. They get satisfaction from helping</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Career tip:</strong> Board members have long memories. Treat every intro as an audition for future intros. Founders who consistently convert board intros into outcomes get more intros. Those who waste them get cut off.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Vague asks ("know anyone at...")</h4>
+          <div class="why">You ask "Do you know anyone at Acme Corp?" Board member has to do work to figure out who's relevant. Request sits in inbox unanswered.</div>
+          <div class="fix">Name the specific person you want to meet. Make it a simple yes/no decision. Do the research yourself.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Not preparing forwardable email</h4>
+          <div class="why">You ask for intro but leave it to board member to write it. They're busy. Writing intro emails from scratch is work. Request dies from friction.</div>
+          <div class="fix">Provide complete, copy-paste ready blurb. Make the intro take 30 seconds, not 30 minutes.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Asking board members too frequently</h4>
+          <div class="why">You ask for intros every week. Board member feels used. Their network becomes depleted. They start declining or ghosting requests.</div>
+          <div class="fix">Max 6-8 requests per year even for highly engaged board members. Space requests 6+ weeks apart. Prioritise quality over quantity.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Not reporting back on outcome</h4>
+          <div class="why">Board member makes intro and never hears what happened. They wonder if you followed up. Feels like their effort was unappreciated. Won't make future intros.</div>
+          <div class="fix">Update board member after first meeting and again when outcome is known. Close the loop every time. Show appreciation.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Not making the connection easy for the introducer</h4>
+          <div class="why">Your forwardable blurb is three paragraphs of dense text. Board member edits it down before forwarding. Or worse, doesn't forward because it's too long.</div>
+          <div class="fix">Keep forwardable blurb under 100 words. Three short paragraphs max. Make it scannable and easy to forward as-is.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Slow response after intro is made</h4>
+          <div class="why">Board member makes intro. You take 3 days to respond. Board member looks bad. Target loses interest. Board member won't make future intros for you.</div>
+          <div class="fix">Reply within 4 hours of intro email. Thank board member publicly. Engage with target immediately. Speed shows respect.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

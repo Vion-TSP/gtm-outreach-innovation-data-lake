@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 11.5 - Ecosystem-Led Growth (Partner Overlap) | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 11.5 - Warm Intro / Network</div>
+  <h1>Ecosystem-Led Growth (Partner Overlap)</h1>
+  <p class="desc">Find accounts where you and your partner both have relationships. Partner provides warm intro. Coordinate joint approach.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low</span>
+    <span class="tag tag-icp">ICP: All ICPs</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> You and your partners sell to overlapping customer bases but complementary needs. Accounts already using your partner's product are pre-qualified (they have budget, they buy technology, they have similar pain points). Partner introductions carry immense trust because they risk their customer relationship.
+      </div>
+      <h3>The psychology of partner-led introductions</h3>
+      <ul>
+        <li><strong>Trusted advisor status</strong> - When your partner introduces you, they're essentially saying "I trust this company with my customer." That's powerful social proof</li>
+        <li><strong>Pre-qualified need</strong> - If an account uses your partner's product, they likely have the adjacent need you solve. Reduced discovery phase</li>
+        <li><strong>Ecosystem thinking</strong> - Buyers increasingly want integrated solutions, not point products. Partner intros position you as part of a cohesive ecosystem</li>
+        <li><strong>Competitive moat</strong> - Accounts introduced through partners are less likely to churn. The combined relationship is stickier than standalone</li>
+      </ul>
+      <h3>Why ecosystem-led growth accelerates pipeline</h3>
+      <p>Traditional outbound requires building trust from zero. Partner intros start with inherited trust. Your partner has already proven value to this account. Their endorsement shortcuts months of credibility building. Plus, partners are motivated to help because successful intros strengthen their own customer relationships.</p>
+      <p><strong>The network effect:</strong> As you grow your partner ecosystem and systematically share customer data, the number of overlapping accounts grows exponentially. Ten partners with 100 overlapping accounts each creates 1,000 warm intro opportunities.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-phone">C</div><div class="wf-label">Connect CRM</div><div class="wf-action">To Crossbeam</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-phone">I</div><div class="wf-label">Identify Overlap</div><div class="wf-action">Shared accounts</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-phone">P</div><div class="wf-label">Prioritise</div><div class="wf-action">By deal stage</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">R</div><div class="wf-label">Request Intro</div><div class="wf-action">From partner</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-phone">C</div><div class="wf-label">Coordinate</div><div class="wf-action">Joint approach</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">T</div><div class="wf-label">Track Pipeline</div><div class="wf-action">Joint revenue</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Connect CRM to Crossbeam</td>
+          <td>Set up Crossbeam account mapping tool (or similar: Reveal, Partnered). Connect your CRM. Partners connect their CRMs. Tool automatically identifies overlapping accounts. Data stays private until both parties opt to share specific accounts</td>
+          <td>1 hour initial setup, ongoing automatic sync</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Identify Overlapping Accounts</td>
+          <td>Review Crossbeam dashboard showing accounts in both your CRM and partner's CRM. Tool shows: accounts you both have as customers, accounts you're pursuing that partner has, accounts partner is pursuing that you have. Export prioritised overlap list</td>
+          <td>15-20 min weekly review</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Prioritise by Deal Stage</td>
+          <td>Focus first on accounts where one party is already a customer and the other is a prospect. These convert fastest. Then prioritise accounts where both are in active sales cycles. Coordinate to avoid conflict and maximise joint value</td>
+          <td>20-30 min (reviewing overlap and prioritising)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Request Partner Intro</td>
+          <td>Reach out to partner account manager or CSM who owns the relationship. Provide context on why intro makes sense for the customer. Ask for warm intro via email or joint call. Make it easy for partner to say yes</td>
+          <td>10 min per intro request</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Coordinate Joint Approach</td>
+          <td>Align with partner on messaging. How do your products integrate? What combined value do you provide? Often best to do joint discovery call where partner introduces you and you present together. Unified front increases win rate</td>
+          <td>30 min pre-call alignment per account</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Track Joint Pipeline</td>
+          <td>Tag deals in CRM that originated from partner intros. Track conversion rates, deal velocity, and win rates. Calculate revenue share or referral fees where appropriate. Report back to partners on outcomes to maintain relationship</td>
+          <td>5 min per deal (ongoing tagging)</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Create formal partnership agreements with clear rules of engagement. Who owns the customer relationship? How are referral fees structured? What data can be shared? Clear agreements prevent conflict and build trust.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Reveal (formerly Crossbeam)</strong></td>
+          <td>Free tier available, paid plans from $500/mo</td>
+          <td>Automated partner account mapping at scale</td>
+          <td>Securely connects CRMs from multiple companies. Shows overlapping accounts without exposing private data until both opt in. Real-time updates as accounts progress. Integrates with Salesforce, HubSpot, and others</td>
+          <td>Free tier limited to 1 partner and basic features. Requires partners to also use the platform. Setup takes coordination</td>
+        </tr>
+        <tr>
+          <td><strong>Crossbeam (legacy branding, now Reveal)</strong></td>
+          <td>Same as Reveal above</td>
+          <td>See Reveal above</td>
+          <td>See Reveal above (same product, rebranded)</td>
+          <td>See Reveal above</td>
+        </tr>
+        <tr>
+          <td><strong>PartnerStack</strong></td>
+          <td>Custom pricing (typically $1,000+/mo)</td>
+          <td>Full partner programme management plus account mapping</td>
+          <td>Handles partner onboarding, referral tracking, commission payments, marketing assets, training. Account overlap mapping included. Portal for partners to submit and track referrals</td>
+          <td>Expensive. Overkill if you only need account mapping. Best for mature partner programmes with many partners</td>
+        </tr>
+        <tr>
+          <td><strong>Partnered</strong></td>
+          <td>$99/mo per company</td>
+          <td>Lightweight account mapping for small teams</td>
+          <td>Simple CSV upload or CRM sync. Shows overlapping accounts with partners. Cheaper than Reveal. Good for testing ecosystem-led motion with 2-3 partners before scaling</td>
+          <td>Less sophisticated than Reveal. Limited integrations. No automated sync with many CRMs. More manual work required</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Reveal free tier</strong> to test with 1-2 key partners. Once you prove the concept and have 3+ active partners, upgrade to <strong>Reveal paid plan</strong> ($500+/mo) for full features. Only consider <strong>PartnerStack</strong> ($1,000+/mo) if you need full partner programme management beyond account mapping.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Partner Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Partner Selection (Complementary Not Competitive)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What makes a good ecosystem partner</h3>
+            <p>The best partners sell to the same ICP but solve adjacent problems. You want high customer overlap without product conflict. If you compete directly, neither party will make intros for fear of losing deals.</p>
+
+            <h3>Ideal partner characteristics</h3>
+            <table>
+              <tr><th>Characteristic</th><th>Why It Matters</th><th>Example</th></tr>
+              <tr>
+                <td><strong>Same ICP, different problem</strong></td>
+                <td>Maximum overlap, zero competition</td>
+                <td>If you sell sales engagement software, partner with sales intelligence (ZoomInfo) or conversation intelligence (Gong)</td>
+              </tr>
+              <tr>
+                <td><strong>Integration or workflow connection</strong></td>
+                <td>Natural reason to co-sell</td>
+                <td>Your product integrates with their product. Joint solution is better than standalone</td>
+              </tr>
+              <tr>
+                <td><strong>Similar deal size and sales cycle</strong></td>
+                <td>Alignment on customer type and effort</td>
+                <td>Both selling to mid-market at similar ACV. Easier to coordinate than mixing enterprise and SMB motions</td>
+              </tr>
+              <tr>
+                <td><strong>Mature customer base</strong></td>
+                <td>More accounts to overlap with</td>
+                <td>Partner with 500+ customers gives more overlap opportunity than partner with 50 customers</td>
+              </tr>
+              <tr>
+                <td><strong>Willing to reciprocate</strong></td>
+                <td>Partnership must be two-way</td>
+                <td>Partner actively makes intros for you, not just receiving intros from you. Balanced exchange</td>
+              </tr>
+            </table>
+
+            <h3>Red flag partners to avoid</h3>
+            <ul>
+              <li><strong>Direct competitors</strong> - Even if you claim different positioning, competing for same budget creates conflict</li>
+              <li><strong>No customer overlap</strong> - Partner sells to completely different ICP. Minimal overlap means minimal value from partnership</li>
+              <li><strong>One-sided takers</strong> - Partner only asks for intros, never reciprocates. Depletes your goodwill quickly</li>
+              <li><strong>Poor reputation</strong> - Partner has quality issues or bad customer experiences. Their intro damages your credibility rather than enhancing it</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Vetting tip:</strong> Before formalising partnership, run a quick overlap analysis. Connect CRMs via Reveal trial. If you see fewer than 20 overlapping accounts, the partnership probably isn't worth the coordination effort yet.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Sharing Agreement sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Data Sharing Agreement (Protect Sensitive Information)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why formal agreements matter</h3>
+            <p>Sharing CRM data with partners is powerful but risky. Without clear agreements, you risk exposing sensitive deal information, pricing, contacts, or pipeline to companies who might misuse it. Legal and commercial guardrails protect both parties.</p>
+
+            <h3>Key elements of data sharing agreements</h3>
+            <table>
+              <tr><th>Element</th><th>What to Cover</th></tr>
+              <tr>
+                <td><strong>Scope of data sharing</strong></td>
+                <td>What data is shared (company names only? Contact names? Deal stages? Revenue?). What is explicitly excluded (pricing, contract terms, internal notes)</td>
+              </tr>
+              <tr>
+                <td><strong>Confidentiality obligations</strong></td>
+                <td>Partners must treat shared data as confidential. Cannot share with third parties without permission. Must secure data appropriately</td>
+              </tr>
+              <tr>
+                <td><strong>Customer consent</strong></td>
+                <td>How to handle customer data privacy. Some industries (healthcare, finance) require explicit consent before sharing customer information</td>
+              </tr>
+              <tr>
+                <td><strong>Usage restrictions</strong></td>
+                <td>Data can only be used for partnership purposes, not general prospecting or competitive intelligence</td>
+              </tr>
+              <tr>
+                <td><strong>Termination process</strong></td>
+                <td>What happens to shared data if partnership ends. Must be deleted or returned. No ongoing use</td>
+              </tr>
+            </table>
+
+            <h3>Privacy-preserving approaches</h3>
+            <ul>
+              <li><strong>Hash-based matching</strong> - Tools like Reveal use hashed email addresses so neither party sees raw data until both opt to share specific accounts</li>
+              <li><strong>Tiered disclosure</strong> - Start with company names only. Reveal contact details and deal stage only after both parties agree to collaborate on specific account</li>
+              <li><strong>Aggregate reporting only</strong> - Share stats ("We have 50 overlapping accounts") without revealing which specific accounts</li>
+              <li><strong>Customer-first approach</strong> - Before making intro, ask customer "Would you like to hear about our partner's complementary solution?" Get opt-in</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Legal tip:</strong> Have your legal team review data sharing agreement before connecting CRMs. Standard Reveal TOS may not cover all your requirements. Add custom clauses for your industry or business model if needed.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coordination Protocol sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Coordination Protocol (Who Leads, Who Supports)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why coordination matters</h3>
+            <p>When two companies approach the same account, confusion about roles kills deals. Who owns the customer relationship? Who takes the lead in conversations? Who handles contracting? Clear protocols prevent conflicts and improve win rates.</p>
+
+            <h3>Coordination decision tree</h3>
+            <table>
+              <tr><th>Scenario</th><th>Lead Company</th><th>Supporting Company</th></tr>
+              <tr>
+                <td><strong>Partner is existing customer, you are new</strong></td>
+                <td>Partner (they have relationship)</td>
+                <td>You (partner introduces you, you run sales process)</td>
+              </tr>
+              <tr>
+                <td><strong>You are existing customer, partner is new</strong></td>
+                <td>You (you have relationship)</td>
+                <td>Partner (you introduce partner, they run sales process)</td>
+              </tr>
+              <tr>
+                <td><strong>Both pursuing as prospects</strong></td>
+                <td>Whoever engaged first or has stronger relationship</td>
+                <td>Other party. Coordinate joint value prop</td>
+              </tr>
+              <tr>
+                <td><strong>Neither has relationship</strong></td>
+                <td>Whoever has stronger ICP fit or larger deal size</td>
+                <td>Other party. Joint outreach from start</td>
+              </tr>
+            </table>
+
+            <h3>Communication cadence between partners</h3>
+            <ul>
+              <li><strong>Weekly sync calls</strong> - 30 min standing call to review new overlaps, coordinate on active deals, report on outcomes</li>
+              <li><strong>Slack channel</strong> - Dedicated partner Slack channel for quick questions, intro requests, deal updates</li>
+              <li><strong>Quarterly business review</strong> - Formal QBR reviewing partnership metrics: intros made, pipeline generated, deals closed, revenue share</li>
+              <li><strong>Immediate escalation protocol</strong> - If conflict arises (both reaching out to same contact, pricing confusion), escalation path to resolve quickly</li>
+            </ul>
+
+            <h3>Joint discovery call best practices</h3>
+            <ul>
+              <li><strong>Pre-call alignment</strong> - 15 min before customer call, align on who covers what, key questions, combined value prop</li>
+              <li><strong>Lead company drives agenda</strong> - Lead company runs the call, supporting company joins to answer specific questions about their product</li>
+              <li><strong>Integrated narrative</strong> - Don't present as two separate products. Present as integrated solution solving connected problems</li>
+              <li><strong>Clear next steps</strong> - End call with specific next steps owned by specific party. No ambiguity on follow-up</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> The party with the existing customer relationship always leads. If neither has relationship, whoever has stronger ICP fit leads. Supporting party defers but adds value through expertise and integration story.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue Attribution sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Revenue Attribution (Track Partner-Sourced Deals)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why attribution matters</h3>
+            <p>You can't optimise what you don't measure. Tracking which deals originated from partner intros shows partnership ROI, identifies best-performing partners, and ensures proper compensation (referral fees or rev share) where applicable.</p>
+
+            <h3>Minimum viable attribution tracking</h3>
+            <table>
+              <tr><th>Data Point</th><th>Purpose</th><th>Where to Track</th></tr>
+              <tr>
+                <td>Partner source</td>
+                <td>Which partner made the intro</td>
+                <td>CRM field: Partner Source (dropdown)</td>
+              </tr>
+              <tr>
+                <td>Intro date</td>
+                <td>When intro was made</td>
+                <td>CRM activity date or deal created date</td>
+              </tr>
+              <tr>
+                <td>Intro type</td>
+                <td>Warm intro vs joint discovery vs co-marketing lead</td>
+                <td>CRM field: Partner Intro Type (dropdown)</td>
+              </tr>
+              <tr>
+                <td>Deal stage progression</td>
+                <td>Track velocity from intro to close</td>
+                <td>Standard CRM deal stages with date stamps</td>
+              </tr>
+              <tr>
+                <td>Closed revenue</td>
+                <td>Calculate partner-sourced revenue</td>
+                <td>CRM deal amount + Partner Source tag</td>
+              </tr>
+              <tr>
+                <td>Referral fee paid</td>
+                <td>Track compensation if applicable</td>
+                <td>Finance system or CRM custom field</td>
+              </tr>
+            </table>
+
+            <h3>Key metrics to monitor</h3>
+            <ul>
+              <li><strong>Partner-sourced pipeline</strong> - Total $ value of open opportunities introduced by partners</li>
+              <li><strong>Partner intro conversion rate</strong> - What percentage of partner intros convert to customers? Should be significantly higher than cold outbound</li>
+              <li><strong>Deal velocity</strong> - Days from intro to close. Partner-sourced deals should close faster due to inherited trust</li>
+              <li><strong>Revenue by partner</strong> - Which partners generate most closed revenue? Double down on best-performing partnerships</li>
+              <li><strong>Reciprocity balance</strong> - Are you making as many intros for partners as they make for you? Track both directions</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Reporting tip:</strong> Create quarterly partner scorecard showing intros made (by you), intros received (from partner), conversion rates, closed revenue. Share with partners to demonstrate value and maintain accountability.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. No formal data sharing agreement</h4>
+          <div class="why">You connect CRMs without legal agreements. Partner misuses data or exposes sensitive information. Legal and commercial risks materialize.</div>
+          <div class="fix">Create formal data sharing agreement before connecting CRMs. Cover confidentiality, usage restrictions, and termination process.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. One-sided relationship</h4>
+          <div class="why">You constantly ask partner for intros but never reciprocate. Partner feels used. They stop making intros or end partnership.</div>
+          <div class="fix">Track intros in both directions. Aim for balanced exchange. Actively look for opportunities to introduce partner to your customers.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. No coordination on messaging</h4>
+          <div class="why">You and partner approach same account with conflicting messages or uncoordinated timing. Customer gets confused. Deal dies.</div>
+          <div class="fix">Establish coordination protocol before joint outreach. Weekly sync calls to align on active accounts and messaging.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Expecting partner to do all the work</h4>
+          <div class="why">You expect partner to make intro, educate customer on your product, and drive the deal. Partner has their own priorities. Intro doesn't convert.</div>
+          <div class="fix">Partner provides warm intro and context. You own the sales process from there. Don't delegate your job to the partner.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Not tracking joint revenue</h4>
+          <div class="why">You don't track which deals came from partner intros. Can't prove partnership ROI. Partnership loses executive support and dies.</div>
+          <div class="fix">Tag all partner-sourced deals in CRM. Track conversion rates and revenue. Report quarterly to demonstrate value.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Partnering with competitors</h4>
+          <div class="why">You try to partner with direct competitor. Neither party makes meaningful intros because you're fighting for same budget. Partnership fails.</div>
+          <div class="fix">Partner with complementary companies solving adjacent problems for same ICP. Avoid direct competitors.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

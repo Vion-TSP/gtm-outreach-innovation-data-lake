@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 12.2 - Free Tool / Micro-SaaS | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 12.2 - Product-Led / Experience</div>
+  <h1>Free Tool / Micro-SaaS</h1>
+  <p class="desc">Build a free tool solving one ICP problem. Gateway to your core product. Generates organic traffic and qualified leads.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: High</span>
+    <span class="tag tag-cost">Cost: Medium-High</span>
+    <span class="tag tag-icp">ICP: Technical Buyers, Founders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Give away something valuable that solves a real problem. Users discover your brand while getting immediate value. Free tool becomes the top of funnel for your paid product. Users who love the free tool naturally explore your core offering.
+      </div>
+      <h3>The psychology of free tools</h3>
+      <ul>
+        <li><strong>Reciprocity principle</strong> - When you give something valuable for free, people feel obligated to reciprocate. They explore your paid product, refer friends, or become customers</li>
+        <li><strong>Proof of expertise</strong> - Building a useful tool demonstrates deep domain knowledge. Users trust you understand their problems because you've solved one already</li>
+        <li><strong>Try before buy</strong> - Free tool showcases your product quality without risk. If free tool works well, paid product probably does too</li>
+        <li><strong>Viral distribution</strong> - Useful free tools get shared organically. Users bookmark, share on social, and recommend to colleagues</li>
+      </ul>
+      <h3>Why free tools beat content marketing</h3>
+      <p>Blog posts provide information. Free tools provide transformation. Tools are bookmarked and used repeatedly. Content is read once and forgotten. Tools generate ongoing touchpoints with your brand. Content generates one-time traffic.</p>
+      <p><strong>The compounding effect:</strong> Once launched, free tools continue generating traffic and leads with minimal ongoing effort. They rank well in SEO, get organic backlinks, and spread through word-of-mouth. Initial build effort pays dividends for years.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-phone">I</div><div class="wf-label">Identify Pain</div><div class="wf-action">One ICP problem</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-video">B</div><div class="wf-label">Build Tool</div><div class="wf-action">Minimal version</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-linkedin">L</div><div class="wf-label">Launch</div><div class="wf-action">Product Hunt/HN</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">C</div><div class="wf-label">Collect Emails</div><div class="wf-action">Optional gate</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">N</div><div class="wf-label">Nurture</div><div class="wf-action">To core product</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-video">I</div><div class="wf-label">Iterate</div><div class="wf-action">Based on usage</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify One Painful ICP Problem</td>
+          <td>Pick a specific problem your ICP faces frequently. NOT the full problem your product solves, but one small painful task. Example: If you sell analytics platform, build a free SQL query debugger. If you sell sales tools, build a cold email subject line tester</td>
+          <td>2-4 hours (customer interviews + validation)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Build Minimal Free Tool</td>
+          <td>Keep it simple. One specific function, executed well. Use fast development frameworks (Next.js, Replit, no-code builders). Prioritize speed to launch over perfection. Aim for MVP in 2-4 weeks of development time</td>
+          <td>40-80 hours (developer time) or 20-30 hours (no-code)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Launch on Product Hunt / Hacker News</td>
+          <td>Launch generates initial traffic spike. Product Hunt for broader audience, Hacker News for technical audience. Prepare launch post explaining problem solved and how tool works. Engage with comments actively first 24 hours</td>
+          <td>4-6 hours (launch prep + day-of engagement)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Collect User Emails</td>
+          <td>Optional email capture for advanced features or results export. Don't gate core functionality. Offer something extra for email. Build list of engaged users who get value from free tool</td>
+          <td>2 hours (email capture implementation)</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Nurture Toward Core Product</td>
+          <td>Email sequence for free tool users. Email 1: Tips for using tool better. Email 2: Explain related problems core product solves. Email 3: Offer trial or demo of core product. Gentle nurture, not aggressive sales</td>
+          <td>3-4 hours (write nurture sequence, one-time)</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Iterate Based on Usage</td>
+          <td>Track which features get used most, where users drop off, what errors occur. Monthly improvements based on real usage. Keep tool maintained and updated. Broken free tools damage brand</td>
+          <td>4-6 hours monthly (ongoing maintenance)</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Make the tool genuinely useful even if user never buys your core product. A free tool that forces upgrade to be useful will get bad reviews and hurt your brand. Give real value freely, earn trust, and let the product connection be natural.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Vercel / Next.js</strong></td>
+          <td>Free tier generous, Pro from $20/mo</td>
+          <td>Fast deployment of React-based web tools</td>
+          <td>Deploy in minutes. Built-in hosting, CDN, serverless functions. Great for interactive calculators, generators, data visualizers. Automatic scaling. Easy to maintain</td>
+          <td>Requires React/JavaScript knowledge. Not suitable if you don't have frontend dev resources</td>
+        </tr>
+        <tr>
+          <td><strong>Replit</strong></td>
+          <td>Free tier available, Hacker plan $7/mo</td>
+          <td>Quick prototyping and deployment without local dev setup</td>
+          <td>Browser-based IDE. Deploy instantly. Supports many languages (Python, Node, etc.). Great for rapid MVP. No local environment setup needed. Share link immediately</td>
+          <td>Free tier has performance limits. Not ideal for high-traffic tools. Professional look requires custom CSS work</td>
+        </tr>
+        <tr>
+          <td><strong>Webflow</strong></td>
+          <td>Site plan from $14/mo</td>
+          <td>No-code tool building with custom interactions</td>
+          <td>Visual builder, no code required. Good for calculators, configurators, simple interactive tools. Professional design out of box. CMS for dynamic content</td>
+          <td>Limited to what Webflow interactions support. Can't build complex logic without custom code. More expensive at scale</td>
+        </tr>
+        <tr>
+          <td><strong>Glide / Softr</strong></td>
+          <td>Free tier, paid from $25-$40/mo</td>
+          <td>No-code database-backed tools</td>
+          <td>Turn spreadsheet or Airtable into interactive tool. Great for directories, calculators with saved results, simple SaaS tools. No code required. Fast to build</td>
+          <td>Limited customization. Can look generic without design work. Not suitable for complex algorithms or heavy computation</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> If you have dev resources, use <strong>Vercel + Next.js</strong> (free tier) for professional, scalable tool. If no-code preferred, use <strong>Webflow</strong> ($14/mo) for design-heavy tools or <strong>Glide</strong> ($25-40/mo) for database-backed tools. For quickest MVP, use <strong>Replit</strong> ($7/mo) and iterate based on validation.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Solve ONE Thing Well sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Solve ONE Thing Well (Not Multiple Features)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why single-purpose tools win</h3>
+            <p>Multi-feature free tools become mini-products requiring significant maintenance. Single-purpose tools are easier to build, easier to explain, and easier for users to understand immediately. One thing done excellently beats ten things done mediocrely.</p>
+
+            <h3>Good vs bad free tool scope</h3>
+            <table>
+              <tr><th>Bad (Too Broad)</th><th>Good (Focused)</th></tr>
+              <tr>
+                <td>Complete email marketing suite</td>
+                <td>Email subject line A/B test predictor</td>
+              </tr>
+              <tr>
+                <td>Full sales CRM</td>
+                <td>Cold email deliverability checker</td>
+              </tr>
+              <tr>
+                <td>Project management platform</td>
+                <td>Sprint velocity calculator</td>
+              </tr>
+              <tr>
+                <td>Financial modeling tool</td>
+                <td>SaaS metrics calculator</td>
+              </tr>
+            </table>
+
+            <h3>How to identify the right single problem</h3>
+            <ul>
+              <li><strong>Talk to customers</strong> - Ask "What's the most annoying manual task you do weekly?" The answer is often a free tool opportunity</li>
+              <li><strong>Look for repeated manual work</strong> - Tasks done in spreadsheets, with copy-paste, or requiring manual calculation are good candidates</li>
+              <li><strong>Find decision-support gaps</strong> - Decisions made with guesswork because data isn't easily accessible</li>
+              <li><strong>Adjacent to core product</strong> - Tool should solve a problem NEAR but not IDENTICAL to your core product. Gateway, not replacement</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> If you can't explain what the tool does in one sentence, the scope is too broad. "Generate SQL queries from natural language" is focused. "Database management platform" is too broad.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Connection to Core Product sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Connection to Core Product (Natural Upgrade Path)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why connection matters</h3>
+            <p>Free tool should naturally lead users to want more. If free tool completely solves their problem with no connection to your core product, it generates traffic but not customers. If connection is too forced, it feels like bait-and-switch. Balance is key.</p>
+
+            <h3>Strong vs weak product connections</h3>
+            <table>
+              <tr><th>Core Product</th><th>Weak Free Tool</th><th>Strong Free Tool</th></tr>
+              <tr>
+                <td>Sales engagement platform</td>
+                <td>Random business name generator (no connection)</td>
+                <td>Email deliverability checker (solves part of sales email problem, core product solves full workflow)</td>
+              </tr>
+              <tr>
+                <td>Analytics platform</td>
+                <td>Website uptime monitor (different domain)</td>
+                <td>SQL query debugger (users debugging queries would benefit from full analytics platform)</td>
+              </tr>
+              <tr>
+                <td>Design collaboration tool</td>
+                <td>Stock photo library (unrelated)</td>
+                <td>Color palette generator from images (design-adjacent, core product helps full design workflow)</td>
+              </tr>
+            </table>
+
+            <h3>How to create natural upgrade path</h3>
+            <ul>
+              <li><strong>Solve the starting point</strong> - Free tool addresses the first step. Paid product handles the full journey. Example: Free tool generates outreach templates, paid product manages entire campaign</li>
+              <li><strong>Single use vs ongoing workflow</strong> - Free tool solves one-time task. Paid product manages recurring workflow. Example: Free tool calculates SaaS metrics once, paid product tracks metrics over time</li>
+              <li><strong>Individual vs team scale</strong> - Free tool works for one person. Paid product adds collaboration, permissions, audit trails for teams</li>
+              <li><strong>Manual vs automated</strong> - Free tool requires manual input each time. Paid product automates with integrations and scheduling</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Conversion prompt:</strong> At end of free tool interaction, show message: "Get results like this automatically every week with [Core Product]. Start free trial." Natural suggestion based on value they just experienced.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Launch Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Launch Strategy (Product Hunt, Hacker News, Communities)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why launch matters</h3>
+            <p>Free tools need initial traffic to build momentum. Good launch creates SEO backlinks, social proof, and early user feedback. Without launch, tool sits unused no matter how good it is.</p>
+
+            <h3>Launch platform selection</h3>
+            <table>
+              <tr><th>Platform</th><th>Best For</th><th>Preparation Required</th></tr>
+              <tr>
+                <td><strong>Product Hunt</strong></td>
+                <td>Consumer-friendly tools, design-focused products, broad appeal</td>
+                <td>Prepare product images, demo video, hunter relationship if possible. Launch Tuesday-Thursday for best visibility</td>
+              </tr>
+              <tr>
+                <td><strong>Hacker News</strong></td>
+                <td>Technical tools, developer-focused products, unique technical approach</td>
+                <td>Show HN post with clear title. Engage with comments. Focus on technical innovation or usefulness</td>
+              </tr>
+              <tr>
+                <td><strong>Reddit (relevant subreddits)</strong></td>
+                <td>Niche-specific tools where subreddit exists for that problem domain</td>
+                <td>Be active community member first. Frame as helping community, not promoting product. Expect skepticism</td>
+              </tr>
+              <tr>
+                <td><strong>Industry Slack/Discord communities</strong></td>
+                <td>Tools solving problems discussed in those communities</td>
+                <td>Relationship with community moderators. Genuine value, not spam. Offer early access to community</td>
+              </tr>
+            </table>
+
+            <h3>Launch day checklist</h3>
+            <ul>
+              <li><strong>Pre-launch email list</strong> - If you have any audience (newsletter, customers, LinkedIn followers), email them launch day asking for upvotes/support</li>
+              <li><strong>Clear value prop</strong> - First sentence of launch post: "Tool X does Y for Z people." No fluff</li>
+              <li><strong>Demo/screenshot</strong> - Show the tool in action. Don't just describe it</li>
+              <li><strong>Engage actively first 4-6 hours</strong> - Respond to every comment. Answer questions. Thank supporters. Engagement boosts algorithm visibility</li>
+              <li><strong>Traffic monitoring</strong> - Watch analytics closely. If tool crashes or has bugs under load, fix immediately. Bad first impression kills momentum</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Multi-platform tip:</strong> Don't launch everywhere simultaneously. Launch Product Hunt one week, Hacker News the next, Reddit the following. Multiple spikes better than one big spike for sustained traffic and iteration opportunity between launches.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Capture Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Email Capture Strategy (Don't Over-Gate)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The gating dilemma</h3>
+            <p>Gate too aggressively and usage plummets. Don't capture emails and you have no way to convert users. Balance is giving core functionality free while offering something extra for email.</p>
+
+            <h3>Effective gating strategies</h3>
+            <table>
+              <tr><th>Approach</th><th>What's Free</th><th>What Requires Email</th></tr>
+              <tr>
+                <td><strong>Results export</strong></td>
+                <td>Use tool fully, see results on screen</td>
+                <td>Download results as PDF, CSV, or save for later access</td>
+              </tr>
+              <tr>
+                <td><strong>Advanced features</strong></td>
+                <td>Basic version of tool</td>
+                <td>Advanced options, additional customization, premium templates</td>
+              </tr>
+              <tr>
+                <td><strong>Usage limits</strong></td>
+                <td>3-5 uses without email</td>
+                <td>Unlimited uses with free account (email required)</td>
+              </tr>
+              <tr>
+                <td><strong>Save and return</strong></td>
+                <td>One-time use</td>
+                <td>Save your work and access from any device (account required)</td>
+              </tr>
+              <tr>
+                <td><strong>Completely ungated</strong></td>
+                <td>Everything</td>
+                <td>Optional newsletter signup at end for tips and related tools</td>
+              </tr>
+            </table>
+
+            <h3>Email capture best practices</h3>
+            <ul>
+              <li><strong>Show value first</strong> - Let users interact with tool before asking for email. Prove value, then ask</li>
+              <li><strong>Clear exchange</strong> - "Enter your email to download results" is clear value exchange. "Enter email to continue" feels arbitrary</li>
+              <li><strong>Single field</strong> - Only ask for email, not name/company/phone. Reduce friction</li>
+              <li><strong>Privacy reassurance</strong> - "No spam, unsubscribe anytime" reduces hesitation</li>
+              <li><strong>Immediate delivery</strong> - If offering export or results, deliver instantly. Don't make them wait for email</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>A/B test guidance:</strong> Test ungated vs soft-gated versions. Measure total users, email capture rate, and downstream product trial conversion. Sometimes ungated generates more total product trials despite lower email capture rate due to higher usage volume.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Tool too complex (trying to build mini-product)</h4>
+          <div class="why">You build a tool with 10 features. Development takes months. By launch, tool feels bloated and confusing. Users don't understand what it does.</div>
+          <div class="fix">Build one specific function only. Launch simple tool in 2-4 weeks. Add features later based on actual user requests.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. No connection to core product</h4>
+          <div class="why">Free tool generates traffic but users never explore core product. Tool is completely standalone. Doesn't drive business outcomes.</div>
+          <div class="fix">Ensure tool solves problem adjacent to core product. Natural upgrade path where users who love free tool want paid product.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Poor UX (broken, slow, confusing)</h4>
+          <div class="why">Tool works but looks bad or loads slowly. Users try once, have poor experience, never return. Damages brand perception.</div>
+          <div class="fix">Polish UX before launch. Fast load times, clear instructions, mobile-responsive. First impression matters enormously.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Not promoting after launch</h4>
+          <div class="why">You launch on Product Hunt, get initial spike, then do nothing. Traffic dies. Tool gets no ongoing usage.</div>
+          <div class="fix">SEO optimize tool page, create blog content linking to tool, share in communities monthly, include in email signature, link from core product.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Building what YOU want vs what ICP needs</h4>
+          <div class="why">You build a tool you personally find interesting. ICP doesn't actually have this problem. Tool gets no usage despite quality.</div>
+          <div class="fix">Validate problem first. Interview customers. Confirm they face this problem frequently and would use a solution.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Letting tool break or get outdated</h4>
+          <div class="why">Tool worked at launch but you stopped maintaining it. APIs changed, bugs appeared, tool stopped working. Users have bad experience.</div>
+          <div class="fix">Monthly maintenance check. Fix bugs promptly. Keep dependencies updated. Broken free tools hurt brand more than no tool at all.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

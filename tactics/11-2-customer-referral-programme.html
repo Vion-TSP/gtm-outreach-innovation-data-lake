@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 11.2 - Customer Referral Programme | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 11.2 - Warm Intro / Network</div>
+  <h1>Customer Referral Programme</h1>
+  <p class="desc">Systematise asking happy customers for referrals to similar companies. Ask after major wins or positive NPS feedback when enthusiasm is highest.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low-Medium</span>
+    <span class="tag tag-cost">Cost: Low + Incentives</span>
+    <span class="tag tag-icp">ICP: All ICPs</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Happy customers want to help you succeed, but most never think to refer you unless asked. Systematising the ask at moments of peak satisfaction dramatically increases referral volume. Referred leads close faster and have higher lifetime value because they arrive pre-sold.
+      </div>
+      <h3>The psychology of customer referrals</h3>
+      <ul>
+        <li><strong>Social proof at maximum strength</strong> - A referral from someone actively using your product is more credible than any marketing message. The referrer stakes their reputation on the recommendation</li>
+        <li><strong>Pre-qualified trust</strong> - Prospects trust people they know more than brands. When a peer says "This solved our problem," it shortcuts weeks of sales process</li>
+        <li><strong>Reciprocity and helping</strong> - Customers who receive value feel a natural desire to reciprocate. Referring you to peers lets them help both you and their colleague simultaneously</li>
+        <li><strong>Social currency</strong> - Referring great solutions makes the referrer look good. They get credit for being helpful and well-connected</li>
+      </ul>
+      <h3>Why most companies don't get referrals</h3>
+      <p>They don't ask. Or they ask at the wrong time (during onboarding when customer hasn't seen value yet). Or they make it hard (vague request, no template, no incentive). Customers are busy. Referrals happen when you create a systematic, frictionless process at moments of maximum satisfaction.</p>
+      <p><strong>The timing advantage:</strong> Ask immediately after a major win. Customer just achieved ROI milestone? Ask. Gave you 9 or 10 on NPS survey? Ask. Just renewed or expanded? Ask. Enthusiasm is highest in these moments. Wait a month and the window closes.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-phone">I</div><div class="wf-label">Identify Happy</div><div class="wf-action">NPS 9-10</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">A</div><div class="wf-label">Ask After Win</div><div class="wf-action">Major milestone</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-email">M</div><div class="wf-label">Make It Easy</div><div class="wf-action">Template + link</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-phone">T</div><div class="wf-label">Track Referrals</div><div class="wf-action">Attribution</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">R</div><div class="wf-label">Reward Both</div><div class="wf-action">Referrer + referee</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-email">N</div><div class="wf-label">Nurture Leads</div><div class="wf-action">Warm follow-up</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify Happy Customers (NPS 9-10)</td>
+          <td>Pull list of customers who scored 9 or 10 on recent NPS surveys, or who recently hit major value milestones (ROI achieved, expansion, renewal, successful project completion). These are your highest-probability referrers</td>
+          <td>10-15 min (quarterly review)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Ask After Major Win/Milestone</td>
+          <td>Time the ask strategically. Best moments: immediately after they achieve measurable ROI, after they give positive NPS feedback, after renewal/expansion, after case study or testimonial. Strike while enthusiasm is hot</td>
+          <td>5 min per ask (automated trigger)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Make It Easy (Template + Link)</td>
+          <td>Provide a simple referral form link or email template they can forward. Include fields for: referee name, company, email, why they'd be a good fit. Make it one-click easy. No friction means more referrals</td>
+          <td>30 min (one-time template setup)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Track Referrals</td>
+          <td>Log every referral in CRM with attribution to the referrer. Track which customers refer most often, which referrals convert best, and which incentives work. Data informs future optimisation</td>
+          <td>2-3 min per referral (CRM entry)</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Reward Both Parties</td>
+          <td>Provide incentive to referrer (cash, account credit, gift card, donation to charity of their choice). Also provide incentive to referee (discount on first purchase). Double-sided incentives increase participation</td>
+          <td>5 min per reward fulfillment</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Nurture Referred Leads</td>
+          <td>Treat referred leads differently than cold leads. Reach out within 24 hours. Reference the referrer by name. Move quickly because referred leads close faster. Keep referrer updated on progress</td>
+          <td>15-20 min per referred lead</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Create tiered rewards based on referral value. One referral gets a small thank-you gift. Three qualified referrals get a bigger reward. Five closed deals get VIP status with special perks. Gamification increases participation.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>ReferralCandy</strong></td>
+          <td>$49/mo + commission per sale</td>
+          <td>E-commerce and transactional products</td>
+          <td>One-click referral link generation. Automatic reward fulfillment. Built-in fraud detection. Integrates with Shopify, WooCommerce, payment processors. Tracks full referral lifecycle</td>
+          <td>Commission model gets expensive at scale. Better suited for B2C or product-led B2B. Less flexible for complex B2B sales cycles</td>
+        </tr>
+        <tr>
+          <td><strong>Referral Rock</strong></td>
+          <td>$200/mo (B2B plan)</td>
+          <td>B2B SaaS with sales-assisted deals</td>
+          <td>Customisable referral portal for customers. Multi-step approval workflow (referral submitted, qualified, closed). Flexible reward options (cash, credits, gifts, donations). Detailed analytics and ROI tracking</td>
+          <td>Higher price point. Requires more setup and configuration. Overkill for small-scale referral programmes</td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot (built-in referral tracking)</strong></td>
+          <td>Included with Sales Hub Professional ($450/mo for 5 users)</td>
+          <td>Companies already using HubSpot CRM</td>
+          <td>Native CRM integration means no data sync issues. Custom properties for tracking referrer and referee. Automated workflows trigger referral asks after NPS survey or milestone. Reporting built into existing dashboards</td>
+          <td>Less specialised than dedicated tools. Manual reward fulfillment. No referral portal or one-click link generation. Requires workflow building</td>
+        </tr>
+        <tr>
+          <td><strong>Influitive</strong></td>
+          <td>Custom pricing (typically $2,000+/mo)</td>
+          <td>Enterprise with large customer base and advocate programmes</td>
+          <td>Full advocacy platform combining referrals, reviews, case studies, events. Gamification with points, badges, leaderboards. Community building features. VIP programme management. Ideal for sophisticated customer marketing</td>
+          <td>Expensive. Complex setup. Requires dedicated customer marketing resource to manage. Only makes sense at scale (1,000+ customers)</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> If you already use <strong>HubSpot</strong>, start there (included, no extra cost). Build simple workflow to trigger referral ask after positive NPS. If not on HubSpot, use <strong>Referral Rock</strong> ($200/mo) for full-featured B2B referral programme with portal and automation. Only consider <strong>Influitive</strong> if you have 1,000+ customers and dedicated customer marketing team.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Timing Triggers sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Timing Triggers (When to Ask for Referrals)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why timing is everything</h3>
+            <p>Ask too early (during onboarding) and the customer hasn't experienced value yet. Ask too late (months after value delivered) and enthusiasm has faded. The perfect moment is immediately after the customer experiences a tangible win.</p>
+
+            <h3>High-probability referral triggers</h3>
+            <table>
+              <tr><th>Trigger Event</th><th>Why It Works</th><th>Example Ask</th></tr>
+              <tr>
+                <td><strong>NPS score of 9 or 10</strong></td>
+                <td>Customer just explicitly stated they'd recommend you. Strike immediately while sentiment is positive</td>
+                <td>"Thanks for the 10/10! Since you'd recommend us, who comes to mind that might benefit from similar results?"</td>
+              </tr>
+              <tr>
+                <td><strong>ROI milestone achieved</strong></td>
+                <td>Customer hit measurable business outcome. They're excited about results and want to share success</td>
+                <td>"Congrats on achieving X! Who else do you know facing similar challenges who'd value these results?"</td>
+              </tr>
+              <tr>
+                <td><strong>Renewal or expansion</strong></td>
+                <td>Customer just committed more money. This signals strong satisfaction and continued value perception</td>
+                <td>"Thanks for renewing/expanding! We'd love to help more companies like yours. Who should we talk to?"</td>
+              </tr>
+              <tr>
+                <td><strong>Case study or testimonial completed</strong></td>
+                <td>Customer already invested time sharing their story. They're in "advocate mode" and primed to help further</td>
+                <td>"Thanks for sharing your story! Who in your network would find this case study relevant?"</td>
+              </tr>
+              <tr>
+                <td><strong>Successful project completion</strong></td>
+                <td>Major implementation or project just finished successfully. Customer is relieved and grateful</td>
+                <td>"Great working with you on X! Who else in your company or network could benefit from similar support?"</td>
+              </tr>
+              <tr>
+                <td><strong>Positive support interaction</strong></td>
+                <td>Support team just solved a tough problem quickly. Customer feels taken care of and appreciative</td>
+                <td>"Glad we could resolve that quickly! If you know others struggling with similar issues, we'd love to help them too."</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Automation tip:</strong> Set up CRM workflows to automatically trigger referral ask emails within 24 hours of these events. Don't wait for manual follow-up. Speed matters because enthusiasm fades quickly.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Incentive Structure sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Incentive Structure (What to Offer Referrers and Referees)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Double-sided incentives work best</h3>
+            <p>Reward both the referrer (for making the introduction) and the referee (for trying your product). Double-sided incentives increase participation on both ends.</p>
+
+            <h3>Incentive options by customer segment</h3>
+            <table>
+              <tr><th>Customer Type</th><th>Referrer Incentive</th><th>Referee Incentive</th></tr>
+              <tr>
+                <td><strong>SMB/Mid-Market</strong></td>
+                <td>Account credit, gift card, cash payment</td>
+                <td>First month discount, extended trial, free onboarding</td>
+              </tr>
+              <tr>
+                <td><strong>Enterprise</strong></td>
+                <td>Charity donation in their name, VIP event access, executive dinner, account upgrades</td>
+                <td>Custom pilot programme, dedicated CSM, preferred pricing</td>
+              </tr>
+              <tr>
+                <td><strong>Startups</strong></td>
+                <td>Cash payment, extended features, co-marketing opportunity</td>
+                <td>Startup-friendly pricing, extended trial, founder access</td>
+              </tr>
+            </table>
+
+            <h3>Reward tier structure</h3>
+            <ul>
+              <li><strong>Tier 1: Referral submitted</strong> - Small thank-you (branded swag, coffee gift card). Acknowledges effort even if referral doesn't convert</li>
+              <li><strong>Tier 2: Referral becomes qualified opportunity</strong> - Moderate reward (larger gift card, account credit, donation). Referee had first meeting and expressed interest</li>
+              <li><strong>Tier 3: Referral converts to customer</strong> - Significant reward (cash payment, large account credit, major donation, VIP perks). Referee signed contract</li>
+              <li><strong>Tier 4: Multiple successful referrals</strong> - Elite status (ongoing perks, early access to features, advisory board seat, conference VIP treatment)</li>
+            </ul>
+
+            <h3>Non-monetary incentives that work</h3>
+            <ul>
+              <li><strong>Recognition</strong> - Public thank-you in newsletter, featured in case study, shoutout at company event</li>
+              <li><strong>Exclusive access</strong> - Beta features, executive office hours, private Slack channel with product team</li>
+              <li><strong>Career benefits</strong> - LinkedIn recommendation, speaker slot at your event, co-authored content</li>
+              <li><strong>Networking value</strong> - Introductions to other customers, invitations to exclusive dinners/events</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Enterprise tip:</strong> Many enterprise employees cannot accept cash or significant gifts due to company policy. Offer charity donations in their name instead. They get recognition without policy violation.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Referral Ask Template sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Referral Ask Template (Make It Easy to Say Yes)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Template structure</h3>
+            <div class="email-block"><span class="label">Email Template</span>Subject: Quick question - who else should benefit from this?
+
+Hi [Customer Name],
+
+Thanks again for [specific win/milestone/positive feedback]. It's been great seeing [specific result they achieved].
+
+Quick question: Who else do you know who might benefit from similar results?
+
+We work best with [ICP description] who are [specific pain point]. If anyone comes to mind, I'd love to help them the way we've helped you.
+
+Just reply with their name and email, or forward this to them directly. We'll take it from there.
+
+As a thank-you, we'll [specific incentive for referrer]. And we'll make sure they get [specific incentive for referee] to get started.
+
+Appreciate your support,
+[Your Name]
+
+P.S. Here's a quick referral link if that's easier: [one-click referral form link]</div>
+
+            <h3>Key elements of effective asks</h3>
+            <ul>
+              <li><strong>Tie to recent win</strong> - Reference the specific value they just experienced. This reminds them why they'd recommend you</li>
+              <li><strong>Specific ICP description</strong> - Don't ask for "anyone who might be interested." Describe exactly who you help. Specificity helps them think of actual people</li>
+              <li><strong>Multiple response options</strong> - Reply with name/email, forward directly, or use one-click form. Remove all friction</li>
+              <li><strong>Clear incentives</strong> - State exactly what both parties get. No vague promises</li>
+              <li><strong>Short and scannable</strong> - Busy people skim emails. Make it easy to understand in 10 seconds</li>
+            </ul>
+
+            <h3>Verbal ask (for phone/video calls)</h3>
+            <p>"One last thing - given the results you've seen, who else comes to mind that might benefit from this? We work best with [ICP] dealing with [pain point]. Anyone you'd feel comfortable introducing us to?"</p>
+
+            <div class="highlight">
+              <strong>Framing tip:</strong> Position referrals as helping their peers, not just helping you. "Who else is struggling with X that you could help by introducing them to us?" This reframes it as them being helpful rather than you asking for favours.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracking and Attribution sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Tracking and Attribution (Know Which Customers Refer Most)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why tracking matters</h3>
+            <p>Without tracking, you don't know which customers are your best referrers, which incentives work, or what ROI your referral programme generates. Proper attribution lets you double down on what works and fix what doesn't.</p>
+
+            <h3>Minimum viable tracking</h3>
+            <table>
+              <tr><th>Data Point</th><th>Purpose</th><th>Where to Track</th></tr>
+              <tr>
+                <td>Referrer name and company</td>
+                <td>Who sent the referral</td>
+                <td>CRM contact record</td>
+              </tr>
+              <tr>
+                <td>Referee name, company, email</td>
+                <td>Who was referred</td>
+                <td>CRM lead record with "Referred by" field</td>
+              </tr>
+              <tr>
+                <td>Referral date</td>
+                <td>When referral was made</td>
+                <td>CRM activity or deal created date</td>
+              </tr>
+              <tr>
+                <td>Referral source trigger</td>
+                <td>What prompted the referral (NPS, renewal, ROI milestone)</td>
+                <td>Custom CRM field or tag</td>
+              </tr>
+              <tr>
+                <td>Referral status</td>
+                <td>Submitted, Qualified, Meeting Held, Opportunity, Closed-Won, Closed-Lost</td>
+                <td>CRM deal stage or custom status field</td>
+              </tr>
+              <tr>
+                <td>Incentive paid (type and amount)</td>
+                <td>What reward was given to referrer</td>
+                <td>CRM activity or finance system</td>
+              </tr>
+              <tr>
+                <td>Revenue generated</td>
+                <td>Deal value if referral converts to customer</td>
+                <td>CRM deal amount</td>
+              </tr>
+            </table>
+
+            <h3>Key metrics to monitor</h3>
+            <ul>
+              <li><strong>Referral ask response rate</strong> - What percentage of customers provide at least one referral when asked? Target: above 15%</li>
+              <li><strong>Referral-to-opportunity conversion</strong> - What percentage of referrals become qualified opportunities? Target: above 40%</li>
+              <li><strong>Referral-to-customer conversion</strong> - What percentage close as customers? Target: above 20%</li>
+              <li><strong>Top referrers</strong> - Which customers refer most often? Cultivate these advocates with extra perks</li>
+              <li><strong>Programme ROI</strong> - Revenue from referred customers minus incentive costs. Should be strongly positive</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Reporting tip:</strong> Create quarterly "Top Referrers" recognition. Share list internally to celebrate helpful customers. Send personal thank-you from CEO. Public recognition encourages continued advocacy.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Asking too early (before value delivered)</h4>
+          <div class="why">You ask for referrals during onboarding or first month. Customer hasn't experienced ROI yet. They have nothing to refer based on. Request feels premature and gets ignored.</div>
+          <div class="fix">Wait until customer achieves first major win or hits measurable milestone. Only ask after they've experienced tangible value.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. No incentive or unclear incentive</h4>
+          <div class="why">You ask for referrals but offer nothing in return, or mention vague "we'll make it worth your while." Customer has no motivation to act.</div>
+          <div class="fix">Clearly state specific incentive for both referrer and referee. Make rewards tangible and attractive.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Making it hard to refer</h4>
+          <div class="why">You ask customer to "introduce us to your network" with no template, link, or guidance. Customer doesn't know what to say or how to make intro. Procrastinates indefinitely.</div>
+          <div class="fix">Provide one-click referral form link or forwardable email template. Remove all friction. Make it take less than 60 seconds.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Not tracking attribution</h4>
+          <div class="why">Referrals come in but you don't track who referred whom. Referrers never know if their intro converted. They feel unappreciated and stop referring.</div>
+          <div class="fix">Track every referral in CRM with proper attribution. Update referrer on progress. Close the loop on outcomes.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Only asking once</h4>
+          <div class="why">You ask for referrals once during customer lifecycle. Customer doesn't think of anyone at that moment. Opportunity lost forever.</div>
+          <div class="fix">Ask multiple times at different trigger moments (NPS, renewal, milestone, case study). Different timing surfaces different referrals.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Not thanking referrers</h4>
+          <div class="why">Customer makes referral but never receives acknowledgment or reward. They feel taken for granted. Won't refer again.</div>
+          <div class="fix">Thank referrer immediately when referral is submitted. Update them when meeting happens. Fulfill promised reward promptly. Acknowledge publicly when appropriate.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 2.5 — LinkedIn Poll-Based Engagement | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 2.5 - LinkedIn-Native</div>
+  <h1>LinkedIn Poll-Based Engagement</h1>
+  <p class="desc">Post polls about ICP pain points. DM respondents whose votes signal buying intent. Low-effort lead qualification disguised as engagement content. Works for any ICP willing to click a poll.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#0a66c2;background:#0a66c222">
+      <div class="hero-ch-icon" style="background:#0a66c2">Li</div>
+      <div class="hero-ch-name">LinkedIn (Primary)</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low</span>
+    <span class="tag tag-cost">Cost: Free</span>
+    <span class="tag tag-icp">ICP: All ICPs</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Polls are the lowest-friction form of engagement on LinkedIn. People who wouldn't comment or like will vote on a poll because it takes one click. By structuring poll options around pain points, you identify prospects with active buying intent - then DM them with relevant insights based on their vote. It's lead qualification disguised as engagement.
+      </div>
+      <h3>The psychology behind poll-based engagement</h3>
+      <ul>
+        <li><strong>Low-effort participation</strong> - Voting takes 2 seconds. No typing, no thought required. This maximizes participation rate compared to comment-based engagement</li>
+        <li><strong>Self-qualification mechanism</strong> - By structuring poll options around buying stages (status quo, exploring, struggling, solved), voters self-identify their readiness to buy</li>
+        <li><strong>Permission-free conversation starter</strong> - When someone votes, you have a natural reason to DM them: "Saw you voted X - curious what led you to that answer?" No awkward cold pitch needed</li>
+        <li><strong>Herd behavior trigger</strong> - Polls showing vote counts create social proof. People are curious how their answer compares to others, which drives engagement</li>
+      </ul>
+      <h3>Why this works across all ICPs</h3>
+      <p>Unlike video or comment-first tactics that work best for specific personas, polls work for any ICP. Founders vote on polls. Analysts vote on polls. Enterprise buyers vote on polls. The key is asking a question relevant to their pain points. A well-crafted poll gets 3-5x more engagement than a standard text post, giving you more qualified leads to DM.</p>
+      <p><strong>The intent signal advantage:</strong> A poll vote is a stronger intent signal than a like or comment on someone else's post. By voting, they're declaring their current state related to your topic. Someone who votes "Currently struggling with this" is a warmer lead than someone who liked a random post about the same topic.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Identify</div><div class="wf-action">Pain point</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-linkedin">C</div><div class="wf-label">Create Poll</div><div class="wf-action">4 options max</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-linkedin">P</div><div class="wf-label">Post</div><div class="wf-action">With context</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">M</div><div class="wf-label">Monitor</div><div class="wf-action">Votes real-time</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-dm">D</div><div class="wf-label">DM</div><div class="wf-action">Signal voters</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Start</div><div class="wf-action">Conversation</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify pain point question</td>
+          <td>Choose a pain point relevant to your ICP that has multiple buying stages. Example: "Where are you in your sales tech stack evaluation?" The question should force voters to self-identify their readiness to buy</td>
+          <td>5-10 min brainstorming</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Create poll with 4 options</td>
+          <td>LinkedIn polls support 4 options max. Structure options around buying stages: 1) Status quo (no intent), 2) Exploring (low intent), 3) Struggling (high intent), 4) Already solved (learn from them). One option should be your target signal</td>
+          <td>5 min drafting options</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Post poll with context</td>
+          <td>Don't just post the poll. Add 2-3 sentences explaining why you're asking. Context increases engagement and positions you as someone seeking to understand, not just promote. Example: "Seeing a lot of teams rethink their sales stack post-layoffs. Curious where you're at in the process."</td>
+          <td>3-5 min writing context</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Monitor votes in real-time</td>
+          <td>LinkedIn shows you who voted and what they selected (for your own polls only). Check notifications 2-3x per day while poll is active (polls run 1-14 days, recommend 3-7 days). Export voter list daily</td>
+          <td>5 min, 2-3x per day</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>DM relevant voters</td>
+          <td>Do not DM everyone. Only DM voters whose answer signals buying intent. Example: If someone votes "Currently evaluating new tools", DM them. If they vote "Happy with current stack", skip them. Prioritize by ICP fit (seniority, company size, industry)</td>
+          <td>2-3 min per DM</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Start conversations based on their vote</td>
+          <td>Your DM should reference their specific vote and offer value, not pitch. Example: "Saw you voted 'Currently evaluating' - curious what's driving the search? We just analyzed 50+ sales stacks and found 3 patterns. Happy to share if useful." Start conversation, pitch later</td>
+          <td>Ongoing conversation</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> LinkedIn notifies you every time someone votes on your poll. Turn on mobile notifications for LinkedIn DMs so you can respond to high-intent voters within 1-2 hours of their vote while you're top of mind for them.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn</strong></td>
+          <td>Free</td>
+          <td>Creating and posting polls</td>
+          <td>Native poll feature. Shows you who voted and what they selected. Poll duration options: 1 day, 3 days, 1 week, 2 weeks</td>
+          <td>Limited poll analytics. Can't export voter list easily. Only 4 options per poll</td>
+        </tr>
+        <tr>
+          <td><strong>Shield Analytics</strong></td>
+          <td>$25/mo</td>
+          <td>Tracking poll performance over time</td>
+          <td>Shows engagement trends on your polls: views, votes, vote distribution, engagement rate. Compare poll performance to identify winning topics</td>
+          <td>Doesn't integrate with CRM. Manual export of voter data still required</td>
+        </tr>
+        <tr>
+          <td><strong>Taplio</strong></td>
+          <td>$49/mo</td>
+          <td>Scheduling polls in advance + DM automation</td>
+          <td>Schedule polls to post at optimal times. Queue feature for planning multiple polls. DM template library for voter outreach. Analytics on poll conversion to DM conversations</td>
+          <td>DM automation can feel robotic if not customised per voter. Risk of over-automation violating LinkedIn ToS</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>LinkedIn</strong> (free) only. Manually create polls, monitor votes via LinkedIn notifications, send DMs manually. Add <strong>Taplio</strong> ($49/mo) once you're running 2+ polls per month and want scheduling + DM templates. Total cost: Free to start, $49/mo scaled.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Question Design sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Question Design: Structuring Polls for Intent Signals</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What makes a good poll question</h3>
+            <p>The poll question must force voters to reveal their buying stage or pain point severity. Avoid yes/no questions or opinion polls that don't qualify intent.</p>
+
+            <h3>Good poll question examples by intent signal</h3>
+            <table>
+              <tr><th>ICP</th><th>Poll Question</th><th>Why It Works</th></tr>
+              <tr>
+                <td>Sales Leaders</td>
+                <td>"Where are you in your sales engagement tool evaluation?"</td>
+                <td>Forces them to self-identify evaluation stage. "Currently evaluating" = high intent. "Happy with current" = skip</td>
+              </tr>
+              <tr>
+                <td>Founders</td>
+                <td>"What's your biggest hiring challenge right now?"</td>
+                <td>Options reveal urgency: "Can't find candidates" (high intent for recruiting tools), "No bandwidth to hire" (wrong timing), etc.</td>
+              </tr>
+              <tr>
+                <td>Marketing Leaders</td>
+                <td>"How do you currently measure content ROI?"</td>
+                <td>Reveals sophistication level. "Manual spreadsheets" = high intent for automation. "Advanced attribution" = already solved</td>
+              </tr>
+            </table>
+
+            <h3>Bad poll questions to avoid</h3>
+            <ul>
+              <li class="con"><strong>"Do you think AI will replace SDRs?"</strong> - Opinion poll. Doesn't reveal buying intent or pain point</li>
+              <li class="con"><strong>"What's your favourite sales tool?"</strong> - Fun engagement, but voters aren't self-qualifying. Everyone votes, no signal</li>
+              <li class="con"><strong>"Are you hiring SDRs this quarter?"</strong> - Too narrow. Yes/no binary doesn't reveal pain severity or timeline</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>The intent signal test:</strong> Before posting, ask: "If someone votes on this poll, does their answer tell me whether they're a qualified lead?" If no, redesign the question.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Option Structure sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Option Structure: 4 Options to Maximize Signal</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The 4-option framework for buying intent</h3>
+            <p>LinkedIn polls allow exactly 4 options. Use this structure to map buying stages:</p>
+            <table>
+              <tr><th>Option</th><th>Intent Level</th><th>Example</th><th>DM Priority</th></tr>
+              <tr>
+                <td>1. Status Quo</td>
+                <td>No intent</td>
+                <td>"Not looking, current solution works"</td>
+                <td>Skip (don't DM)</td>
+              </tr>
+              <tr>
+                <td>2. Exploring</td>
+                <td>Low-Medium intent</td>
+                <td>"Researching options, no timeline"</td>
+                <td>Medium (DM with educational content, not a pitch)</td>
+              </tr>
+              <tr>
+                <td>3. Struggling</td>
+                <td>High intent</td>
+                <td>"Actively evaluating, need solution soon"</td>
+                <td>High (DM immediately, offer to help)</td>
+              </tr>
+              <tr>
+                <td>4. Already Solved</td>
+                <td>Zero intent (but valuable)</td>
+                <td>"Already implemented X, working well"</td>
+                <td>Low (DM to learn from them, potential case study or referral source)</td>
+              </tr>
+            </table>
+
+            <h3>Example poll with intent-mapped options</h3>
+            <p><strong>Question:</strong> "Where are you in your sales tech stack evaluation?"</p>
+            <ul>
+              <li>Option 1: "Happy with current stack" (Status Quo - Skip)</li>
+              <li>Option 2: "Exploring what's out there, no urgency" (Exploring - Medium priority)</li>
+              <li>Option 3: "Currently evaluating vendors, need to decide soon" (Struggling - High priority)</li>
+              <li>Option 4: "Just implemented new stack, loving it" (Already Solved - Low priority, learn from them)</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Option phrasing tip:</strong> Use first-person language ("I'm currently evaluating" vs "Evaluating options"). First-person increases honesty because voters are making a personal declaration, not choosing an abstract answer.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timing and Frequency sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Timing and Frequency: When to Post Polls</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Optimal posting times for poll engagement</h3>
+            <table>
+              <tr><th>Day</th><th>Time</th><th>Engagement Rate</th><th>Why</th></tr>
+              <tr>
+                <td>Tuesday</td>
+                <td>8-10 AM</td>
+                <td>Highest</td>
+                <td>Start of workday, people checking LinkedIn with coffee. Peak engagement window</td>
+              </tr>
+              <tr>
+                <td>Wednesday</td>
+                <td>8-10 AM</td>
+                <td>High</td>
+                <td>Mid-week, high activity. Second-best day after Tuesday</td>
+              </tr>
+              <tr>
+                <td>Thursday</td>
+                <td>8-10 AM</td>
+                <td>Medium-High</td>
+                <td>Still solid engagement, but people starting to think about Friday</td>
+              </tr>
+              <tr>
+                <td>Monday</td>
+                <td>8-10 AM</td>
+                <td>Medium</td>
+                <td>People catching up on weekend backlog. Distracted attention</td>
+              </tr>
+              <tr>
+                <td>Friday</td>
+                <td>Any time</td>
+                <td>Low</td>
+                <td>Checked-out energy. Save polls for Tue-Thu</td>
+              </tr>
+            </table>
+
+            <h3>How often to run polls</h3>
+            <p>Polls are high-engagement but can fatigue your audience if overused. Recommended frequency:</p>
+            <ul>
+              <li><strong>Starting out:</strong> 1 poll per month. Test different question formats and track conversion from vote to DM conversation</li>
+              <li><strong>Once proven:</strong> 2 polls per month (every other week). Enough to keep pipeline flowing without poll fatigue</li>
+              <li><strong>Maximum sustainable:</strong> 1 poll per week. Beyond this, your audience tunes out and engagement drops</li>
+            </ul>
+
+            <h3>Poll duration: how long to keep polls open</h3>
+            <table>
+              <tr><th>Duration</th><th>Best For</th><th>Trade-offs</th></tr>
+              <tr>
+                <td>1 day</td>
+                <td>Creating urgency, testing fast</td>
+                <td>Pro: Fast feedback. Con: Misses people who check LinkedIn 2-3x per week</td>
+              </tr>
+              <tr>
+                <td>3 days</td>
+                <td>Most use cases (default)</td>
+                <td>Pro: Catches most active LinkedIn users. Con: None, this is the sweet spot</td>
+              </tr>
+              <tr>
+                <td>1 week</td>
+                <td>Maximizing reach for slower audiences</td>
+                <td>Pro: Maximum votes. Con: Slower feedback, harder to maintain DM momentum</td>
+              </tr>
+              <tr>
+                <td>2 weeks</td>
+                <td>Rarely useful</td>
+                <td>Pro: None really. Con: Poll falls out of feed before it closes. Most votes come in first 3 days anyway</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>TSP recommendation:</strong> Post polls Tuesday or Wednesday mornings, 8-10 AM. Run for 3 days. Frequency: 1-2 polls per month. This maximizes engagement without audience fatigue.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post Copy Structure sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Post Copy Structure: Context Before Poll</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why context matters</h3>
+            <p>A poll without context gets votes but low credibility. Adding 2-3 sentences before the poll explaining why you're asking increases engagement and positions you as someone seeking insights, not just engagement bait.</p>
+
+            <h3>Effective post structure</h3>
+            <ol>
+              <li><strong>Hook line:</strong> 1 sentence stating the trend or problem driving the question. Example: "Seeing a lot of sales teams rethink their tech stack after Q4 cuts."</li>
+              <li><strong>Context:</strong> 1-2 sentences explaining why this matters or what you've observed. Example: "Most are stuck between doubling down on existing tools vs consolidating. No clear playbook."</li>
+              <li><strong>Ask:</strong> 1 sentence inviting them to share where they're at. Example: "Curious where you are in the process:"</li>
+              <li><strong>Poll:</strong> (The poll itself goes here)</li>
+              <li><strong>Optional close:</strong> 1 sentence offering to share insights. Example: "Happy to share what's working for teams I've talked to - DM me if useful."</li>
+            </ol>
+
+            <h3>Example post with context</h3>
+            <p><strong>Full post copy:</strong></p>
+            <p>Seeing a lot of sales teams rethink their tech stack after Q4 cuts.</p>
+            <p>Most are stuck between doubling down on existing tools vs consolidating to cut costs. No clear playbook.</p>
+            <p>Curious where you are in the process:</p>
+            <p>(Poll options here)</p>
+            <p>Happy to share what's working for teams at James, Sarah, and Acme - DM me if useful.</p>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> End your post with "DM me if useful" or "Happy to share insights." This gives voters permission to DM you, which increases inbound DMs from high-intent voters who don't wait for your outreach.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DM Approach sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>DM Approach: Converting Voters to Conversations</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The DM framework: Reference, Insight, Ask</h3>
+            <p>Your DM must reference their specific vote, offer value (not pitch), and ask a low-friction question to start conversation.</p>
+
+            <h3>DM templates by voter intent</h3>
+            <table>
+              <tr><th>Voter Answer</th><th>DM Template</th><th>Why It Works</th></tr>
+              <tr>
+                <td>"Actively evaluating" (High intent)</td>
+                <td>"Sarah - saw you voted 'actively evaluating' on my poll. Curious what's driving the search? We just analyzed 50+ sales stacks and found 3 patterns that predict success vs regret. Happy to share if useful."</td>
+                <td>References vote, offers specific insight (not pitch), asks low-friction question</td>
+              </tr>
+              <tr>
+                <td>"Exploring options" (Medium intent)</td>
+                <td>"James - noticed you're exploring new tools. No urgency I assume? We put together a decision framework for when it's worth switching vs when it's not. Want me to send it over?"</td>
+                <td>Acknowledges no urgency, offers educational content, low-pressure ask</td>
+              </tr>
+              <tr>
+                <td>"Already solved" (Zero intent, but valuable)</td>
+                <td>"Sarah - saw you just implemented a new stack. Congrats. Curious what made you choose X over Y? Always learning from teams who've gone through this."</td>
+                <td>Acknowledges their success, asks to learn from them. Builds relationship for future referrals</td>
+              </tr>
+            </table>
+
+            <h3>What NOT to DM</h3>
+            <ul>
+              <li class="con"><strong>"Saw you voted on my poll. Let's chat about your needs."</strong> - Generic, immediate pitch. Kills conversation before it starts</li>
+              <li class="con"><strong>"Thanks for voting! Here's what we do..."</strong> - Pitch disguised as gratitude. Transparent and off-putting</li>
+              <li class="con"><strong>"Can I get 15 min on your calendar?"</strong> - Asking for time before providing value. Too aggressive</li>
+            </ul>
+
+            <h3>Timing: when to send DMs</h3>
+            <p><strong>High-intent voters:</strong> DM within 1-2 hours of their vote if possible. They're thinking about this topic right now. Strike while it's top of mind.</p>
+            <p><strong>Medium-intent voters:</strong> DM within 24 hours. No rush, but don't wait 3 days or they'll forget voting.</p>
+            <p><strong>Low/no intent voters:</strong> Skip or wait 2-3 days and send a softer educational message.</p>
+
+            <div class="highlight">
+              <strong>Response rate expectation:</strong> High-intent voters respond to DMs 30-50% of the time. Medium-intent voters: 10-20%. You won't convert everyone, but the voters who respond are significantly warmer than cold outreach would produce.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Poll Frequency sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Poll Frequency and Fatigue Management</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The poll fatigue threshold</h3>
+            <p>Polls work because they're novel. If you post polls weekly, your audience learns to scroll past. Engagement drops, and voters stop being qualified leads because only your superfans keep engaging.</p>
+
+            <h3>Sustainable poll cadence</h3>
+            <table>
+              <tr><th>Posting Frequency</th><th>Engagement Impact</th><th>Best For</th></tr>
+              <tr>
+                <td>1 poll per month</td>
+                <td>High engagement, no fatigue</td>
+                <td>Starting out. Testing poll topics and conversion rates</td>
+              </tr>
+              <tr>
+                <td>2 polls per month</td>
+                <td>High engagement, sustainable</td>
+                <td>Once proven. Sweet spot for most sellers</td>
+              </tr>
+              <tr>
+                <td>1 poll per week</td>
+                <td>Medium engagement, fatigue begins</td>
+                <td>High-volume pipeline needs. Only sustainable if you vary topics significantly</td>
+              </tr>
+              <tr>
+                <td>2+ polls per week</td>
+                <td>Low engagement, high fatigue</td>
+                <td>Avoid. Your audience tunes out. Polls become noise</td>
+              </tr>
+            </table>
+
+            <h3>Mixing content types to avoid fatigue</h3>
+            <p>Don't only post polls. Mix in other content types: insights, case studies, hot takes, question posts (non-poll). Aim for 1 poll per 4-5 total posts. This keeps polls feeling special rather than repetitive.</p>
+
+            <div class="highlight">
+              <strong>The variety rule:</strong> If you post 8 times per month, max 2 should be polls. The other 6 should be different content types. This maintains poll engagement while building broader thought leadership.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Irrelevant or fun polls that don't qualify buyers</h4>
+          <div class="why">"What's your favourite coffee?" or "Are you a morning person?" get high engagement but zero qualified leads. Entertainment polls don't map to buying intent.</div>
+          <div class="fix">Every poll must have one option that signals buying intent. Ask questions that force voters to reveal their current pain point, evaluation stage, or solution status.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. DMing everyone who votes</h4>
+          <div class="why">If 100 people vote and you DM all 100, you're spamming. Most voters aren't qualified (voted status quo or aren't in your ICP). You burn time and damage credibility.</div>
+          <div class="fix">Only DM voters whose answer signals intent AND who match your ICP (check title, company, seniority). Prioritize high-intent votes. Skip status quo and low-fit voters.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Immediately pitching in the DM</h4>
+          <div class="why">DM: "Saw you voted. We solve this problem. Let's chat?" = Instant delete. You turned their low-effort engagement (poll vote) into a sales pitch. Feels transactional.</div>
+          <div class="fix">Reference their vote, offer insight or ask a question related to their answer. Start a conversation. Pitch 2-3 messages in, not message one.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Running polls too frequently</h4>
+          <div class="why">Posting 2-3 polls per week trains your audience to ignore them. Poll fatigue kills engagement. Voters stop participating because you've overused the format.</div>
+          <div class="fix">Max 2 polls per month. Mix polls with other content types (insights, case studies, questions). Keep polls feeling special, not repetitive.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No follow-up on voters who respond to your DM</h4>
+          <div class="why">Voter responds to your DM with interest and you don't follow up for 3 days. Momentum dies. They move on or engage with a faster competitor.</div>
+          <div class="fix">Set up LinkedIn mobile notifications for DMs. When a voter responds, reply within 4-6 hours (same day). Keep the conversation moving while you're top of mind.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Poll questions too broad to be useful</h4>
+          <div class="why">"What's your biggest business challenge?" is too generic. Answers don't map to buying intent for your specific product. Voters self-select into vague categories.</div>
+          <div class="fix">Ask narrow, specific questions tied to your solution category. Example: "How do you currently track sales pipeline?" not "What's your biggest sales challenge?" Narrow questions yield actionable signals.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

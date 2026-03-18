@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 2.4 — Comment-First Engagement Strategy | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 2.4 - LinkedIn-Native</div>
+  <h1>Comment-First Engagement Strategy</h1>
+  <p class="desc">Engage with 3-5 prospect posts over 2 weeks before outreach. Builds familiarity and credibility by adding value in their feed before asking for their time. Warm approach for senior buyers who ignore cold messages.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#0a66c2;background:#0a66c222">
+      <div class="hero-ch-icon" style="background:#0a66c2">Li</div>
+      <div class="hero-ch-name">LinkedIn (Primary)</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low</span>
+    <span class="tag tag-icp">ICP: Founders, C-suite, Sales Leaders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Senior buyers ignore cold connection requests. But they notice who engages with their content. By commenting thoughtfully on 3-5 posts over 2 weeks, you build familiarity before asking for anything. When you eventually send a connection request, you're not a stranger - you're the person who added value to their posts.
+      </div>
+      <h3>The psychology behind comment-first engagement</h3>
+      <ul>
+        <li><strong>Reciprocity trigger</strong> - You gave them value (thoughtful engagement, visibility boost) before asking for their time. Reciprocity bias makes them more likely to accept your request</li>
+        <li><strong>Familiarity principle</strong> - Humans trust familiar names. After seeing your name 3-5 times in their notifications, your connection request feels less cold</li>
+        <li><strong>Social proof signal</strong> - Commenting publicly signals you're part of their professional community, not a random spammer</li>
+        <li><strong>Pattern interruption</strong> - Most outreach asks immediately. Giving first (engagement) before asking (connection) breaks the pattern and stands out</li>
+      </ul>
+      <h3>Why this works for senior buyers specifically</h3>
+      <p>Founders, C-suite, and Sales Leaders receive 20-50 cold connection requests per week. They ignore most. But they post content hoping for engagement. When you comment thoughtfully, you're giving them something they actually want: validation, visibility, and conversation on their posts. This reverses the power dynamic.</p>
+      <p><strong>The timing advantage:</strong> By engaging over 2 weeks, you avoid the spam signal. A single comment followed by an immediate connection request looks transactional. Five comments over 14 days looks like genuine interest in their ideas.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Identify</div><div class="wf-action">Target prospects</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-linkedin">F</div><div class="wf-label">Follow</div><div class="wf-action">Their content</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-linkedin">E</div><div class="wf-label">Engage</div><div class="wf-action">3-5 posts</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">W</div><div class="wf-label">Wait</div><div class="wf-action">1-2 weeks</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-linkedin">C</div><div class="wf-label">Connect</div><div class="wf-action">Send request</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-linkedin">R</div><div class="wf-label">Reference</div><div class="wf-action">Your comments</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 7</div><div class="wf-node ch-linkedin">T</div><div class="wf-label">Transition</div><div class="wf-action">To conversation</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify target prospects</td>
+          <td>Pull list of 10-15 prospects who post regularly on LinkedIn. Check posting frequency: aim for people who post 2-4x per week (enough content to engage with, but not overwhelming)</td>
+          <td>15-20 min once per month</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Follow their content</td>
+          <td>Follow them on LinkedIn. Turn on post notifications for top 5 prospects so you see posts immediately. Set up a daily 10 min block to check their recent posts</td>
+          <td>5 min setup, 10 min/day ongoing</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Engage with 3-5 posts</td>
+          <td>Leave thoughtful comments on 3-5 of their posts over 2 weeks. Not "great post" - add insight, ask a question, or share a related experience. Aim for 2-3 comments per week per prospect</td>
+          <td>3-5 min per comment, 10-15 min/day total</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Wait 1-2 weeks</td>
+          <td>Do not immediately send a connection request after your first comment. Let the familiarity build. After 3-5 quality comments spread over 1-2 weeks, you're ready to connect</td>
+          <td>Patience (no active time)</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Send connection request</td>
+          <td>Send a personalised connection note referencing your engagement: "Sarah - been following your posts on sales hiring challenges. Would love to connect."</td>
+          <td>2 min per request</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Reference your comments</td>
+          <td>In your connection note or first message, reference a specific post or insight they shared: "Your post on founder-led sales really resonated - went through that transition myself at Acme."</td>
+          <td>Built into Step 5</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Transition to conversation</td>
+          <td>Once connected, send a message focused on their insights, not your pitch. Ask a question related to their recent posts. Build rapport first, pitch later (3-5 messages in)</td>
+          <td>5-10 min per conversation</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Track who you're engaging with in a simple spreadsheet or CRM. Columns: Name, LinkedIn URL, Date First Commented, Comment Count, Connection Request Sent, Status. This prevents you from forgetting who you've warmed and ensures consistent follow-through.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn Sales Navigator</strong></td>
+          <td>$99/mo</td>
+          <td>Finding active posters in your ICP</td>
+          <td>Advanced search filters: post frequency, seniority, industry. Save prospect lists. Track profile views and engagements</td>
+          <td>Expensive for solo users. No engagement automation (manual commenting only)</td>
+        </tr>
+        <tr>
+          <td><strong>Shield Analytics</strong></td>
+          <td>$25/mo</td>
+          <td>Tracking your LinkedIn engagement performance</td>
+          <td>See which of your comments get the most replies and visibility. Track connection acceptance rates by engagement type</td>
+          <td>Analytics only - doesn't help you find prospects or automate comments</td>
+        </tr>
+        <tr>
+          <td><strong>Taplio</strong></td>
+          <td>$49/mo</td>
+          <td>Scheduling your own posts + engagement tracking</td>
+          <td>Queue feature shows recent posts from people you follow. Chrome extension for comment templates. CRM-style engagement tracking</td>
+          <td>Comment templates can feel robotic if overused. Must manually customise each comment</td>
+        </tr>
+        <tr>
+          <td><strong>Aware</strong></td>
+          <td>$33/mo</td>
+          <td>Monitoring prospect posts in real-time</td>
+          <td>Dashboard showing recent posts from your saved prospects. Notifications when they post. Comment tracking and history</td>
+          <td>No automation - all engagement is manual. Limited prospect capacity on basic plan</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>LinkedIn</strong> (free) + <strong>Taplio</strong> ($49/mo) for engagement tracking and prospect monitoring. Add <strong>Sales Navigator</strong> ($99/mo) if you need advanced ICP filtering and want to scale to 20+ prospects at a time. Total cost: $49/mo starter, $148/mo scaled.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- What Makes a Good Comment sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>What Makes a Good Comment</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Good comments share these traits</h3>
+            <ul>
+              <li><strong>Adds insight</strong> - Builds on their idea with a new angle, data point, or contrarian perspective. Example: "This mirrors what we saw at James Corp - reducing call scripts actually increased conversion by 18% because reps sounded more natural."</li>
+              <li><strong>Asks a thoughtful question</strong> - Shows you engaged deeply with their post. Example: "Curious how you balanced standardisation vs customisation when training your SDR team on this approach?"</li>
+              <li><strong>Shares a related experience</strong> - Connects their insight to your own story. Example: "Went through this exact transition last year. The hardest part wasn't the tech - it was getting buy-in from sales ops. How did you approach that?"</li>
+              <li><strong>Disagrees respectfully (when genuine)</strong> - Thoughtful disagreement can spark engagement. Example: "Interesting take. I've actually found the opposite works for enterprise deals - longer emails with proof points outperform short ones. Maybe segment-dependent?"</li>
+            </ul>
+
+            <h3>What NOT to comment</h3>
+            <ul>
+              <li class="con"><strong>"Great post!"</strong> - Generic praise. Zero thought. Signals you didn't read it</li>
+              <li class="con"><strong>"Thanks for sharing"</strong> - Adds no value. Filler comment</li>
+              <li class="con"><strong>Emoji only</strong> - 👏💯🔥 without text. Lazy engagement</li>
+              <li class="con"><strong>Self-promotional</strong> - "We help with this at Acme, DM me" - Spammy. Save it for later</li>
+              <li class="con"><strong>One-word responses</strong> - "Agreed." "100%." "Exactly." - Too short to be memorable</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Length target:</strong> 2-4 sentences (30-60 words). Long enough to add value, short enough that others read it. If your comment is longer than their original post, you're overthinking it.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Engagement Cadence sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Engagement Cadence</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Optimal commenting frequency per prospect</h3>
+            <table>
+              <tr><th>Timeline</th><th>Number of Comments</th><th>Spacing</th><th>Why This Works</th></tr>
+              <tr>
+                <td>Week 1</td>
+                <td>2 comments</td>
+                <td>3-4 days apart</td>
+                <td>Introduces your name to their notifications without overwhelming. Establishes you as someone interested in their content</td>
+              </tr>
+              <tr>
+                <td>Week 2</td>
+                <td>2-3 comments</td>
+                <td>2-3 days apart</td>
+                <td>Reinforces familiarity. By comment 4-5, your name feels familiar, not random</td>
+              </tr>
+              <tr>
+                <td>End of Week 2</td>
+                <td>Connection request</td>
+                <td>24-48h after last comment</td>
+                <td>Send while you're still fresh in their mind, but not immediately after a comment (avoids looking transactional)</td>
+              </tr>
+            </table>
+
+            <h3>Managing multiple prospects simultaneously</h3>
+            <p>Don't try to warm 50 prospects at once. Start with 10-15 active prospects in your engagement rotation at any given time. As prospects accept your connection request (or reject it), rotate them out and add new prospects to your warming pool.</p>
+
+            <p><strong>Daily engagement habit:</strong> Block 10-15 minutes per day (mornings work best - catch posts from previous evening/night). Scroll through recent posts from your warming list. Leave 3-5 quality comments per day total across all prospects. This keeps your engagement consistent without burning out.</p>
+
+            <div class="highlight">
+              <strong>Rotation strategy:</strong> Maintain a rolling 30-day cycle. Week 1-2: warm new prospects. Week 3: send connection requests to warmed prospects. Week 4: engage with newly connected prospects, add new prospects to warming pool. Repeat.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Types of Engagement sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Types of Engagement Beyond Commenting</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Engagement hierarchy by impact</h3>
+            <table>
+              <tr><th>Engagement Type</th><th>Impact Level</th><th>When to Use</th><th>Visibility to Prospect</th></tr>
+              <tr>
+                <td><strong>Thoughtful comment</strong></td>
+                <td>High</td>
+                <td>Default engagement type. Use for 80% of your interactions</td>
+                <td>High - They get a notification. Comment is public and visible to their network</td>
+              </tr>
+              <tr>
+                <td><strong>Like</strong></td>
+                <td>Low</td>
+                <td>When you want to signal engagement but don't have a valuable comment to add. Useful for staying present without over-commenting</td>
+                <td>Low - Buried in their like notifications. Minimal visibility unless post has few likes</td>
+              </tr>
+              <tr>
+                <td><strong>Share with commentary</strong></td>
+                <td>Very High</td>
+                <td>When their post is exceptionally relevant to your network. Add 2-3 sentences of your own take when sharing. Use sparingly (1-2x per prospect max)</td>
+                <td>Very High - They get a notification + see you amplified their content to your network. Strong reciprocity trigger</td>
+              </tr>
+            </table>
+
+            <h3>Mixing engagement types</h3>
+            <p>Your 3-5 engagement touches don't all need to be comments. Ideal mix: 3-4 comments + 1 share with commentary. The share signals you valued their content enough to amplify it, which is more memorable than likes or comments alone.</p>
+
+            <div class="highlight">
+              <strong>When to share:</strong> Only share posts that are genuinely valuable to your network. Sharing low-quality content just to warm a prospect damages your own credibility. If their content isn't share-worthy, stick to comments and likes.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transitioning to Connection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Transitioning from Commenter to Connector</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Crafting the connection request note</h3>
+            <p>After 3-5 quality engagements over 1-2 weeks, send your connection request. The note should reference your engagement without being transactional.</p>
+
+            <h3>Connection note templates</h3>
+            <table>
+              <tr><th>Scenario</th><th>Template</th><th>Why It Works</th></tr>
+              <tr>
+                <td>General engagement</td>
+                <td>"Sarah - been following your posts on sales hiring. Really resonated with your take on founder-led sales transitions. Would love to connect."</td>
+                <td>References their content theme, not a specific pitch. Shows you've been paying attention</td>
+              </tr>
+              <tr>
+                <td>After sharing their post</td>
+                <td>"James - shared your post on SDR metrics with my team yesterday. Sparked a great conversation. Let's connect."</td>
+                <td>Highlights that you amplified their content. Strong reciprocity signal</td>
+              </tr>
+              <tr>
+                <td>Shared experience angle</td>
+                <td>"Sarah - your posts on scaling outbound mirror what we went through at Acme last year. Would be great to compare notes."</td>
+                <td>Positions you as a peer with relevant experience, not a vendor</td>
+              </tr>
+            </table>
+
+            <h3>What happens after they accept</h3>
+            <p>Do not immediately pitch. Continue engaging with their content for another 3-5 posts after connecting. Then send a message referencing a recent post: "Your post on X got me thinking - we tackled this at Acme by doing Y. Worth a quick chat?"</p>
+
+            <p><strong>Transition timeline:</strong> Connection accepted → Engage with 3-5 more posts over 1-2 weeks → Send first message (asking, not pitching) → If they respond, continue conversation → Pitch 3-5 messages in, not in message one.</p>
+
+            <div class="highlight">
+              <strong>Patience pays:</strong> The prospects who convert from this approach take 3-4 weeks from first engagement to first meeting. That's intentional. Slow burn builds trust. If you rush the pitch, you undo all the goodwill from your engagement.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracking and Scaling sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Tracking Who You're Engaging With</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why tracking matters</h3>
+            <p>Without tracking, you'll forget who you've engaged with, when you last commented, and whether you've sent a connection request. This leads to awkward situations: commenting too frequently, sending duplicate requests, or losing track of warmed prospects entirely.</p>
+
+            <h3>Minimum viable tracking system</h3>
+            <p>Use a simple spreadsheet or CRM. Minimum fields:</p>
+            <ul>
+              <li><strong>Name</strong> - Prospect full name</li>
+              <li><strong>LinkedIn URL</strong> - Direct link to their profile</li>
+              <li><strong>Date First Commented</strong> - Start of warming period</li>
+              <li><strong>Comment Count</strong> - Track toward 3-5 target</li>
+              <li><strong>Last Engagement Date</strong> - Avoid over-commenting or going silent too long</li>
+              <li><strong>Connection Request Sent</strong> - Date sent (or "Not Yet")</li>
+              <li><strong>Status</strong> - Warming / Pending / Connected / Rejected</li>
+            </ul>
+
+            <h3>Scaling from 10 to 50+ prospects</h3>
+            <p>Once this becomes part of your daily routine, you can scale from 10-15 active warming prospects to 30-50 by using tools like Taplio or Aware to surface recent posts in a single dashboard. At 50 prospects, you're commenting 10-15x per day, which is sustainable in a 20 min daily block.</p>
+
+            <table>
+              <tr><th>Scale Level</th><th>Active Prospects</th><th>Daily Time</th><th>Tools Needed</th></tr>
+              <tr>
+                <td>Starter</td>
+                <td>10-15</td>
+                <td>10-15 min</td>
+                <td>LinkedIn + Spreadsheet</td>
+              </tr>
+              <tr>
+                <td>Intermediate</td>
+                <td>20-30</td>
+                <td>15-20 min</td>
+                <td>LinkedIn + Taplio</td>
+              </tr>
+              <tr>
+                <td>Advanced</td>
+                <td>40-50</td>
+                <td>20-30 min</td>
+                <td>Sales Navigator + Taplio + Aware</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Quality over quantity:</strong> 10 prospects with 5 thoughtful comments each beats 50 prospects with generic engagement. Start small, master the cadence, then scale.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scaling Beyond 50 Prospects sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Scaling Beyond Manual Engagement</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>When you hit the limits of manual engagement</h3>
+            <p>At 50+ active prospects, manual engagement becomes unsustainable for a solo rep. Two options: hire a dedicated engagement SDR, or layer in semi-automated tools (with extreme caution around LinkedIn ToS).</p>
+
+            <h3>Team-based approach: engagement SDRs</h3>
+            <p>Some teams hire an SDR specifically for engagement. Their job: comment on 50-100 prospect posts per day on behalf of the AE team. The AE reviews high-engagement prospects weekly and takes over the relationship from there. This works best at scale (5+ AEs feeding prospects to the engagement SDR).</p>
+
+            <h3>Automation tools (use cautiously)</h3>
+            <p>Tools like Phantombuster or Dux-Soup can automate likes and basic comments, but LinkedIn actively bans accounts for automation. If you go this route: use conservative limits (max 50 actions/day), rotate IP addresses, and avoid generic comments. High risk of account suspension.</p>
+
+            <div class="highlight">
+              <strong>TSP recommendation:</strong> Stay manual until you hit 50+ prospects. At that point, either rotate prospects monthly (keep 30 active at a time) or invest in Taplio + VA support (VA finds posts, you write comments). Avoid full automation - the quality drop isn't worth the time savings.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Generic comments that add no value</h4>
+          <div class="why">"Great post!" or "Thanks for sharing" signal you didn't actually read it. Zero memorability. You're just another bot-like engagement.</div>
+          <div class="fix">Write 2-4 sentences that add insight, ask a question, or share a related experience. If you can't think of a valuable comment, skip that post and wait for a better one.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Engaging once then immediately pitching</h4>
+          <div class="why">Leaving one comment then sending a connection request with a sales pitch 2 hours later is transparent and transactional. Kills all goodwill.</div>
+          <div class="fix">Minimum 3 engagements spread over 1-2 weeks before connecting. Then continue engaging after connection before pitching. Patience builds trust.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Commenting too frequently (stalker vibes)</h4>
+          <div class="why">Commenting on every post they publish (daily or multiple times per day) feels desperate or stalky. They'll notice and it's off-putting.</div>
+          <div class="fix">Max 2-3 comments per week per prospect. Space them out every 2-3 days. Let other posts go by without engagement. You want to be present, not obsessive.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Not tracking who you're warming</h4>
+          <div class="why">Without tracking, you lose context: Did I already comment on their posts? Did I send a connection request? When did I last engage? This leads to duplicate requests or ghosting warmed prospects.</div>
+          <div class="fix">Use a simple spreadsheet or CRM to track: Name, Date First Commented, Comment Count, Last Engagement, Connection Status. Update it after every engagement.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Pitching in the connection request</h4>
+          <div class="why">Connection note: "Love your content. We help companies like yours with X. Let's chat." = Instant rejection. The connection request isn't a sales opportunity.</div>
+          <div class="fix">Connection note should reference your engagement and express interest in their ideas, not your product. "Been following your posts on X. Really resonated. Let's connect." Save the pitch for message 3-5 after acceptance.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Giving up after 1 week</h4>
+          <div class="why">Commenting 2-3 times in week one then moving on because you don't see immediate results. Familiarity takes time to build.</div>
+          <div class="fix">Commit to 2 full weeks minimum (3-5 engagements) before sending connection request. If they don't accept, continue engaging for another week before moving on. Some prospects take 3-4 weeks to warm.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

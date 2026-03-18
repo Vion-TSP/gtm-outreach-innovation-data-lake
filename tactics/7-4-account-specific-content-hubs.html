@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 7.4 — Account-Specific Content Hubs | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 7.4 - ABM Plays</div>
+  <h1>Account-Specific Content Hubs</h1>
+  <p class="desc">Build private microsites for high-value target accounts containing curated case studies, ROI calculators, proposals, and relevant resources. Provides buying committee one-stop access to all information needed for evaluation while giving you detailed engagement analytics.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: High</span>
+    <span class="tag tag-cost">Cost: Medium-High</span>
+    <span class="tag tag-icp">ICP: Enterprise C-suite</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Enterprise buying committees research asynchronously. Different stakeholders need different content at different times. A content hub centralises everything the committee needs in one place, making your content easily shareable internally and giving you visibility into what each stakeholder cares about based on what they consume.
+      </div>
+      <h3>The psychology behind content hubs</h3>
+      <ul>
+        <li><strong>Buyer enablement</strong> - You make it easy for champions to sell internally by providing all ammunition in one shareable link. No hunting through email attachments or recreating presentations</li>
+        <li><strong>Control narrative</strong> - When buyers research on their own, they find random content of varying quality. A content hub ensures they see your best, most relevant content presented in ideal sequence</li>
+        <li><strong>Demonstrate investment</strong> - Building dedicated microsite for one account signals serious intent and commitment. Shows this is not generic sales process but strategic partnership approach</li>
+        <li><strong>Intelligence gathering</strong> - Engagement analytics reveal which stakeholders are actively researching, which content resonates, and where buying process stands based on consumption patterns</li>
+      </ul>
+      <h3>Why microsites specifically</h3>
+      <p>Email attachments get lost. PDFs do not track engagement. Your main website has too much irrelevant content mixed with what matters for this specific account. A dedicated microsite is lightweight, focused, trackable, and feels like VIP treatment rather than generic marketing.</p>
+      <p><strong>The sharing multiplier:</strong> One stakeholder shares the content hub URL with five colleagues. Those five each explore different sections based on their role. You now have engagement data on six stakeholders without sending six separate outreach emails. The hub does multiplicative work.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Select Account</div><div class="wf-action">High-value target</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">C</div><div class="wf-label">Curate Content</div><div class="wf-action">Relevant assets</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">B</div><div class="wf-label">Build Microsite</div><div class="wf-action">Private hub</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Share Link</div><div class="wf-action">With stakeholders</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-phone">T</div><div class="wf-label">Track Engagement</div><div class="wf-action">Who views what</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-email">F</div><div class="wf-label">Follow Up</div><div class="wf-action">Based on data</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Select High-Value Account</td>
+          <td>Choose from your top 10 strategic accounts. Content hubs require significant effort, reserve for accounts with deal values justifying the investment. Typically six-figure plus opportunities</td>
+          <td>10 min account selection</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Curate Relevant Content</td>
+          <td>Identify 8-15 pieces of content relevant to this account from existing library. Include case studies from similar companies, technical documentation addressing their stack, ROI analyses using their metrics, recorded demos, proposals, and implementation guides</td>
+          <td>1-2 hours curation</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Build Private Microsite</td>
+          <td>Use content hub platform or Notion to create organised microsite. Group content by buyer journey stage or stakeholder role. Add their company branding. Include custom welcome message. Ensure mobile-responsive and fast loading</td>
+          <td>2-3 hours first hub, 1 hour subsequent</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Share Link with Stakeholders</td>
+          <td>Send personalised email to primary contact with link to their content hub. Explain what they will find and why you curated it. Encourage sharing with colleagues. Optionally password-protect for exclusivity feeling</td>
+          <td>15 min per stakeholder email</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Track Content Engagement</td>
+          <td>Monitor who visits hub, which content pieces they view, time spent on each, and which stakeholders share internally. Track return visits indicating ongoing evaluation. Set up alerts for high-engagement signals</td>
+          <td>5 min daily monitoring</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Follow Up Based on Data</td>
+          <td>When stakeholder engages with specific content, follow up referencing it. "Saw you spent time with the financial services case study. Happy to connect you with that customer." Use engagement data to personalise outreach timing and content</td>
+          <td>10 min per follow-up</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Add new content to the hub as buying process progresses. Start with awareness-stage content, add consideration-stage content after first meeting, add decision-stage content like proposals and contracts as deal advances. Evolving hub keeps stakeholders returning and signals progress.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Folloze</strong></td>
+          <td>$$$</td>
+          <td>Enterprise ABM programmes with design resources</td>
+          <td>Purpose-built for account-based content hubs. Beautiful templates, robust analytics showing individual visitor behaviour, CRM integration, content recommendation engine. Designed specifically for this use case</td>
+          <td>Expensive for small teams. Requires annual contract typically starting £20k plus. Overkill unless running ABM at scale across many accounts</td>
+        </tr>
+        <tr>
+          <td><strong>Uberflip</strong></td>
+          <td>$$$</td>
+          <td>Marketing teams with large content libraries</td>
+          <td>Content experience platform that creates personalised content streams. Good for teams with hundreds of content assets needing intelligent curation. Analytics and lead scoring built in</td>
+          <td>Complex to set up. Best for marketing teams not individual sellers. Requires content operations support. High price point</td>
+        </tr>
+        <tr>
+          <td><strong>PathFactory</strong></td>
+          <td>$$-$$$</td>
+          <td>Content journey tracking and optimisation</td>
+          <td>Tracks full content journey across multiple assets. Shows which content paths lead to conversion. AI-powered content recommendations. Integrates with marketing automation</td>
+          <td>Pricing not transparent, requires demo and quote. More focused on marketing funnel than sales ABM. Learning curve for setup</td>
+        </tr>
+        <tr>
+          <td><strong>Notion</strong></td>
+          <td>Free or £10/mo</td>
+          <td>Small teams testing content hub approach</td>
+          <td>Free to start. Beautiful templates. Easy to create organised content hubs with nested pages. Can make pages public with custom URLs. Embeds video, PDFs, everything needed</td>
+          <td>Limited analytics compared to purpose-built tools. Cannot track individual visitor behaviour or time on page. No CRM integration. Manual process to update content</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Notion</strong> (free or £10/mo) to test the content hub approach with 3-5 accounts. Validate that hubs improve engagement and close rates before investing in expensive purpose-built platforms. Once proven, consider <strong>Folloze</strong> if running ABM at scale.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Content Curation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Content Curation - Less is More</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The curation challenge</h3>
+            <p>The temptation is to include every possibly relevant piece of content in the hub. This overwhelms buyers and dilutes impact. Curation means selecting the 10-15 most valuable pieces for this specific account and excluding everything else, even if it is good content. Quality and relevance over quantity.</p>
+
+            <h3>What to include in account content hub</h3>
+            <table>
+              <tr><th>Content Type</th><th>Why Include</th><th>Example</th></tr>
+              <tr>
+                <td>Industry-specific case studies</td>
+                <td>Social proof from companies they relate to</td>
+                <td>If targeting fintech, include only fintech case studies not generic or other industries</td>
+              </tr>
+              <tr>
+                <td>ROI calculator or business case</td>
+                <td>Helps them quantify value internally</td>
+                <td>Pre-populated calculator using their company size and industry benchmarks</td>
+              </tr>
+              <tr>
+                <td>Technical documentation</td>
+                <td>Addresses technical buyer concerns</td>
+                <td>Architecture diagrams, security documentation, integration guides for their existing stack</td>
+              </tr>
+              <tr>
+                <td>Recorded product demo</td>
+                <td>Allows asynchronous product review</td>
+                <td>Custom demo showing use cases relevant to their business not generic feature tour</td>
+              </tr>
+              <tr>
+                <td>Proposal or pricing guide</td>
+                <td>Transparency on commercial terms</td>
+                <td>Indicative pricing for their company size or detailed proposal after discovery</td>
+              </tr>
+              <tr>
+                <td>Implementation timeline</td>
+                <td>Addresses operations concerns</td>
+                <td>Typical deployment timeline with key milestones for companies their size</td>
+              </tr>
+            </table>
+
+            <h3>What to exclude</h3>
+            <ul>
+              <li><strong>Generic marketing content</strong> - Blog posts, generic whitepapers, and high-level thought leadership pieces belong on your website not in account-specific hub</li>
+              <li><strong>Irrelevant case studies</strong> - Different industry, different use case, different company size. If they cannot see themselves in the story, exclude it</li>
+              <li><strong>Outdated content</strong> - Nothing older than 12 months unless truly evergreen. Dated content signals you are not maintaining the hub</li>
+              <li><strong>Sales-focused content</strong> - Promotional materials, sales brochures, overly salesy content. Hub should educate not pitch</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Curation test:</strong> For each piece of content, ask "Would a buying committee stakeholder find this directly useful for evaluating us as a vendor?" If answer is not clear yes, exclude it. Aim for 10-15 pieces maximum. Tight curation beats comprehensive library.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hub Organisation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Hub Organisation - Structure for Discovery</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Organisation principles</h3>
+            <p>How you structure content affects whether stakeholders find what they need. Poor organisation leads to abandonment even if content itself is valuable. Structure should match how buying committees actually consume information during evaluation.</p>
+
+            <h3>Organisation approaches</h3>
+            <ul>
+              <li><strong>By stakeholder role</strong> - Sections for Finance, Engineering, Operations, Executive. Each role finds their content immediately without hunting through irrelevant pieces</li>
+              <li><strong>By buying journey stage</strong> - Sections for Learn, Evaluate, Decide. Guides stakeholders through logical progression from awareness to decision</li>
+              <li><strong>By question or concern</strong> - Structure around common questions: How does it work, What does it cost, How long to implement, Who else uses it. Natural discovery based on what buyers wonder</li>
+              <li><strong>Hybrid approach</strong> - Top-level organisation by role, second-level by journey stage within each role section</li>
+            </ul>
+
+            <h3>Recommended hub structure</h3>
+            <ol>
+              <li><strong>Welcome section</strong> - Personalised message explaining hub purpose and what they will find. Video welcome message adds personal touch</li>
+              <li><strong>Overview</strong> - Quick summary of your solution and why relevant to them. 2-3 minutes to understand value proposition</li>
+              <li><strong>Role-based sections</strong> - Separate sections for key stakeholder roles with content relevant to each</li>
+              <li><strong>Social proof</strong> - Case studies and customer testimonials from similar companies grouped together</li>
+              <li><strong>Technical details</strong> - Architecture, security, integrations for technical stakeholders who want deep dive</li>
+              <li><strong>Commercial information</strong> - Pricing, ROI analysis, contract terms for budget and finance stakeholders</li>
+              <li><strong>Implementation</strong> - Timeline, change management, training resources for operations stakeholders</li>
+              <li><strong>Next steps</strong> - Clear call-to-action for booking meeting or requesting custom analysis</li>
+            </ol>
+
+            <div class="highlight">
+              <strong>Navigation rule:</strong> Every piece of content should be accessible within two clicks from landing page. If stakeholder has to click three or more times to find what they want, structure is too complex. Simplify navigation.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Engagement Tracking sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Engagement Tracking - Turn Data into Action</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What engagement data reveals</h3>
+            <p>Content hub analytics tell you what stakeholders care about, where they are in buying process, and who is actively engaged versus checked out. This intelligence guides follow-up strategy and helps qualify deal health.</p>
+
+            <h3>Key metrics to track</h3>
+            <table>
+              <tr><th>Metric</th><th>What It Signals</th><th>Follow-Up Action</th></tr>
+              <tr>
+                <td>Hub visits by unique stakeholders</td>
+                <td>How many committee members are engaged. Single visitor versus six visitors indicates deal breadth</td>
+                <td>If only one stakeholder visiting, push for multi-threading. If many stakeholders, deal has momentum</td>
+              </tr>
+              <tr>
+                <td>Most viewed content pieces</td>
+                <td>What buying committee cares most about. Pricing, technical docs, or case studies reveal priorities</td>
+                <td>Address top concerns proactively. If pricing viewed most, have commercial conversation. If technical docs, schedule technical deep dive</td>
+              </tr>
+              <tr>
+                <td>Time spent in hub</td>
+                <td>Depth of evaluation. 2 minutes is cursory. 20 minutes across multiple visits signals serious consideration</td>
+                <td>High time investment deserves prioritised follow-up. Low time investment may indicate lack of fit or interest</td>
+              </tr>
+              <tr>
+                <td>Return visits over time</td>
+                <td>Deal staying active or going cold. Regular visits signal ongoing evaluation. Weeks without visits suggests stalled deal</td>
+                <td>Declining engagement triggers re-engagement campaign or honest qualification conversation</td>
+              </tr>
+              <tr>
+                <td>Content downloads</td>
+                <td>Content valuable enough to save indicates serious evaluation. Usually means sharing internally beyond hub</td>
+                <td>Downloaded content especially proposals or technical docs signals near-term decision. Accelerate follow-up</td>
+              </tr>
+            </table>
+
+            <h3>Setting up engagement alerts</h3>
+            <p>Configure alerts so you know immediately when high-value engagement occurs. Get notified when new stakeholder visits hub, when someone spends over 10 minutes, when proposal downloaded, when visits spike indicating internal meeting discussing you. Real-time alerts enable timely follow-up while you are top of mind.</p>
+
+            <div class="highlight">
+              <strong>Privacy balance:</strong> While engagement tracking provides valuable intelligence, be thoughtful mentioning it. "Noticed you spent time with our technical documentation" shows awareness without being creepy. "I see you visited the hub 7 times for total of 23 minutes" crosses into invasive. Use data to inform outreach not to demonstrate surveillance.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hub Maintenance sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Hub Maintenance - Keep Content Fresh</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why maintenance matters</h3>
+            <p>Enterprise sales cycles last months. Stakeholders return to content hub multiple times during evaluation. If content never changes, hub feels static and abandoned. Adding relevant content as buying process progresses gives stakeholders reason to return and signals your continued engagement.</p>
+
+            <h3>Content update cadence</h3>
+            <ul>
+              <li><strong>After discovery call</strong> - Add custom proposal or summary of discovery conversation. Shows you listened and are responsive</li>
+              <li><strong>After demo</strong> - Add recording of their custom demo and technical documentation addressing questions raised during demo</li>
+              <li><strong>When new objections surface</strong> - Add case studies or content addressing specific concerns that came up in conversations</li>
+              <li><strong>When deal advances</strong> - Add implementation guides, contract templates, customer onboarding materials as stakeholders move toward decision</li>
+              <li><strong>Weekly during active evaluation</strong> - Add one new relevant piece weekly to give stakeholders reason to return and check for updates</li>
+            </ul>
+
+            <h3>Notification strategy</h3>
+            <p>When you add significant new content to hub, notify key stakeholders via email. "Added the custom ROI analysis we discussed to your content hub. Take a look and let me know questions." This brings them back to hub and shows ongoing investment in their evaluation.</p>
+
+            <div class="highlight">
+              <strong>Archival rule:</strong> When deal closes won or lost, archive the account-specific hub. Do not let old hubs accumulate containing outdated pricing or proposals. Keep only active deal hubs live to avoid confusion and ensure maintenance effort focuses on real opportunities.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Including too much content - content dumping</h4>
+          <div class="why">You include 50 pieces of content thinking more is better. Buyers feel overwhelmed, do not know where to start, and abandon the hub without consuming anything valuable.</div>
+          <div class="fix">Curate ruthlessly to 10-15 most relevant pieces. Quality and relevance over quantity. Each piece should be directly valuable for evaluating you as vendor. Exclude everything else even if good content.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Not tracking engagement analytics</h4>
+          <div class="why">You build beautiful content hub then have no idea if anyone visits, what they view, or who is engaged. Flying blind on deal health and stakeholder interest.</div>
+          <div class="fix">Use platform with robust analytics or at minimum URL tracking. Know who visits, what content they consume, time spent, and return visits. Use this data to guide follow-up strategy and prioritise accounts.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. No personalisation beyond logo</h4>
+          <div class="why">You swap in their company logo but all content is generic. Hub feels like marketing website with superficial personalisation. Does not demonstrate understanding of their specific context.</div>
+          <div class="fix">Include personalised welcome message, custom ROI analysis using their metrics, case studies from their specific industry, and content addressing their known pain points. Deep personalisation not just cosmetic.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Generic case studies not relevant</h4>
+          <div class="why">You include case studies from different industries or company sizes. Target account cannot relate to the stories. Social proof loses impact because they do not see themselves.</div>
+          <div class="fix">Only include case studies from similar industry, company size, and use case. If targeting enterprise fintech, show enterprise fintech customers not SMB e-commerce customers. Relevance is everything.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Never updating content after creation</h4>
+          <div class="why">You build hub once then never touch it again during 6-month sales cycle. Stakeholders return and see nothing new. Hub feels abandoned and dated.</div>
+          <div class="fix">Add new content as buying process progresses. Custom proposals after discovery, demo recordings, updated ROI analyses, implementation guides as deal advances. Give stakeholders reason to return by keeping content fresh.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Creating hubs for too many accounts</h4>
+          <div class="why">You try to scale content hubs to 50 accounts. Quality degrades. Personalisation becomes shallow. Maintenance becomes impossible. Hubs lose effectiveness.</div>
+          <div class="fix">Reserve content hubs for top 5-10 strategic accounts where deal value justifies high-touch effort. Better to have 5 excellent deeply personalised hubs than 50 mediocre templated ones.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

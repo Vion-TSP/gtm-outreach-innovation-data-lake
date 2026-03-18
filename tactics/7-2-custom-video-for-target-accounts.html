@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 7.2 — Custom Video for Target Accounts | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 7.2 - ABM Plays</div>
+  <h1>Custom Video for Target Accounts</h1>
+  <p class="desc">Record 60-90 second personalised videos for high-value prospects showing specific analysis of their business, website, or competitive positioning. Demonstrates effort and expertise while creating emotional connection that text cannot achieve.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: High</span>
+    <span class="tag tag-cost">Cost: Low</span>
+    <span class="tag tag-icp">ICP: C-suite, Founders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Video creates human connection impossible through text. When someone sees your face, hears your voice, and watches you analyse their specific business, they feel the investment you made. This emotional response combined with demonstrated expertise dramatically increases response rates compared to written outreach.
+      </div>
+      <h3>The psychology behind custom videos</h3>
+      <ul>
+        <li><strong>Effort visibility</strong> - Text can be templated and automated. Video clearly required personal time investment. Prospects immediately recognise and appreciate this effort, creating reciprocity pressure</li>
+        <li><strong>Credibility through demonstration</strong> - Talking through specific insights about their business proves expertise more effectively than claiming expertise in writing. Show rather than tell</li>
+        <li><strong>Emotional connection</strong> - Seeing a real person creates trust and likeability that text cannot replicate. Humans are wired to respond to faces and voices</li>
+        <li><strong>Curiosity trigger</strong> - Subject line "I recorded this for you, Sarah" creates powerful curiosity. What did they record? What did they find? Email gets opened</li>
+      </ul>
+      <h3>Why video specifically for high-value accounts</h3>
+      <p>Custom video does not scale and should not scale. Recording personalised videos for hundreds of prospects would be inefficient and quality would suffer. This tactic works precisely because it is reserved for your top tier targets where the potential deal value justifies the time investment.</p>
+      <p><strong>The pattern interrupt:</strong> C-suite executives receive thousands of emails weekly. Most are text. A personalised video immediately stands out in the inbox. Even if they have seen video prospecting before, a genuinely custom analysis of their business is rare enough to capture attention.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">R</div><div class="wf-label">Deep Research</div><div class="wf-action">Account analysis</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">S</div><div class="wf-label">Script Outline</div><div class="wf-action">Key insights</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">R</div><div class="wf-label">Record Video</div><div class="wf-action">60-90 seconds</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">S</div><div class="wf-label">Send Email</div><div class="wf-action">Embed video</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-video">T</div><div class="wf-label">Track Views</div><div class="wf-action">Monitor engagement</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-phone">F</div><div class="wf-label">Follow Up</div><div class="wf-action">Call viewers</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Deep Research Account</td>
+          <td>Spend 30-45 minutes deeply researching the target company. Analyse their website, recent news, competitor positioning, tech stack visible via BuiltWith, LinkedIn activity from executives. Identify specific opportunities or issues you can address</td>
+          <td>30-45 min per account</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Script Custom Analysis</td>
+          <td>Outline 3-4 key insights you will share in the video. Do not write full script word-for-word as this makes delivery sound robotic. Bullet points of insights plus opening and closing</td>
+          <td>10-15 min scripting</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Record Personalised Video</td>
+          <td>Record yourself speaking to camera while screen sharing their website or relevant data. Introduce yourself, share 2-3 specific insights about their business, explain briefly how you help companies like theirs, and suggest next step. Keep to 60-90 seconds maximum</td>
+          <td>5-10 min including retakes</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Send via Email</td>
+          <td>Email the prospect with embedded video thumbnail that plays on click. Subject line references custom video: "Sarah - recorded this analysis for Acme." Body text teases one insight from video and encourages watching</td>
+          <td>5 min per send</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Track Views</td>
+          <td>Most video tools provide view tracking. Monitor who watches, how many times, and what percentage of video they watch. Someone who watches 90% is highly engaged even if they do not reply immediately</td>
+          <td>2 min daily monitoring</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Follow Up on Viewers</td>
+          <td>Within 24 hours of someone watching your video, follow up with call or personalised email referencing that they watched. "Saw you watched the video. Happy to dive deeper into the point about X." High intent signal deserves fast follow-up</td>
+          <td>5-10 min per follow-up</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Record your video while screen sharing their actual website or LinkedIn profile. Pointing out specific elements on their site proves this is genuinely custom, not a template with their name swapped in. The screen share provides visual interest while you talk.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Loom</strong></td>
+          <td>£12.50/mo</td>
+          <td>Quick screen recordings with minimal friction</td>
+          <td>One-click recording from browser or desktop. Automatic transcription and closed captions. Simple embed in email. Detailed view analytics showing who watched and for how long</td>
+          <td>Limited video editing capabilities. Cannot trim or cut sections after recording without upgrading to higher tier. Basic customisation options for thumbnails</td>
+        </tr>
+        <tr>
+          <td><strong>Vidyard</strong></td>
+          <td>£59/mo</td>
+          <td>Sales teams doing high volume video prospecting</td>
+          <td>Advanced viewer analytics including identification of individual viewers via email integration. Custom video thumbnails with call-to-action buttons. CRM integration to log video views as activities</td>
+          <td>Higher cost may not justify for occasional use. Feature set designed for teams doing video prospecting at scale. Can be overkill for testing the approach</td>
+        </tr>
+        <tr>
+          <td><strong>HeyGen</strong></td>
+          <td>£29/mo</td>
+          <td>AI avatar videos for scale personalisation</td>
+          <td>Create AI avatar that looks and sounds like you. Type script and avatar delivers it. Can scale to hundreds of custom videos quickly. Multiple languages and voices available</td>
+          <td>While impressive technology, AI avatars lack authentic human feel for high-value enterprise outreach. Best used for mid-market scale plays rather than strategic C-suite targeting</td>
+        </tr>
+        <tr>
+          <td><strong>Riverside</strong></td>
+          <td>Free for basic recording</td>
+          <td>High production quality recordings</td>
+          <td>Records locally on your device ensuring 4K video and high quality audio even with poor internet. Includes basic editing tools. Free tier suitable for prospecting videos</td>
+          <td>Requires download rather than browser-based. Slight learning curve. Designed more for podcast and interview recording than quick sales prospecting</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Loom</strong> (£12.50/mo) for ease of use and solid analytics. One-click recording and simple email embedding makes it frictionless to test custom video prospecting. Upgrade to <strong>Vidyard</strong> (£59/mo) only if custom video becomes core part of your ABM motion and you need CRM integration.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Research and Preparation sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Research and Preparation - Show Their Actual Data</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What makes research valuable for video</h3>
+            <p>Generic insights anyone could find in 5 minutes on Google do not justify a custom video. Your research should uncover specific observations about their business that demonstrate both expertise and effort. This is what transforms a video from gimmick to genuine value-add.</p>
+
+            <h3>Research areas that translate well to video</h3>
+            <ul>
+              <li><strong>Website analysis</strong> - Walk through their website while screen sharing. Point out specific pages, messaging, CTAs, or technical elements relevant to what you solve. "I noticed on your pricing page that..." creates specific credibility</li>
+              <li><strong>Competitive positioning</strong> - Show how they position against competitors using their own website and competitor sites side by side. Highlight gaps or opportunities in their positioning</li>
+              <li><strong>Tech stack insights</strong> - Use BuiltWith or similar to identify tools they use. Explain integration opportunities or gaps in their stack that you address</li>
+              <li><strong>Content and messaging audit</strong> - Review their recent blog posts, LinkedIn content, or case studies. Share observations about messaging consistency or opportunities to strengthen their story</li>
+            </ul>
+
+            <h3>Research checklist before recording</h3>
+            <table>
+              <tr><th>Research Item</th><th>Where to Find It</th><th>How to Use in Video</th></tr>
+              <tr>
+                <td>Recent company news</td>
+                <td>Company blog, press releases, LinkedIn posts from executives</td>
+                <td>"Saw your recent announcement about X. This likely means you are dealing with Y challenge..."</td>
+              </tr>
+              <tr>
+                <td>Website structure and messaging</td>
+                <td>Browse entire website, read all key pages</td>
+                <td>Screen share specific page and point out element: "Your value prop here says X, which suggests..."</td>
+              </tr>
+              <tr>
+                <td>Competitor comparison</td>
+                <td>Visit 2-3 main competitor websites</td>
+                <td>"Compared to how your competitors position on this, you have opportunity to differentiate by..."</td>
+              </tr>
+              <tr>
+                <td>LinkedIn presence</td>
+                <td>Target prospect LinkedIn profile and recent activity</td>
+                <td>"Noticed you posted about X last week. That aligns with what we are seeing across your industry..."</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Depth indicator:</strong> If you could deliver the same insights after researching any company in their industry, your research is too shallow. Aim for observations that are unique to their specific company, not generic industry commentary.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Video Structure sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Video Structure - 60-90 Seconds Maximum</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why length matters critically</h3>
+            <p>Busy executives will watch a 60 second video. They will not watch 5 minutes. Every second beyond 90 seconds dramatically decreases completion rate. A video they watch completely is infinitely more valuable than a longer video they abandon after 20 seconds.</p>
+
+            <h3>Optimal video structure</h3>
+            <ul>
+              <li><strong>0-10 seconds: Personalised hook</strong> - "Hi Sarah, I am James. I spent some time looking at Acme and wanted to share a few quick thoughts." Establish who you are and why this is relevant to them specifically</li>
+              <li><strong>10-60 seconds: Core insights</strong> - Share 2-3 specific observations while screen sharing their website or relevant data. Focus on insights not sales pitch. Demonstrate expertise through analysis</li>
+              <li><strong>60-75 seconds: Bridge to value</strong> - Brief transition explaining how these observations relate to what you do: "This is exactly the kind of challenge we help companies like Acme solve."</li>
+              <li><strong>75-90 seconds: Clear call-to-action</strong> - Specific next step: "If this resonates, grab 15 minutes on my calendar." Include calendar link in email accompanying video</li>
+            </ul>
+
+            <h3>Common timing mistakes</h3>
+            <table>
+              <tr><th>Mistake</th><th>Why It Fails</th><th>Better Approach</th></tr>
+              <tr>
+                <td>Long introduction about yourself</td>
+                <td>They do not care about your background yet. They care if you understand their business</td>
+                <td>5 seconds maximum on who you are. Jump immediately into insights about them</td>
+              </tr>
+              <tr>
+                <td>Explaining all product features</td>
+                <td>Sounds like sales pitch. They stop watching. Plus 90 seconds is not enough time anyway</td>
+                <td>Mention what you do in one sentence. Save product detail for the conversation you are trying to earn</td>
+              </tr>
+              <tr>
+                <td>Rambling without script outline</td>
+                <td>Loses focus and goes long. Viewer loses interest</td>
+                <td>Outline key points before recording. Practice once to ensure timing. Then record for real</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Editing permission:</strong> If your first take goes 2 minutes, do not send it. Re-record with tighter focus. Or use editing to cut it down to 90 seconds. Sending a long rambling video signals you do not respect their time.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery Quality sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Delivery Quality - Natural Not Scripted</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The authenticity balance</h3>
+            <p>A perfectly polished video feels corporate and impersonal. A sloppy video signals lack of professionalism. The goal is authentic expertise, which means conversational delivery with good production quality on basics like lighting and audio.</p>
+
+            <h3>Production quality checklist</h3>
+            <ul>
+              <li><strong>Lighting</strong> - Natural light from window facing you, or simple ring light. Avoid backlighting where window is behind you making you a dark silhouette</li>
+              <li><strong>Audio</strong> - Use external mic or earbuds, not laptop mic. Clear audio is more important than perfect video. People tolerate mediocre video but abandon videos with bad audio</li>
+              <li><strong>Background</strong> - Clean, professional background. Home office is fine. Messy room or distracting elements harm credibility. Use virtual background only if your real background is problematic</li>
+              <li><strong>Eye contact</strong> - Look at camera not at your own image on screen. This creates eye contact feeling for viewer. Small adjustment with massive impact on connection</li>
+            </ul>
+
+            <h3>Delivery style</h3>
+            <table>
+              <tr><th>Avoid</th><th>Aim For</th></tr>
+              <tr>
+                <td>Reading from script word-for-word sounding robotic</td>
+                <td>Speaking from bullet point outline with natural conversational delivery</td>
+              </tr>
+              <tr>
+                <td>Overly formal corporate language</td>
+                <td>Talking like you would explain to a colleague over coffee</td>
+              </tr>
+              <tr>
+                <td>Monotone delivery with no energy</td>
+                <td>Genuine enthusiasm about the insights you are sharing, but not fake hype</td>
+              </tr>
+              <tr>
+                <td>Filler words every sentence - um, uh, like, you know</td>
+                <td>Occasional filler word is human and fine. Excessive fillers undermine credibility</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Retake permission:</strong> If you stumble badly or lose your train of thought, stop and start over. It takes 90 seconds to record. Spending 5 minutes doing 3 takes to get a clean version is time well invested. But do not obsess over perfection or you will never send any videos.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Follow-Up Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Follow-Up Strategy - Track Views and Act Fast</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why view tracking matters</h3>
+            <p>Someone who watches your video but does not reply is not a lost opportunity. They are showing interest signal through behaviour even without explicit response. View data tells you who is engaged and deserves prioritised follow-up.</p>
+
+            <h3>Interpreting view signals</h3>
+            <table>
+              <tr><th>View Behaviour</th><th>Signal Strength</th><th>Follow-Up Action</th></tr>
+              <tr>
+                <td>No view within 48 hours</td>
+                <td>Low - email may not have been opened or video ignored</td>
+                <td>Send follow-up email with different subject line or try different contact at same company</td>
+              </tr>
+              <tr>
+                <td>Watched under 30%, single view</td>
+                <td>Medium - they checked it out but did not finish. Mild curiosity</td>
+                <td>Wait 5-7 days then send follow-up email offering different resource or angle</td>
+              </tr>
+              <tr>
+                <td>Watched 50-90%, single view</td>
+                <td>High - engaged with content even if did not respond</td>
+                <td>Call or personalised email within 24 hours: "Saw you watched the video. Would love to discuss X in more detail."</td>
+              </tr>
+              <tr>
+                <td>Multiple views or shared internally</td>
+                <td>Very high - showing to colleagues or reviewing multiple times before responding</td>
+                <td>Immediate call or very personalised follow-up within 12 hours. They are seriously considering</td>
+              </tr>
+            </table>
+
+            <h3>Follow-up email template after view</h3>
+            <p>Subject: Re: Video for Sarah at Acme</p>
+            <p>Sarah,</p>
+            <p>Noticed you watched the video I sent over. The point about how your pricing page could better highlight ROI for enterprise buyers seemed to resonate based on what I know about Acme's growth plans.</p>
+            <p>Happy to walk through that in more detail or share examples of how similar companies have approached this. Worth 15 minutes this week?</p>
+            <p>Grab time here if so: [calendar link]</p>
+
+            <div class="highlight">
+              <strong>Speed matters:</strong> Following up within 24 hours of a view significantly increases response rate compared to waiting several days. They watched your video, you are top of mind, strike while the interest is hot.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Video too long - over 2 minutes</h4>
+          <div class="why">Busy executives will not watch a 5 minute prospecting video no matter how good the content. Completion rate drops dramatically after 90 seconds.</div>
+          <div class="fix">Ruthlessly edit to 60-90 seconds maximum. Focus on 2-3 key insights only. Save detailed explanation for the meeting you are trying to earn. Practice and time yourself before recording.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Reading from script - sounds robotic</h4>
+          <div class="why">When you read word-for-word from script you sound unnatural and disengaged. Eye contact is wrong, delivery is flat, credibility suffers.</div>
+          <div class="fix">Outline key points in bullets, not full sentences. Practice once to know your flow. Then record speaking naturally to camera as if explaining to a colleague. Conversational beats polished.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Not showing their actual website or data</h4>
+          <div class="why">Just talking to camera without visuals makes it harder to prove genuine customisation. Could be template with name swapped.</div>
+          <div class="fix">Screen share their website, LinkedIn profile, or competitor comparison while talking. Point to specific elements. Visual proof plus verbal analysis demonstrates authentic research and custom effort.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Generic value prop despite video format</h4>
+          <div class="why">Recording a video does not automatically make content valuable. If insights are generic industry commentary anyone could give, the format does not save it.</div>
+          <div class="fix">Every insight should be specific to their company not just their industry. Use their company name, their website pages, their specific context. Generic insights in video format still fail.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No follow-up on video views</h4>
+          <div class="why">Prospect watches your video showing interest, but you never follow up. They move on, interest fades, opportunity lost.</div>
+          <div class="fix">Check view analytics daily. When someone watches your video, follow up within 24 hours while you are fresh in their mind. Video view is warm signal deserving prioritised outreach.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Poor audio or lighting quality</h4>
+          <div class="why">Bad audio is unwatchable. People abandon videos with poor sound even if content is good. Dark video or distracting background harms credibility.</div>
+          <div class="fix">Invest in basic external mic or use earbuds. Face window for natural light or use simple ring light. Test audio and video before recording. Clean background. Production basics are table stakes.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

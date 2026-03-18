@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 4.6 — LinkedIn Carousel Playbook Posts | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+.ch-content{background:#d29922}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 4.6 - Content-Led Outreach</div>
+  <h1>LinkedIn Carousel Playbook Posts</h1>
+  <p class="desc">Multi-slide PDF carousels with actionable insights posted natively on LinkedIn. High engagement format that delivers educational value while positioning your brand as a thought leader.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#0a66c2;background:#0a66c222">
+      <div class="hero-ch-icon" style="background:#0a66c2">Li</div>
+      <div class="hero-ch-name">LinkedIn</div>
+    </div>
+    <span class="hero-ch-plus">+</span>
+    <div class="hero-ch" style="border-color:#d29922;background:#9e6a0322">
+      <div class="hero-ch-icon" style="background:#d29922">C</div>
+      <div class="hero-ch-name">Content</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low-Medium</span>
+    <span class="tag tag-cost">Cost: Free</span>
+    <span class="tag tag-icp">ICP: All ICPs</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> LinkedIn's algorithm massively favours carousel posts (multi-slide PDFs). They get 3-5x more engagement than single-image or text-only posts. Carousels keep users on LinkedIn longer (swiping through slides), so the platform rewards them with more reach.
+      </div>
+      <h3>The psychology behind carousel posts</h3>
+      <ul>
+        <li><strong>Pattern interrupt</strong> - Carousels stand out in the feed. Most posts are text or single images. The swipeable format catches attention and invites interaction</li>
+        <li><strong>Curiosity loop</strong> - Each slide creates curiosity about the next. Slide 1 hooks with a problem. Slide 2 teases the solution. Users keep swiping to get the full story</li>
+        <li><strong>Actionable value in digestible chunks</strong> - Long-form posts overwhelm. Carousels break insights into bite-sized slides. Each slide delivers one idea, making complex topics easy to consume</li>
+        <li><strong>Save and share behaviour</strong> - LinkedIn shows you how many people saved your post. Carousels get saved more than any other format because they're reference-worthy. People save them to revisit later or share with colleagues</li>
+      </ul>
+      <h3>Why carousels outperform other content formats</h3>
+      <p>Carousels combine visual appeal (design draws attention), educational value (each slide teaches something), and algorithmic preference (LinkedIn promotes them). A well-designed carousel delivers a micro-lesson in 2 minutes. This builds authority without requiring prospects to read a 2000-word blog post or watch a 30-minute video.</p>
+      <p><strong>The engagement flywheel:</strong> More swipes signal engagement. LinkedIn interprets engagement as quality. Quality content gets more reach. More reach drives more engagement. Carousels trigger this flywheel better than static posts.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-content">C</div><div class="wf-label">Choose Topic</div><div class="wf-action">ICP pain point</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-content">W</div><div class="wf-label">Write 8-12 Slide Script</div><div class="wf-action">One idea per slide</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-content">D</div><div class="wf-label">Design in Canva/Figma</div><div class="wf-action">Bold & minimal</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-content">E</div><div class="wf-label">Export as PDF</div><div class="wf-action">LinkedIn format</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-linkedin">P</div><div class="wf-label">Post on LinkedIn with Hook Caption</div><div class="wf-action">First line matters</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-linkedin">E</div><div class="wf-label">Engage with Comments</div><div class="wf-action">First 2 hours critical</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 7</div><div class="wf-node ch-content">T</div><div class="wf-label">Track Performance</div><div class="wf-action">Views, saves, shares</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Choose topic</td>
+          <td>Pick one specific problem your ICP faces. Narrow beats broad. "How to fix cold email deliverability" beats "Email marketing tips." Look for topics that generate questions in communities, LinkedIn comments, or customer conversations</td>
+          <td>15 min (topic research)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Write 8-12 slide script</td>
+          <td>Slide 1: Hook (bold statement or question). Slides 2-10: Core content (steps, tips, frameworks). Slide 11: Recap or key takeaway. Slide 12: CTA (follow, comment, DM). Keep text minimal, one idea per slide, use bullet points</td>
+          <td>30-45 min (scripting)</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Design in Canva or Figma</td>
+          <td>Use Canva templates (search "LinkedIn carousel") or build from scratch. Consistent brand colours, large bold fonts (readable on mobile), minimal text per slide (5-10 words max per line), use icons or simple graphics. Export as PDF</td>
+          <td>30-60 min (design)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Export as PDF</td>
+          <td>Canva: Download - PDF Standard. Keep file size under 10MB. LinkedIn accepts PDF uploads as carousels automatically. Each page becomes a swipeable slide</td>
+          <td>2 min (export)</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Post on LinkedIn with hook caption</td>
+          <td>First line is critical (hooks readers before "see more"). Keep it punchy. Example: "Your cold emails are landing in spam. Here's why." Add context in body, include CTA (comment, share, DM). Tag relevant people if appropriate</td>
+          <td>10 min (write caption, post)</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Engage with comments</td>
+          <td>First 2 hours after posting are critical for algorithm. Reply to every comment. Ask follow-up questions. Keep conversation going. High comment activity signals quality to LinkedIn, increasing reach</td>
+          <td>30-60 min (first 2 hours active engagement)</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Track performance</td>
+          <td>LinkedIn analytics show views, likes, comments, shares, and saves. Saves are most important metric (indicates reference-worthy content). Track which topics perform best. Double down on high performers</td>
+          <td>5 min (check analytics after 48 hours)</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Batch create carousels. Script 4-5 topics in one sitting. Design them all at once using the same template. You'll build a content bank for 4-5 weeks in one afternoon.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Canva</strong></td>
+          <td>Free</td>
+          <td>Quick carousel design with templates</td>
+          <td>Thousands of carousel templates. Drag-and-drop design. Brand kit (upload logo, colours). Export directly as PDF. Mobile app for on-the-go edits</td>
+          <td>Free tier has watermark on some templates. Fewer custom design options than Figma</td>
+        </tr>
+        <tr>
+          <td><strong>Figma</strong></td>
+          <td>Free</td>
+          <td>Custom design with full control</td>
+          <td>Professional design tool. Complete control over layout, fonts, colours. Reusable components. Collaboration features. Export as PDF or individual PNGs</td>
+          <td>Steeper learning curve than Canva. Overkill if you just need quick templates</td>
+        </tr>
+        <tr>
+          <td><strong>PowerPoint</strong></td>
+          <td>Included with Office</td>
+          <td>Simple carousel creation (no new tool to learn)</td>
+          <td>Familiar interface. Easy to create slides. Export as PDF. Works offline. Good for text-heavy carousels</td>
+          <td>Less design flexibility than Canva or Figma. Templates are outdated. Harder to make visually appealing</td>
+        </tr>
+        <tr>
+          <td><strong>Carousel Creator tools</strong></td>
+          <td>Varies (free-$20/mo)</td>
+          <td>Automated carousel generation from text input</td>
+          <td>Tools like Taplio, Supergrow auto-generate carousels from text prompts. Fast but generic. Good for high-volume posting</td>
+          <td>Templates look similar to competitors using same tools. Less brand differentiation</td>
+        </tr>
+        <tr>
+          <td><strong>LinkedIn (native PDF upload)</strong></td>
+          <td>Free</td>
+          <td>Posting the carousel</td>
+          <td>Upload PDF directly to LinkedIn post. Each page becomes a slide. No third-party tool needed. Carousels auto-play in feed</td>
+          <td>PDF must be under 10MB. LinkedIn crops slides if aspect ratio is wrong (use 1080x1080 or 1080x1350 for best fit)</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Use <strong>Canva</strong> (free) for most carousels. Fast, easy, great templates. Use <strong>Figma</strong> (free) if you need custom branding or complex layouts. Avoid carousel automation tools unless posting daily; they sacrifice uniqueness for speed. Export as PDF and upload natively to LinkedIn.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Topic selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Topic Selection (Solve One Specific Problem per Carousel)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why narrow topics beat broad topics</h3>
+            <p>Broad carousels ("10 tips for better sales") are forgettable. Narrow carousels ("How to write cold email subject lines that get opened") are actionable. Narrow topics attract the right audience and get saved more because they solve a specific problem.</p>
+
+            <h3>How to choose a carousel topic</h3>
+            <ul>
+              <li><strong>One pain point, one carousel</strong> - Each carousel should address a single problem your ICP faces. Don't try to cover multiple topics. Depth beats breadth</li>
+              <li><strong>Look for high-friction moments</strong> - What causes your ICP to pause and search for help? Those are your topics. Example: "How to get executive buy-in for new tools" or "How to prioritise features with limited resources"</li>
+              <li><strong>Mine customer questions</strong> - What do customers ask during sales calls? What confusion appears in support tickets? Turn common questions into carousels</li>
+              <li><strong>Check what competitors are posting</strong> - See what carousel topics get high engagement in your space. You can create your own version with better insights or a unique angle</li>
+            </ul>
+
+            <h3>Good vs bad carousel topics</h3>
+            <table>
+              <tr><th>Bad (Too Broad)</th><th>Good (Specific)</th></tr>
+              <tr>
+                <td>"10 ways to improve your GTM strategy"</td>
+                <td>"How to align sales and marketing on ICP definition"</td>
+              </tr>
+              <tr>
+                <td>"Best practices for cold outreach"</td>
+                <td>"The 5-step framework for writing cold emails that get replies"</td>
+              </tr>
+              <tr>
+                <td>"How to use data in your business"</td>
+                <td>"3 metrics that predict churn (and how to track them)"</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Topic validation:</strong> Before creating a carousel, search LinkedIn for similar posts. If you find 5-plus posts on the topic with high engagement, it's validated. If you find zero, either you've discovered a gap or the topic isn't resonant. Test it.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide structure sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Slide Structure (Hook Slide, Problem, Steps, CTA)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Anatomy of a high-performing carousel</h3>
+            <p>Great carousels follow a predictable structure: hook to grab attention, problem to create relevance, steps or insights to deliver value, and CTA to drive action. This structure guides readers through a clear narrative.</p>
+
+            <h3>Slide-by-slide breakdown</h3>
+            <table>
+              <tr><th>Slide</th><th>Purpose</th><th>Example</th></tr>
+              <tr>
+                <td><strong>Slide 1: Hook</strong></td>
+                <td>Grab attention immediately. Bold statement, question, or surprising stat. Make them want to swipe</td>
+                <td>"Your cold emails are getting ignored. Here's why." or "5 mistakes killing your LinkedIn outreach"</td>
+              </tr>
+              <tr>
+                <td><strong>Slide 2: Problem setup</strong></td>
+                <td>Expand on the hook. Explain why this problem matters. Create urgency or pain</td>
+                <td>"Most reps send 100-plus emails per week and get 2 replies. The problem: generic messaging."</td>
+              </tr>
+              <tr>
+                <td><strong>Slides 3-10: Core content</strong></td>
+                <td>Deliver the solution. Step-by-step framework, tips, or insights. One idea per slide. Keep it actionable</td>
+                <td>Step 1: Research the prospect. Step 2: Personalise the first line. Step 3: Focus on their problem, not your product. Etc.</td>
+              </tr>
+              <tr>
+                <td><strong>Slide 11: Recap</strong></td>
+                <td>Summarise key takeaways. Reinforce the value delivered</td>
+                <td>"Recap: Research, personalise, focus on their pain, keep it short, clear CTA."</td>
+              </tr>
+              <tr>
+                <td><strong>Slide 12: CTA</strong></td>
+                <td>Tell readers what to do next. Follow you, comment, DM, share. Make it specific</td>
+                <td>"Found this helpful? Follow me for more GTM insights. Drop a comment with your biggest cold email challenge."</td>
+              </tr>
+            </table>
+
+            <h3>Slide length guidance</h3>
+            <ul>
+              <li><strong>8-12 slides is the sweet spot</strong> - Fewer than 8 feels incomplete. More than 12 and completion rate drops. Most high-performing carousels are 10 slides</li>
+              <li><strong>One idea per slide</strong> - Don't cram multiple points into one slide. Break complex ideas into multiple slides. Makes content easier to digest</li>
+              <li><strong>Text per slide</strong> - Aim for 10-20 words per slide. Headlines should be 5-7 words. Body text 1-2 short sentences max. More text reduces readability on mobile</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Hook formula:</strong> Start with a bold claim, stat, or question. Examples: "90% of sales decks fail. Here's why." or "What if I told you cold calling still works?" or "The biggest mistake in cold outreach (and how to fix it)." Test different hooks to see what resonates.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Design tips sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Design Tips (Bold Text, Minimal Words per Slide, Consistent Brand)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Design principles for high-performing carousels</h3>
+            <p>Great design is invisible. It makes content easy to read and visually appealing without being distracting. Bold text, consistent branding, and minimal words are the foundation.</p>
+
+            <h3>Typography best practices</h3>
+            <ul>
+              <li><strong>Use large, bold fonts</strong> - Slide headlines should be 60-80pt. Body text 30-40pt. Most viewing happens on mobile; small text is unreadable</li>
+              <li><strong>Limit fonts to 2 max</strong> - One for headlines, one for body text. Using 3-plus fonts looks messy and unprofessional</li>
+              <li><strong>High contrast</strong> - Dark text on light background or light text on dark background. Avoid low-contrast colour combos (grey on white, yellow on white)</li>
+              <li><strong>Left-align text</strong> - Centre alignment works for headlines but makes body text harder to read. Stick to left-aligned for multi-line text</li>
+            </ul>
+
+            <h3>Visual hierarchy</h3>
+            <table>
+              <tr><th>Element</th><th>Treatment</th><th>Why</th></tr>
+              <tr>
+                <td>Headline</td>
+                <td>Large, bold, top of slide</td>
+                <td>First thing readers see. Should communicate the slide's main idea</td>
+              </tr>
+              <tr>
+                <td>Body text</td>
+                <td>Smaller, below headline, 1-2 sentences max</td>
+                <td>Expands on headline. Keeps slides scannable</td>
+              </tr>
+              <tr>
+                <td>Icons or graphics</td>
+                <td>Simple, supporting (not decorative)</td>
+                <td>Visual aids help reinforce the message. Don't use clipart or generic stock photos</td>
+              </tr>
+              <tr>
+                <td>Branding</td>
+                <td>Logo in corner, consistent colours</td>
+                <td>Subtle but present. Users should know it's your content without branding being distracting</td>
+              </tr>
+            </table>
+
+            <h3>Colour and branding</h3>
+            <ul>
+              <li><strong>Stick to your brand colours</strong> - Use 2-3 colours consistently across all slides. This builds brand recognition. People should recognise your carousels before seeing your name</li>
+              <li><strong>Use colour intentionally</strong> - Highlight key words or phrases with a contrasting colour. Don't make every slide a different colour; it looks chaotic</li>
+              <li><strong>White space matters</strong> - Don't fill every pixel. Generous margins and spacing make slides easier to read. Cluttered slides overwhelm</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Mobile-first design:</strong> 80-plus percent of LinkedIn engagement happens on mobile. Design slides on desktop but view them on mobile before posting. If text is hard to read on a phone screen, increase font size or reduce word count.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Caption writing sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Caption Writing (Hook First Line, Context, CTA)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why the caption matters as much as the carousel</h3>
+            <p>The carousel delivers the content, but the caption sells the click. Without a strong caption, people scroll past. The first line is critical because LinkedIn truncates after one line; users must click "see more" to read the rest.</p>
+
+            <h3>Caption structure</h3>
+            <table>
+              <tr><th>Section</th><th>Purpose</th><th>Example</th></tr>
+              <tr>
+                <td><strong>First line (hook)</strong></td>
+                <td>Grab attention before "see more." Make it punchy and curiosity-driven</td>
+                <td>"Cold emails landing in spam? Here's the fix." or "Your sales deck is boring. Here's why."</td>
+              </tr>
+              <tr>
+                <td><strong>Context (2-3 sentences)</strong></td>
+                <td>Expand on the hook. Explain what the carousel covers and why it matters</td>
+                <td>"Most reps don't realise their emails trigger spam filters. I've analysed 500-plus cold campaigns. Here are the 5 mistakes killing deliverability."</td>
+              </tr>
+              <tr>
+                <td><strong>Preview of value</strong></td>
+                <td>Tease what's inside the carousel without giving it all away</td>
+                <td>"In this carousel: SPF/DKIM setup, email warmup strategy, content red flags, volume best practices, and tools to track deliverability."</td>
+              </tr>
+              <tr>
+                <td><strong>CTA</strong></td>
+                <td>Tell readers what to do. Follow, comment, share, DM. Make it specific</td>
+                <td>"Found this helpful? Follow me for more GTM insights. Comment with your biggest email challenge and I'll respond."</td>
+              </tr>
+            </table>
+
+            <h3>Caption length</h3>
+            <ul>
+              <li><strong>Keep it short</strong> - 100-150 words max. Long captions get skipped. People want to swipe through the carousel, not read a blog post</li>
+              <li><strong>Use line breaks</strong> - Break caption into short paragraphs (1-2 sentences each). Makes it scannable. Blocks of text are hard to read on mobile</li>
+              <li><strong>Avoid hashtags</strong> - LinkedIn's algorithm no longer rewards hashtags. They make captions look spammy. Focus on strong copy instead</li>
+            </ul>
+
+            <h3>Hook formulas that work</h3>
+            <ul>
+              <li><strong>Problem statement</strong> - "Your cold emails are getting ignored. Here's why."</li>
+              <li><strong>Bold claim</strong> - "Cold calling is dead. Here's what works instead."</li>
+              <li><strong>Question</strong> - "Why do most sales decks fail? I analysed 200 to find out."</li>
+              <li><strong>Surprising stat</strong> - "90% of LinkedIn messages go unanswered. Here's how to be in the 10%."</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Testing hooks:</strong> The first line determines click-through rate. Test different hooks on similar carousels. Track which ones drive more engagement. Double down on high-performing patterns.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posting cadence sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Posting Cadence (1-2 Per Week)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>How often to post carousels</h3>
+            <p>Carousels are high-effort content. Posting daily burns you out and dilutes quality. Posting once a month makes you forgettable. The sweet spot: 1-2 carousels per week, supplemented with regular text or single-image posts on other days.</p>
+
+            <h3>Weekly posting rhythm</h3>
+            <table>
+              <tr><th>Day</th><th>Content Type</th><th>Why</th></tr>
+              <tr>
+                <td>Monday</td>
+                <td>Carousel post</td>
+                <td>High engagement day. People catching up after the weekend</td>
+              </tr>
+              <tr>
+                <td>Tuesday-Wednesday</td>
+                <td>Text posts, single-image posts, engagement</td>
+                <td>Stay visible without creating new carousels. Comment on others' posts</td>
+              </tr>
+              <tr>
+                <td>Thursday</td>
+                <td>Carousel post (optional, if doing 2/week)</td>
+                <td>Mid-week engagement spike. Good for tutorials or frameworks</td>
+              </tr>
+              <tr>
+                <td>Friday</td>
+                <td>Light content (insights, quick tips)</td>
+                <td>Engagement drops Friday afternoon. Save heavy content for Mon-Thu</td>
+              </tr>
+            </table>
+
+            <h3>Batching carousel creation</h3>
+            <ul>
+              <li><strong>Script 4-5 carousels in one session</strong> - Set aside 2 hours. Outline topics and write slide scripts for multiple carousels. This is faster than scripting one at a time</li>
+              <li><strong>Design them all at once</strong> - Once scripts are done, design all carousels in one session using the same template. Batch work is more efficient</li>
+              <li><strong>Schedule or queue for posting</strong> - Now you have 4-5 weeks of content ready. Post on your chosen cadence without scrambling each week</li>
+            </ul>
+
+            <h3>Posting time optimisation</h3>
+            <p>LinkedIn engagement peaks during work hours. Best posting times: 8-10 AM or 12-2 PM in your audience's timezone. Avoid evenings and weekends when engagement drops. Check your LinkedIn analytics to see when your audience is most active and post accordingly.</p>
+
+            <div class="highlight">
+              <strong>Consistency beats volume:</strong> Posting 1 carousel per week for 12 weeks beats posting 3 in one week then nothing for 2 months. Build a habit. Your audience will expect and look forward to your carousels.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Optimal slide count sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Optimal Slide Count (8-12)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why 8-12 slides is the optimal range</h3>
+            <p>Too few slides and your carousel feels incomplete or surface-level. Too many slides and completion rate drops as users get bored or overwhelmed. Data shows 8-12 slides maximises engagement and completion rate.</p>
+
+            <h3>Slide count by content type</h3>
+            <table>
+              <tr><th>Content Type</th><th>Recommended Slides</th><th>Why</th></tr>
+              <tr>
+                <td>Step-by-step frameworks</td>
+                <td>10-12 slides</td>
+                <td>Hook (1), intro (1), 5-7 steps (1 per slide), recap (1), CTA (1). Covers full framework without feeling rushed</td>
+              </tr>
+              <tr>
+                <td>Tips or insights</td>
+                <td>8-10 slides</td>
+                <td>Hook (1), intro (1), 5 tips (1 per slide), recap (1), CTA (1). Short and punchy</td>
+              </tr>
+              <tr>
+                <td>Mistakes to avoid</td>
+                <td>8-10 slides</td>
+                <td>Hook (1), intro (1), 5 mistakes (1 per slide), recap (1), CTA (1). Negative framing hooks attention</td>
+              </tr>
+              <tr>
+                <td>Deep-dive tutorials</td>
+                <td>12-15 slides</td>
+                <td>Only go longer if topic demands it. Example: "Complete guide to email deliverability" justifies 15 slides. But most topics don't need this</td>
+              </tr>
+            </table>
+
+            <h3>What happens when you go too long</h3>
+            <ul>
+              <li><strong>Completion rate drops</strong> - Users swipe through first 5-6 slides, then bail. They don't see your CTA or recap</li>
+              <li><strong>Engagement per slide decreases</strong> - LinkedIn analytics show drop-off by slide. Slide 15 gets 30-40% of the views that slide 1 gets</li>
+              <li><strong>Carousel feels like work</strong> - If swiping through your carousel feels like a chore, users won't save or share it. Keep it tight</li>
+            </ul>
+
+            <h3>When to go shorter (5-7 slides)</h3>
+            <p>Sometimes less is more. If your topic is simple or you want quick consumption, 5-7 slides works. Example: "3 mistakes killing your LinkedIn profile" only needs 5 slides (hook, intro, 3 mistakes, CTA). Don't artificially pad to hit 10 slides.</p>
+
+            <div class="highlight">
+              <strong>Slide count test:</strong> After scripting your carousel, read through it. If any slide feels like filler or doesn't add value, cut it. Every slide must earn its place. Tight, valuable carousels perform better than long, padded ones.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Engagement strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Engagement Strategy (Reply to Every Comment in First 2 Hours)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why the first 2 hours are critical</h3>
+            <p>LinkedIn's algorithm watches initial engagement closely. If your post gets likes and comments in the first 2 hours, LinkedIn interprets it as high-quality and pushes it to more people. If engagement is slow, the post dies in the feed.</p>
+
+            <h3>Post-publish engagement checklist</h3>
+            <ul>
+              <li><strong>Reply to every comment within 2 hours</strong> - Don't just say "Thanks!" Ask follow-up questions. Keep the conversation going. Each reply signals engagement to the algorithm</li>
+              <li><strong>Engage with commenters' profiles</strong> - After replying, visit their profile and engage with their recent posts. This builds relationships and increases likelihood they'll engage with your future content</li>
+              <li><strong>DM high-intent commenters</strong> - If someone leaves a thoughtful comment or asks a question related to your product, DM them: "Loved your comment on my carousel. Would you be open to a quick chat about X?"</li>
+              <li><strong>Share the post in relevant communities</strong> - Post link in Slack communities, internal channels, or DM to close connections. Initial engagement boost helps algorithmic reach</li>
+            </ul>
+
+            <h3>What to reply to comments</h3>
+            <table>
+              <tr><th>Comment Type</th><th>How to Reply</th></tr>
+              <tr>
+                <td>"Great post!"</td>
+                <td>Thank them and ask a question: "Thanks Sarah! Which of the 5 tips do you think is most underused?"</td>
+              </tr>
+              <tr>
+                <td>Question or clarification</td>
+                <td>Answer thoroughly. Then ask a follow-up: "Great question. Here's how I think about it... What's your experience with this?"</td>
+              </tr>
+              <tr>
+                <td>Adds their own insight</td>
+                <td>Acknowledge and build on it: "Love this addition, James. Totally agree that X is underrated. Have you found Y works as well?"</td>
+              </tr>
+              <tr>
+                <td>Critique or disagreement</td>
+                <td>Stay professional. Acknowledge their perspective: "Fair point. I've seen it work in X scenarios, but you're right it doesn't fit Y. Thanks for adding nuance."</td>
+              </tr>
+            </table>
+
+            <h3>Proactive engagement (before posting)</h3>
+            <ul>
+              <li><strong>Seed engagement with your network</strong> - Before posting, DM 5-10 close connections: "Posting a carousel on X in 10 minutes. Would love your thoughts." When it goes live, they'll be the first to comment</li>
+              <li><strong>Post when your audience is active</strong> - Check LinkedIn analytics to see when your followers are online. Post during peak hours for maximum initial engagement</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Engagement flywheel:</strong> More comments - More replies from you - More total engagement - Algorithm boosts reach - More views - More comments. The first 2 hours set this flywheel in motion. Prioritise active engagement immediately after posting.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Too much text per slide</h4>
+          <div class="why">You cram 5 sentences onto one slide. Text is tiny and unreadable on mobile. Users skip it immediately.</div>
+          <div class="fix">Limit to 10-20 words per slide. Use large fonts (60-plus pt for headlines). If content doesn't fit on one slide, split it into two slides. Prioritise readability over saying everything.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. No hook on first slide</h4>
+          <div class="why">Slide 1 says "Introduction" or has a generic title. Users don't swipe because nothing grabbed their attention.</div>
+          <div class="fix">Slide 1 must hook. Use a bold statement, question, or stat. Examples: "Your emails are landing in spam. Here's why." or "5 mistakes killing your outreach." Make them curious enough to swipe.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Inconsistent design</h4>
+          <div class="why">Each slide uses different fonts, colours, or layouts. Looks unprofessional and hurts brand recognition.</div>
+          <div class="fix">Use a template. Keep fonts, colours, and layout consistent across all slides. Your carousels should be instantly recognisable as yours. Build a branded template in Canva and reuse it.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. No CTA on last slide</h4>
+          <div class="why">Carousel ends with no call-to-action. Users swipe through, get value, then scroll away. You miss the conversion opportunity.</div>
+          <div class="fix">Always include a CTA on the last slide. Tell readers what to do next: follow you, comment, DM, share. Make it specific. "Drop a comment with your biggest challenge and I'll respond."</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Posting without engaging in comments</h4>
+          <div class="why">You post the carousel then disappear. Comments sit unanswered. Algorithm sees low engagement and kills reach.</div>
+          <div class="fix">Block 1-2 hours after posting for active engagement. Reply to every comment. Ask follow-up questions. Keep the conversation going. First 2 hours are critical for algorithmic reach.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Making it too promotional</h4>
+          <div class="why">Every slide mentions your product. It reads like a sales pitch disguised as education. Users don't save or share it.</div>
+          <div class="fix">Deliver pure value for 11 slides. Only mention your product on slide 12 if it's genuinely relevant. Or keep it in the caption CTA. Trust that educational content builds more pipeline than direct pitches.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>7. Poor readability on mobile</h4>
+          <div class="why">You design on desktop and never check mobile. Text is too small, colours don't contrast well, slides are hard to read on a phone.</div>
+          <div class="fix">Always preview on mobile before posting. 80-plus percent of views happen on mobile. If text is hard to read on your phone screen, increase font size or reduce word count.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

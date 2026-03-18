@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 3.4 - Sponsor Niche Community Events | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 3.4 - Community-Led Growth</div>
+  <h1>Sponsor Niche Community Events</h1>
+  <p class="desc">Sponsor existing community events (meetups, virtual events, micro-conferences) to gain immediate access to an engaged, pre-qualified audience. Faster than building your own community, with direct networking and visibility among your ICP.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#3fb950;background:#3fb95022">
+      <div class="hero-ch-icon" style="background:#3fb950">C</div>
+      <div class="hero-ch-name">Community (Primary)</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low</span>
+    <span class="tag tag-cost">Cost: Low-Medium</span>
+    <span class="tag tag-icp">ICP: All ICPs</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Building a community from scratch takes 6-12 months. Sponsoring an existing community event gives you immediate access to a highly engaged, pre-qualified audience who chose to attend because the topic matters to them. You're buying access to trust someone else spent years building.
+      </div>
+      <h3>The psychology behind event sponsorship</h3>
+      <ul>
+        <li><strong>Association with trusted organisers</strong> - When you sponsor an event run by a respected community figure, their credibility transfers to you. Attendees assume sponsors are vetted and relevant</li>
+        <li><strong>Captive, high-intent audience</strong> - People at community events are actively seeking to learn and network. They're not passively scrolling. They're engaged and receptive to meeting sponsors who can help them</li>
+        <li><strong>Permission to start conversations</strong> - As a sponsor, you have explicit permission to network, speak, and share your perspective. This eliminates the awkwardness of cold outreach - people expect to meet you</li>
+        <li><strong>Immediate credibility through selection</strong> - Being chosen as a sponsor signals legitimacy. Attendees think "If Sarah chose them as a sponsor, they must be credible in this space"</li>
+      </ul>
+      <h3>Why niche events specifically</h3>
+      <p>Large conferences have hundreds of sponsors competing for attention. Niche community events (50-200 attendees) have 2-5 sponsors maximum. You're not lost in noise. Every attendee sees your name, hears you speak if you negotiate a slot, and knows you supported the event.</p>
+      <p><strong>The ROI advantage:</strong> Niche event sponsorships cost a fraction of major conferences but deliver higher-quality conversations. At a 100-person niche event, you can personally meet 30-40 attendees. At a 5,000-person conference, you're lucky to have 10 meaningful conversations despite spending significantly more.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node" style="background:#3fb950">I</div><div class="wf-label">Identify Events</div><div class="wf-action">ICP gatherings</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node" style="background:#3fb950">E</div><div class="wf-label">Evaluate Fit</div><div class="wf-action">Audience quality</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node" style="background:#3fb950">N</div><div class="wf-label">Negotiate Package</div><div class="wf-action">Speaking + access</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node" style="background:#3fb950">P</div><div class="wf-label">Prepare Assets</div><div class="wf-action">Talking points</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node" style="background:#3fb950">A</div><div class="wf-label">Attend & Network</div><div class="wf-action">Real conversations</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node" style="background:#3fb950">F</div><div class="wf-label">Follow Up</div><div class="wf-action">Within 48 hours</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify relevant events</td>
+          <td>Look for niche meetups, virtual events, and micro-conferences where your ICP gathers. Check Luma, Eventbrite, LinkedIn Events, and community-specific platforms. Ask customers what events they attend</td>
+          <td>2-3 hours research</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Evaluate audience fit</td>
+          <td>Review attendee list if available, or ask organiser for attendee demographics. Check past event photos and recaps to gauge quality. Ensure 60%+ of attendees match your ICP</td>
+          <td>30 min per event evaluation</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Negotiate sponsorship package</td>
+          <td>Contact organiser directly. Ask about sponsorship tiers. Negotiate for what matters: speaking slot (5-10 min), attendee list, logo placement, booth or table. Don't just accept standard package - customise it</td>
+          <td>1-2 hours negotiation</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Prepare assets and talking points</td>
+          <td>If you're speaking, prepare a genuinely helpful 5-10 min talk (not a pitch). Prepare 3-5 conversation starters for networking. Bring swag if relevant (useful items, not junk)</td>
+          <td>2-3 hours preparation</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Attend and network strategically</td>
+          <td>Don't just stand at your booth. Actively network. Ask attendees about their challenges, not "are you interested in our product". Have real conversations. Take notes on who you meet</td>
+          <td>Event duration (typically 2-4 hours)</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Follow up with contacts</td>
+          <td>Within 48 hours, send personalised messages to everyone you met. Reference specific conversation details. Offer to continue the conversation or share resources. This is where sponsorship ROI happens</td>
+          <td>2-3 hours follow-up</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Sponsor the same event multiple times (quarterly or annually). First-time sponsors are unknown. By the third event, you're part of the community. Attendees know your name and seek you out. Consistency builds much stronger ROI than one-off sponsorships.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Luma</strong></td>
+          <td>Free</td>
+          <td>Discovering virtual and in-person community events</td>
+          <td>Clean event discovery interface. Shows popular events in specific industries. Easy to filter by location, topic, or date. Many niche communities use Luma</td>
+          <td>Not all community events listed. Skews toward tech and startup communities. Misses industry-specific platforms</td>
+        </tr>
+        <tr>
+          <td><strong>Eventbrite</strong></td>
+          <td>$0+ (varies)</td>
+          <td>Finding larger meetups and paid events</td>
+          <td>Massive event database. Search by location and category. Shows attendee counts. Contact info for organisers available</td>
+          <td>Cluttered with non-professional events. Need to filter heavily. Many listings are outdated or cancelled</td>
+        </tr>
+        <tr>
+          <td><strong>Meetup</strong></td>
+          <td>$25/mo (for organisers)</td>
+          <td>Local, recurring community meetups</td>
+          <td>Best for finding local, recurring meetups in specific industries. Shows member count and engagement. Easy to contact organisers about sponsorship</td>
+          <td>Primarily local/in-person events. Virtual events less common. Some industries not well-represented</td>
+        </tr>
+        <tr>
+          <td><strong>Lu.ma</strong></td>
+          <td>Free</td>
+          <td>High-quality curated events, especially in tech and B2B</td>
+          <td>Curated event discovery. Social features show which connections are attending. Calendar sync. Popular with startup and SaaS communities</td>
+          <td>Smaller event database than Eventbrite. Newer platform with less historical data. Skews heavily tech-focused</td>
+        </tr>
+        <tr>
+          <td><strong>Community-specific platforms</strong></td>
+          <td>Varies</td>
+          <td>Industry-specific events (e.g., RevOps, Sales Ops, GTM communities)</td>
+          <td>Events tailored to specific ICPs. Higher-quality attendee fit. Often run by respected community leaders in that space</td>
+          <td>Need to know which communities exist. No central discovery. Each has its own platform or Slack/Discord announcements</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Luma</strong> (free) for discovering tech and B2B events. Use <strong>Meetup</strong> ($25/mo) for local recurring meetups. Ask your best customers directly: "What events or meetups do you attend?" This surfaces the highest-quality, most relevant events.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Finding the Right Events sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Finding the Right Events (Niche Greater Than Large, Engaged Greater Than Big)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why niche beats large</h3>
+            <p>Large conferences attract everyone. Niche events attract your exact ICP who care deeply about the specific topic. At a 5,000-person marketing conference, you're one of 200 sponsors. At a 100-person RevOps meetup, you're one of 3 sponsors and every attendee knows who you are.</p>
+
+            <h3>How to identify high-value niche events</h3>
+            <ul>
+              <li><strong>Ask your customers directly</strong> - "What events, meetups, or community gatherings do you attend?" This gives you a curated list of events your ICP actually values</li>
+              <li><strong>Check community Slack/Discord channels</strong> - Many communities announce events in dedicated channels. Join relevant communities and watch for event announcements</li>
+              <li><strong>Search Luma and LinkedIn Events by topic</strong> - Search specific pain points or job titles: "sales ops meetup", "RevOps community event", "B2B growth workshop"</li>
+              <li><strong>Follow community leaders</strong> - Identify who runs communities in your space. Follow them on LinkedIn and Twitter. They announce their events publicly</li>
+              <li><strong>Look for recurring events</strong> - Quarterly or monthly events signal established communities. One-off events are riskier - unclear if they'll have good attendance or repeat</li>
+            </ul>
+
+            <h3>Evaluating event quality</h3>
+            <table>
+              <tr><th>Good Signal</th><th>Bad Signal</th></tr>
+              <tr>
+                <td>50-200 attendees with clear ICP focus</td>
+                <td>Over 1,000 attendees or very broad audience</td>
+              </tr>
+              <tr>
+                <td>Run by respected community figure or organisation</td>
+                <td>Run by unknown organiser with no community credibility</td>
+              </tr>
+              <tr>
+                <td>Past events had high engagement (photos, recaps, testimonials)</td>
+                <td>First-time event with no track record</td>
+              </tr>
+              <tr>
+                <td>Attendees actively participate (not just listen passively)</td>
+                <td>One-way presentations with no networking component</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>The ICP concentration test:</strong> If you can't expect at least 30 target accounts or 50 target individuals at an event, it's too broad or too small. You need enough ICP density to justify the sponsorship investment and time.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sponsorship Tiers sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Sponsorship Tiers (What to Negotiate For - Speaking, Attendees, Logo)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Standard sponsorship packages vs what you actually want</h3>
+            <p>Most events offer standard tiers: logo on website, booth space, swag bag insert. These are table stakes. The real value comes from speaking slots, attendee access, and organiser partnership. Negotiate for what drives pipeline, not what looks good in a sponsor deck.</p>
+
+            <h3>What to negotiate for (in priority order)</h3>
+            <ul>
+              <li><strong>Speaking slot (5-10 min)</strong> - This is the highest-value item. Positions you as an expert, not just a sponsor. Everyone remembers speakers. Few remember booth vendors. Worth negotiating higher sponsorship tier for this</li>
+              <li><strong>Attendee list with contact info</strong> - Pre-event attendee list lets you research who's attending and prepare personalised talking points. Post-event list enables follow-up. Without this, you can't systematically follow up</li>
+              <li><strong>Organiser introduction/endorsement</strong> - Ask organiser to introduce you warmly in their opening remarks or email. "We're excited to have Sarah from Acme sponsoring - she's an expert in X." This transfers credibility immediately</li>
+              <li><strong>Dedicated networking time</strong> - Request a dedicated sponsor networking block where attendees are encouraged to meet sponsors. Passive booth presence gets low traffic. Structured networking creates obligation to engage</li>
+              <li><strong>Logo and branding</strong> - Standard but necessary. Logo on website, emails, event materials. Ensure it's prominent, not buried with 20 other sponsors</li>
+            </ul>
+
+            <h3>Typical sponsorship pricing (niche events)</h3>
+            <table>
+              <tr><th>Tier</th><th>Price Range</th><th>What You Get</th></tr>
+              <tr>
+                <td>Basic</td>
+                <td>$500-$1,500</td>
+                <td>Logo on website and emails. Booth or table space. Swag bag insert</td>
+              </tr>
+              <tr>
+                <td>Standard</td>
+                <td>$1,500-$3,000</td>
+                <td>All basic benefits plus attendee list, social media mentions, larger booth space</td>
+              </tr>
+              <tr>
+                <td>Premium</td>
+                <td>$3,000-$5,000</td>
+                <td>All standard benefits plus 5-10 min speaking slot, dedicated email mention, VIP networking access</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Negotiation tip:</strong> If budget is tight, offer to provide value in exchange for sponsorship. "We can't do the premium tier, but we can provide X resource or bring in Y speaker from our network. Would that work for standard tier pricing?" Community organisers often value content and connections over cash.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Maximising ROI sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Maximising ROI from Sponsorship (Beyond Just Showing Up)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why most sponsorships fail to deliver ROI</h3>
+            <p>Companies sponsor events, set up a booth, collect business cards, and never follow up effectively. The event becomes a cost line item with no pipeline attribution. ROI comes from preparation, active engagement, and systematic follow-up - not just presence.</p>
+
+            <h3>Pre-event preparation (the week before)</h3>
+            <ul>
+              <li><strong>Research attendees</strong> - Get attendee list. Identify top 20 target accounts or people you want to meet. Research them on LinkedIn. Prepare personalised talking points</li>
+              <li><strong>Reach out to key attendees beforehand</strong> - DM or email 10-15 top targets: "Looking forward to meeting you at the event! Would love to hear about your work on X." Pre-arranged meetings beat hoping to bump into people</li>
+              <li><strong>Prepare your talk (if speaking)</strong> - No product pitches. Share frameworks, lessons learned, or insights your ICP finds valuable. Aim to be the most helpful speaker, not the most promotional</li>
+              <li><strong>Coordinate team attendance</strong> - If sending multiple people, assign roles: one person speaks, one networks actively, one staffs booth. Don't cluster together - spread out to maximise conversations</li>
+            </ul>
+
+            <h3>During the event (active engagement tactics)</h3>
+            <ul>
+              <li><strong>Don't hide at your booth</strong> - Actively walk around, introduce yourself, ask people about their challenges. The booth is a home base, not where you spend all your time</li>
+              <li><strong>Ask discovery questions, not pitches</strong> - "What's your biggest challenge with X right now?" not "Have you heard about our product?". Real conversations build relationships</li>
+              <li><strong>Take detailed notes on each person</strong> - Use phone notes or paper. Write down: name, company, specific challenge they mentioned, follow-up action. You'll forget otherwise</li>
+              <li><strong>Offer immediate value</strong> - "I have a framework for that - let me send it to you." or "You should meet James who solved exactly this. Let me intro you." Be helpful now, not just promising future calls</li>
+            </ul>
+
+            <h3>Post-event follow-up (within 48 hours)</h3>
+            <ul>
+              <li><strong>Personalised messages to everyone you met</strong> - Reference specific conversation: "Sarah, great chatting about your SDR scaling challenge. Here's that framework I mentioned..."</li>
+              <li><strong>Prioritise high-intent contacts first</strong> - People who expressed strong interest or clear pain points get outreach within 24h. Lower-priority contacts within 48h</li>
+              <li><strong>Deliver on promises immediately</strong> - If you said you'd send something, send it within 24h. Fast follow-through builds trust and keeps momentum</li>
+              <li><strong>Request intro to organiser's network</strong> - If you built rapport with organiser, ask for intros to other attendees or community members. Organisers are connectors - leverage that</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>The 3x3 rule:</strong> For every 1 hour at the event, spend 30 min preparing beforehand and 30 min following up after. Events without pre-work and follow-up are wasted opportunities. The real ROI happens in the preparation and follow-through.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- What to Do at the Event sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>What to Do at the Event (Real Networking, Not Booth Sitting)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The booth trap</h3>
+            <p>Most sponsors sit at their booth waiting for people to approach. Attendees avoid booths because they expect pitches. The booth should be a home base where people can find you, not where you spend the whole event. The real value happens in active networking.</p>
+
+            <h3>Active networking strategies</h3>
+            <ul>
+              <li><strong>Arrive early, stay late</strong> - Early arrivals and late lingerers are often the most engaged community members. Easier to have real conversations when fewer people around</li>
+              <li><strong>Join group conversations</strong> - Don't wait for one-on-one opportunities. Join small groups (3-4 people) discussing relevant topics. Listen first, add value to discussion, then introduce yourself</li>
+              <li><strong>Ask for introductions</strong> - When you meet someone interesting, ask "Who else here should I meet?" People love making connections. This exponentially expands your network at the event</li>
+              <li><strong>Facilitate introductions yourself</strong> - Connect two attendees who could help each other. Become known as a connector, not just a vendor. This builds social capital fast</li>
+              <li><strong>Attend all sessions and workshops</strong> - Don't skip content to staff your booth. Attending sessions shows you value the community. Plus you meet people in shared learning context, not transactional booth context</li>
+            </ul>
+
+            <h3>Conversation framework</h3>
+            <ol>
+              <li><strong>Introduction (15 sec)</strong> - "I'm Sarah, I work on tools for sales ops teams. What brings you to the event?"</li>
+              <li><strong>Discovery (2-3 min)</strong> - Ask about their role, challenges, what they're hoping to learn at the event. Listen actively, take mental notes</li>
+              <li><strong>Value add (1-2 min)</strong> - Share a relevant insight, resource, or introduction based on what they shared. Give before asking for anything</li>
+              <li><strong>Follow-up agreement (30 sec)</strong> - "Would love to continue this conversation. Mind if I send you that framework I mentioned?" Get permission to follow up</li>
+            </ol>
+
+            <div class="highlight">
+              <strong>The help-first principle:</strong> Every conversation should leave the other person better off, whether they become a customer or not. Share insights, make intros, send resources. This reputation compounds across events as your name spreads through the community.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post-Event Follow-Up Sequence sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Post-Event Follow-Up Sequence (Turn Conversations into Pipeline)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why most event follow-up fails</h3>
+            <p>Typical follow-up: generic "nice to meet you" email sent 1-2 weeks after the event. By then, the person barely remembers you. Effective follow-up is fast, personalised, and value-first. It references specific conversation details and delivers on promises made at the event.</p>
+
+            <h3>Follow-up timeline</h3>
+            <table>
+              <tr><th>Timeline</th><th>Action</th><th>Message Type</th></tr>
+              <tr>
+                <td>Within 24h</td>
+                <td>Message top 10 priority contacts</td>
+                <td>"Sarah, great meeting you yesterday. You mentioned the challenge with scaling your SDR team. Here's that framework I mentioned on how James at Acme approached it..."</td>
+              </tr>
+              <tr>
+                <td>Within 48h</td>
+                <td>Message remaining contacts</td>
+                <td>"Thanks for chatting at the event! Enjoyed hearing about your work on X. Here's my contact if you want to continue the conversation..."</td>
+              </tr>
+              <tr>
+                <td>Within 1 week</td>
+                <td>Follow up on promised resources/intros</td>
+                <td>Deliver everything you promised during conversations. Resources, introductions, frameworks, anything mentioned</td>
+              </tr>
+              <tr>
+                <td>2 weeks after</td>
+                <td>Check in on high-intent contacts</td>
+                <td>"Following up on our conversation about X. Have you had a chance to review that framework? Would love to hear your thoughts."</td>
+              </tr>
+            </table>
+
+            <h3>Message personalisation checklist</h3>
+            <ul>
+              <li>Reference specific conversation detail (not just "nice to meet you")</li>
+              <li>Mention specific challenge or topic they discussed</li>
+              <li>Deliver on any promise you made (send resource, make intro, share insight)</li>
+              <li>Include clear next step or question (not just "let me know if you want to chat")</li>
+              <li>Keep it conversational and brief (3-4 sentences max)</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>CRM tracking:</strong> Log every event contact in your CRM immediately. Tag them with event name, conversation notes, priority level, and follow-up status. This ensures systematic follow-up and allows you to measure which events drive the most pipeline over time.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Building Ongoing Relationships with Organisers sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Building Ongoing Relationships with Organisers (Long-Term Partnership)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why organiser relationships matter</h3>
+            <p>Event organisers are community gatekeepers. Build a strong relationship with them and they'll recommend you to attendees, give you better sponsorship terms, and invite you to speak at future events. They can also introduce you to other community leaders and high-value members.</p>
+
+            <h3>How to build relationships with organisers</h3>
+            <ul>
+              <li><strong>Be the easiest sponsor to work with</strong> - Respond quickly to their requests. Deliver assets on time. Don't haggle over minor details. Organisers remember sponsors who make their lives easier</li>
+              <li><strong>Provide value beyond sponsorship fee</strong> - Offer to promote the event to your network. Share useful content or speakers. Help them recruit attendees. Become a partner, not just a check writer</li>
+              <li><strong>Give feedback and appreciation</strong> - After the event, send thoughtful feedback on what worked well. Thank them publicly on LinkedIn. Organisers rarely get appreciation - this builds goodwill</li>
+              <li><strong>Commit to recurring sponsorship</strong> - "We'd love to sponsor your next 3 events." Long-term commitment gets you better terms, deeper partnership, and stronger community integration</li>
+              <li><strong>Stay in touch between events</strong> - Check in quarterly even when no event coming up. Share relevant resources. Ask how their community is growing. Build a real relationship, not transactional contact</li>
+            </ul>
+
+            <h3>Benefits of strong organiser relationships</h3>
+            <ul>
+              <li>First access to sponsorship opportunities (before public announcement)</li>
+              <li>Better sponsorship terms or custom packages built for you</li>
+              <li>Introductions to high-value community members or other organisers</li>
+              <li>Speaking invitations at future events without having to pitch</li>
+              <li>Credibility boost when organiser endorses you to the community</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>The partnership mindset:</strong> Don't treat organisers as vendors selling you access. Treat them as partners building something valuable. Ask "How can I help make your next event even better?" This shift in mindset creates dramatically stronger relationships.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Sponsoring too-broad events</h4>
+          <div class="why">You sponsor a large general conference with thousands of attendees but only 5% match your ICP. You spend significantly more but have fewer quality conversations than a niche event would deliver.</div>
+          <div class="fix">Focus on niche events with 50-200 attendees where 60%+ match your ICP. Better to be the only sponsor at a 100-person perfect-fit event than one of 50 sponsors at a 2,000-person broad event.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. No clear goal or follow-up plan</h4>
+          <div class="why">You sponsor the event, show up, collect business cards, then never follow up systematically. No CRM tracking, no prioritisation, no personalised outreach. The sponsorship becomes pure expense with no pipeline.</div>
+          <div class="fix">Set a clear goal before the event (meet 30 attendees, get 10 qualified conversations). Prepare follow-up templates. Log all contacts in CRM immediately. Follow up within 48h with personalised messages.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Sending junior reps who can't have strategic conversations</h4>
+          <div class="why">You send junior staff to represent you at the event. They can explain your product but can't have strategic conversations about the ICP's challenges. Attendees don't engage deeply because there's no peer-level discussion.</div>
+          <div class="fix">Send people who can have strategic, peer-level conversations with your ICP. Founders, senior sales, or subject matter experts. Attendees want to talk to people who understand their challenges deeply, not junior reps reading from scripts.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Over-branding and aggressive sponsor presence</h4>
+          <div class="why">You plaster your logo everywhere, hand out excessive swag, and make every interaction feel like a sales pitch. Community events hate aggressive sponsors. Attendees avoid your booth.</div>
+          <div class="fix">Subtlety and helpfulness beat aggressive branding. Minimal swag (useful items only), conversational interactions, no hard pitches. Position yourself as a community supporter who happens to have a relevant product, not a vendor hunting for deals.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Not negotiating for attendee access</h4>
+          <div class="why">You accept standard sponsorship package without asking for attendee list or speaking slot. You have no way to prepare or follow up systematically. You miss the highest-value components of sponsorship.</div>
+          <div class="fix">Always negotiate. Ask for attendee list (pre and post-event), speaking slot, and organiser endorsement. These are often available if you just ask. Don't accept first offer - customise the package to what actually drives pipeline.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. One-time sponsorship without building ongoing relationship</h4>
+          <div class="why">You sponsor once, get mediocre results, and never come back. First-time sponsors are unknown. The real value comes from being a consistent community supporter across multiple events.</div>
+          <div class="fix">Commit to sponsoring the same event 2-3 times minimum. By the third event, you're part of the community fabric. Attendees recognise you, seek you out, and trust you more. Build relationship with organiser for long-term partnership.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

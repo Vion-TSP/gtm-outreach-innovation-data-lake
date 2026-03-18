@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 7.6 — Champion Building Programme | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 7.6 - ABM Plays</div>
+  <h1>Champion Building Programme</h1>
+  <p class="desc">Systematically identify and equip internal champions at target accounts with content, ROI data, presentations, and coaching to help them sell your solution internally. Turn engaged mid-level contacts into powerful advocates who navigate bureaucracy and build consensus on your behalf.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low</span>
+    <span class="tag tag-icp">ICP: Mid-level Managers, RevOps, Marketing Managers</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Most enterprise deals have an internal champion whether you intentionally cultivate one or not. The champion either succeeds or fails at building internal consensus. By proactively equipping champions with tools and coaching, you dramatically increase their success rate, which directly increases your close rate.
+      </div>
+      <h3>The psychology behind champion programmes</h3>
+      <ul>
+        <li><strong>Ownership and investment</strong> - When someone champions your solution internally, they become psychologically invested in its success. Helping them win makes them help you win. Mutual incentive alignment</li>
+        <li><strong>Internal credibility</strong> - Champions are trusted colleagues not external salespeople. Their recommendations carry more weight than yours. Peer influence beats vendor pitches in enterprise decision-making</li>
+        <li><strong>Political navigation</strong> - Champions understand internal politics, who has influence, where landmines exist, and how decisions really get made. You cannot navigate this from outside. Champions can</li>
+        <li><strong>Effort reciprocity</strong> - When you invest significant effort helping someone succeed internally, they feel obligated to reciprocate with effort, advocacy, and information sharing. Relationship depth matters</li>
+      </ul>
+      <h3>Why champion building specifically</h3>
+      <p>Natural champions exist but often lack resources to sell effectively internally. They believe in your solution but do not have ROI analysis, cannot answer technical objections, and struggle presenting to executives. Systematic champion building turns willing but under-equipped advocates into powerful internal salespeople.</p>
+      <p><strong>The force multiplier:</strong> One equipped champion can reach 10 internal stakeholders you will never get meetings with. They attend internal meetings you cannot access. They continue selling when you are offline. Champion programmes scale your selling capacity beyond your direct reach.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Identify</div><div class="wf-action">Potential champion</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-email">B</div><div class="wf-label">Build</div><div class="wf-action">Relationship</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">P</div><div class="wf-label">Provide Tools</div><div class="wf-action">Selling materials</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-phone">C</div><div class="wf-label">Coach</div><div class="wf-action">Internal pitch</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">S</div><div class="wf-label">Support</div><div class="wf-action">Through process</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-video">C</div><div class="wf-label">Celebrate</div><div class="wf-action">The win together</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify Potential Champion</td>
+          <td>Look for mid-level managers or practitioners who are engaged, asking good questions, and have credibility internally. Not necessarily C-suite. Often RevOps, Marketing Ops, or Department Heads who will use the solution and have influence</td>
+          <td>Ongoing during sales conversations</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Build Relationship</td>
+          <td>Invest time understanding their goals, challenges, and political dynamics. What does career success look like for them? Who do they report to? What are their personal motivations beyond the business case? Build genuine relationship not transactional one</td>
+          <td>2-3 conversations, 30-60 min each</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Provide Internal Selling Tools</td>
+          <td>Create champion toolkit including executive presentation deck, ROI calculator, comparison sheets, objection handling guide, technical FAQ, and case studies they can share internally. Make it easy for them to sell without you in the room</td>
+          <td>1-2 hours creating champion kit</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Coach on Internal Pitch</td>
+          <td>Role-play presenting to their executives. Anticipate objections. Help craft messaging that resonates with their company culture and priorities. Teach them how to navigate politics and build consensus. Be their strategic advisor not just vendor</td>
+          <td>1-2 coaching sessions, 45 min each</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Support Through Buying Process</td>
+          <td>Stay in close contact as they navigate internal approvals. Provide additional materials as objections arise. Be available for questions. Troubleshoot political obstacles. Adjust strategy based on their feedback from internal conversations</td>
+          <td>Ongoing weekly check-ins</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Celebrate the Win Together</td>
+          <td>When deal closes, publicly recognise champion's role in making it happen. Thank them in front of their management. Offer to be reference for their internal performance reviews. Build long-term relationship beyond single deal</td>
+          <td>Post-close acknowledgement</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Create champion Slack or email channel for ongoing access. "Ping me anytime with questions as you navigate this internally." Being responsive and available builds trust and increases champion effectiveness. Make yourself their secret weapon.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>HubSpot CRM</strong></td>
+          <td>Free</td>
+          <td>Tracking champion engagement and managing relationship</td>
+          <td>Free CRM tracks all interactions with champion. Document coaching sessions, materials shared, internal milestones. Set reminders for check-ins. Note their goals and motivations for personalised support</td>
+          <td>Basic functionality in free tier. No advanced deal coaching features. Manual tracking of champion activities rather than automated workflows</td>
+        </tr>
+        <tr>
+          <td><strong>Notion</strong></td>
+          <td>Free or £10/mo</td>
+          <td>Creating champion resource hub</td>
+          <td>Build shared workspace with champion containing all materials they need. Presentation decks, ROI tools, FAQs, case studies. Easy to update. Champion can access anytime and share internally with their team</td>
+          <td>No built-in analytics to see what champion is accessing or sharing. Cannot track engagement within Notion workspace</td>
+        </tr>
+        <tr>
+          <td><strong>LinkedIn</strong></td>
+          <td>Free</td>
+          <td>Maintaining ongoing relationship with champion</td>
+          <td>Stay connected with champion via LinkedIn. Share relevant content, congratulate on promotions, maintain relationship beyond single deal. Long-term champion relationships drive referrals and expansion opportunities</td>
+          <td>Requires manual relationship maintenance. No automation. Relationship depth depends on consistent personal effort</td>
+        </tr>
+        <tr>
+          <td><strong>Google Slides or Canva</strong></td>
+          <td>Free</td>
+          <td>Creating presentation materials for champion</td>
+          <td>Build executive presentation deck champion can use internally. Make it editable so they can customise for their context. Include speaker notes with suggested talking points. Easy to share and collaborate</td>
+          <td>Static documents without interactive elements. Cannot track who views or how much time spent with materials</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Use <strong>HubSpot Free CRM</strong> for tracking champion relationship and <strong>Google Slides</strong> for creating champion materials. Simple, free stack that covers core needs. Invest time in relationship and content quality rather than expensive tools.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Identifying Right Champion sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Identifying Right Champion - Look for Influence Not Title</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What makes an effective champion</h3>
+            <p>Not everyone who likes your solution can champion it effectively. Good champions combine personal motivation with organisational influence and political skills. Wrong champion wastes your investment and leads to stalled deals even when they try hard.</p>
+
+            <h3>Champion characteristics to look for</h3>
+            <ul>
+              <li><strong>Personal motivation</strong> - Do they have skin in the game? Will successful implementation make their job easier or advance their career? Champions driven by personal benefit work harder than those doing favours</li>
+              <li><strong>Political capital</strong> - Are they respected internally? Do people listen when they speak? New employees or those with low credibility struggle to champion regardless of enthusiasm</li>
+              <li><strong>Access to decision makers</strong> - Can they get meetings with executives? Do they have regular touchpoints with budget holders? Champions without access to power cannot drive decisions</li>
+              <li><strong>Communication skills</strong> - Can they articulate value proposition clearly? Present to executives? Handle objections? Strong communicators are more effective champions</li>
+              <li><strong>Persistence and follow-through</strong> - Do they follow up on commitments? Building internal consensus requires consistent effort over months. Champions who go quiet after initial enthusiasm cannot close deals</li>
+            </ul>
+
+            <h3>Champion screening questions</h3>
+            <table>
+              <tr><th>Question</th><th>What It Reveals</th><th>Good Answer</th></tr>
+              <tr>
+                <td>"How are purchase decisions like this typically made here?"</td>
+                <td>Understanding of internal process and their role in it</td>
+                <td>Detailed explanation showing they have navigated this before and understand the landscape</td>
+              </tr>
+              <tr>
+                <td>"Who else needs to be involved in evaluating this?"</td>
+                <td>Awareness of buying committee and willingness to multi-thread</td>
+                <td>Names specific stakeholders and explains their concerns. Offers to facilitate introductions</td>
+              </tr>
+              <tr>
+                <td>"What would successful implementation mean for you personally?"</td>
+                <td>Personal motivation beyond business benefits</td>
+                <td>Specific answer about career goals, performance metrics, or job satisfaction improvements</td>
+              </tr>
+              <tr>
+                <td>"Have you championed buying decisions like this before?"</td>
+                <td>Experience navigating internal approval process</td>
+                <td>Concrete example of previous success including obstacles they overcame</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Warning sign:</strong> If potential champion says "just send me information and I will share it around" without asking questions about how to position it or who to approach, they likely lack political skills or motivation to truly champion. Real champions want coaching not just materials.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Champion Toolkit sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Champion Toolkit - Give Them Everything They Need</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why toolkits matter</h3>
+            <p>Champions want to help but lack materials to sell effectively internally. They cannot build ROI analysis from scratch. They do not know how to handle technical objections. Comprehensive toolkit removes friction and increases champion effectiveness dramatically.</p>
+
+            <h3>Essential champion toolkit components</h3>
+            <ul>
+              <li><strong>Executive presentation deck</strong> - 10-15 slide deck champion can present to their leadership. Include problem statement, solution overview, ROI, case studies, implementation timeline. Make it fully editable so they can customise</li>
+              <li><strong>ROI calculator or business case</strong> - Pre-built financial analysis showing expected return. Ideally customised with their company data. Champions struggle building financial business cases from scratch. Do it for them</li>
+              <li><strong>Objection handling guide</strong> - Document addressing common objections with recommended responses. "What if someone asks about security?" Here is how to answer. Anticipate concerns and prep champions</li>
+              <li><strong>Technical FAQ</strong> - Answers to technical questions that will come up from IT or Engineering stakeholders. Integration details, security certifications, architecture diagrams. Champion cannot answer technical questions alone. Give them resources</li>
+              <li><strong>Comparison sheet</strong> - How you compare to alternatives they will evaluate. Be honest about trade-offs. Help champion position you accurately not just positively</li>
+              <li><strong>Case studies from similar companies</strong> - Stories from companies in their industry or similar size. Champions need social proof to show peers having success</li>
+            </ul>
+
+            <h3>Toolkit delivery format</h3>
+            <p>Create shared Notion workspace, Google Drive folder, or simple webpage containing all materials. Make it easy to navigate and find specific resources. Update as new materials become available or objections arise. Give champion one URL to access everything.</p>
+
+            <div class="highlight">
+              <strong>Customisation matters:</strong> Generic toolkit is better than nothing, but customised toolkit for their specific company is 10x more effective. Use their company name in presentations. Reference their specific pain points. Include data relevant to their situation. Customisation shows investment and increases champion confidence.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coaching Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Coaching Strategy - Teach Them How to Sell Internally</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why coaching beats just providing materials</h3>
+            <p>Champions are not professional salespeople. Giving them great materials without teaching them how to use those materials leads to mediocre internal selling. Coaching transforms willing advocates into effective internal salespeople who navigate politics and build consensus.</p>
+
+            <h3>Key coaching areas</h3>
+            <ul>
+              <li><strong>Stakeholder mapping</strong> - Help champion identify all stakeholders who need to approve. Discuss each person's priorities, potential objections, and how to approach them. Build strategy for building coalition of support</li>
+              <li><strong>Pitching to executives</strong> - Role-play presenting to their C-suite. Practice concise elevator pitch. Teach them to lead with business outcomes not features. Help them anticipate and handle executive-level questions</li>
+              <li><strong>Handling objections</strong> - Go through likely objections and practice responses. Not just what to say but how to say it confidently. Build champion's capability to think on their feet in internal meetings</li>
+              <li><strong>Building consensus</strong> - Teach political skills for building internal support. Who should they approach first? How to get early wins to build momentum? When to escalate versus resolve conflicts directly?</li>
+              <li><strong>Timeline and milestones</strong> - Create realistic internal project plan with milestones. When should they present to executives? When to involve procurement? Having plan reduces champion anxiety and increases follow-through</li>
+            </ul>
+
+            <h3>Coaching session structure</h3>
+            <p><strong>Session 1: Stakeholder strategy</strong> - Map buying committee, identify champion's relationship with each, plan approach for building support across stakeholders</p>
+            <p><strong>Session 2: Executive pitch practice</strong> - Champion presents using your materials. Give feedback on messaging, pacing, and objection handling. Iterate until confident</p>
+            <p><strong>Ongoing: Office hours</strong> - Offer standing availability for quick questions as champion navigates process. "Text me before your CFO meeting and we can prep for 10 minutes."</p>
+
+            <div class="highlight">
+              <strong>Coaching mindset:</strong> Position yourself as their advisor not someone extracting work from them. "I want to help you succeed in getting this approved internally. What obstacles do you foresee?" Frame coaching as helping them win not pushing your sale.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Staying Connected sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Staying Connected - Support Through Long Buying Cycle</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why continuous support matters</h3>
+            <p>Enterprise buying cycles last 3-9 months. Champions lose momentum when left alone. Obstacles arise that discourage them. Continuous support keeps champion engaged and helps them overcome hurdles that would otherwise kill the deal.</p>
+
+            <h3>Support cadence</h3>
+            <ul>
+              <li><strong>Weekly check-ins</strong> - Short 15 minute calls or Slack messages. "What happened this week? Any obstacles? Who should we talk to next?" Maintain momentum and show ongoing investment</li>
+              <li><strong>Before key meetings</strong> - Prep sessions before champion presents to executives or key stakeholders. Review talking points, anticipate questions, boost confidence</li>
+              <li><strong>After setbacks</strong> - When deals hit obstacles such as budget freezes or internal politics, reach out immediately. Help champion regroup and adjust strategy. Many deals die here if champion feels unsupported</li>
+              <li><strong>Celebrations of milestones</strong> - When champion gets approval from key stakeholder or clears major hurdle, acknowledge and celebrate. Recognition reinforces their effort and maintains motivation</li>
+            </ul>
+
+            <h3>Support do's and don'ts</h3>
+            <table>
+              <tr><th>Do This</th><th>Not This</th></tr>
+              <tr>
+                <td>Ask "How can I support you this week?"</td>
+                <td>Demand "What is your timeline for getting this approved?"</td>
+              </tr>
+              <tr>
+                <td>Provide additional resources when objections arise</td>
+                <td>Say "We already gave you everything you need"</td>
+              </tr>
+              <tr>
+                <td>Offer to join internal meetings when helpful</td>
+                <td>Insist on attending every meeting because you do not trust champion</td>
+              </tr>
+              <tr>
+                <td>Check in when champion goes quiet to understand obstacles</td>
+                <td>Assume champion ghosting means lack of interest and deprioritise</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Persistence pays:</strong> Many enterprise deals close in months 6-9 of evaluation after multiple setbacks. Champions who feel supported through difficult periods stick with it. Champions who feel abandoned move on to easier wins. Your sustained support directly impacts deal closure rates.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Choosing wrong champion - picking based on enthusiasm not influence</h4>
+          <div class="why">You pick junior person who loves your product but has no political capital or access to decision makers. Despite their enthusiasm, they cannot move the deal forward.</div>
+          <div class="fix">Assess political influence and access to power not just enthusiasm. Look for mid-level managers with credibility, communication skills, and track record navigating internal approvals. Influence matters more than title.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Not giving them tools to sell internally</h4>
+          <div class="why">You expect champion to build business case, create presentations, and answer technical questions on their own. They lack resources and struggle to sell effectively internally.</div>
+          <div class="fix">Create comprehensive champion toolkit with exec presentation, ROI calculator, objection guides, technical FAQ, and case studies. Make it easy for champion to sell without you. Remove all friction.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Losing touch during long buying cycle</h4>
+          <div class="why">You engage champion initially then go quiet for months. Champion loses momentum, encounters obstacles without support, and deal stalls or dies from neglect.</div>
+          <div class="fix">Weekly check-ins throughout buying cycle. Stay engaged, provide ongoing support, help overcome obstacles, celebrate milestones. Sustained relationship drives deals to closure. Do not go dark.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Not understanding their internal politics</h4>
+          <div class="why">You do not invest time learning about champion's political landscape, who has power, where landmines exist. Champion navigates blindly without your strategic guidance.</div>
+          <div class="fix">Deep dive on internal politics early. Who are allies? Who are skeptics? What is history of similar initiatives? How do decisions really get made? Use this intelligence to coach champion's internal strategy.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Pushing too hard - making champion uncomfortable</h4>
+          <div class="why">You pressure champion for constant updates, demand they move faster, or criticise their internal selling approach. Champion feels used not supported. Relationship deteriorates.</div>
+          <div class="fix">Frame relationship as helping them win not extracting work from them. Ask "How can I support you?" not "Why is this taking so long?" Be patient with internal processes. Make champion feel like you are on their team.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Not coaching them - just dumping materials</h4>
+          <div class="why">You send champion pile of documents and presentations expecting they know how to use them effectively. No coaching on how to pitch, handle objections, or navigate politics. Materials alone are not enough.</div>
+          <div class="fix">Role-play executive presentations. Practise objection handling. Coach on stakeholder strategy and consensus building. Teach champion how to sell internally. Coaching multiplies material effectiveness by 10x.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

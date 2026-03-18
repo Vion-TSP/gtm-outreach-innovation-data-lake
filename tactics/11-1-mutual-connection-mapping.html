@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 11.1 - Mutual Connection Mapping | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 11.1 - Warm Intro / Network</div>
+  <h1>Mutual Connection Mapping</h1>
+  <p class="desc">Map your team's collective network against target account decision-makers to identify warm introduction paths. Warm intros convert significantly better than cold outreach.</p>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Low-Medium</span>
+    <span class="tag tag-icp">ICP: All ICPs</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Your team collectively knows hundreds or thousands of people. Most companies never systematically map these connections against their target accounts. Warm introductions leverage existing trust, dramatically increasing response rates and meeting conversion compared to cold outreach.
+      </div>
+      <h3>The psychology of warm introductions</h3>
+      <ul>
+        <li><strong>Trust transfer</strong> - When someone you trust introduces you to another person, their credibility transfers. The prospect starts with positive sentiment rather than skepticism</li>
+        <li><strong>Social proof</strong> - A mutual connection serves as implicit endorsement. "If Sarah trusts this person enough to introduce us, they're probably worth my time"</li>
+        <li><strong>Reciprocity</strong> - People feel obligated to respond to introductions. Ignoring a warm intro feels rude in a way that ignoring cold email doesn't</li>
+        <li><strong>Context and relevance</strong> - Mutual connections can provide specific context about why this introduction makes sense, making your pitch immediately relevant</li>
+      </ul>
+      <h3>Why most teams miss these opportunities</h3>
+      <p>Individual reps only see their own networks. Your SDR might be cold-emailing someone that your CTO went to university with. Your AE might be struggling to reach a VP who your CEO worked with five years ago. Without systematic mapping, these connections stay invisible.</p>
+      <p><strong>The compounding effect:</strong> Each team member adds their unique network. A 5-person team might have 200 mutual connections across target accounts. A 20-person team might have 800-1000. The larger your team, the more powerful this tactic becomes.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-email">E</div><div class="wf-label">Export Targets</div><div class="wf-action">Target account list</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-linkedin">M</div><div class="wf-label">Map Networks</div><div class="wf-action">Team LinkedIn scan</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Identify Mutuals</div><div class="wf-action">Find connections</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-phone">P</div><div class="wf-label">Prioritise Paths</div><div class="wf-action">Strongest first</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-email">R</div><div class="wf-label">Request Intro</div><div class="wf-action">With blurb</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-email">F</div><div class="wf-label">Follow Up</div><div class="wf-action">After connection</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Export Target Account List</td>
+          <td>Pull your high-priority target accounts from CRM. Include company name, target contacts, and their LinkedIn URLs. Focus on top-tier accounts first rather than trying to map your entire universe</td>
+          <td>15-30 min (one-time export)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Map Team LinkedIn Networks</td>
+          <td>Use LinkedIn Sales Navigator TeamLink feature or tools like The Swarm or Apollo.io. Each team member connects their LinkedIn account. The tool aggregates all first-degree connections across your team</td>
+          <td>30 min setup, 5 min per team member</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Identify Mutual Connections</td>
+          <td>Cross-reference target contacts against aggregated team network. The tool highlights who on your team knows who at target accounts. Export this as a spreadsheet with columns: Target Company, Target Contact, Your Team Member, Connection Strength</td>
+          <td>10-15 min (automated by tools)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Prioritise Strongest Paths</td>
+          <td>Not all connections are equal. Prioritise based on: How well does your team member know the mutual connection? How recent is the relationship? How relevant is the mutual connection to your offer? Score each path and focus on top opportunities first</td>
+          <td>20-30 min (review and prioritise)</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Request Specific Intros</td>
+          <td>Reach out to your team member who has the connection. Provide a forwardable blurb explaining why you want the intro and what value you can provide. Make it easy for them to forward with minimal editing. Be specific about who you want to meet and why</td>
+          <td>5-10 min per intro request</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Follow Up After Intro</td>
+          <td>When the intro is made, respond within 24 hours. Thank the introducer publicly (cc them on reply). Move the conversation forward immediately with a specific next step. Report back to the introducer on the outcome</td>
+          <td>10-15 min per intro follow-up</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Run this mapping exercise quarterly. Your team's networks grow over time. New hires bring new connections. Previous contacts move to new companies that might be target accounts. Regular mapping ensures you never miss emerging opportunities.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn Sales Navigator</strong></td>
+          <td>$99/mo per user</td>
+          <td>Individual network mapping and TeamLink feature</td>
+          <td>TeamLink shows mutual connections across your team. Filters for 2nd-degree connections at target accounts. Native LinkedIn integration means always up-to-date</td>
+          <td>Requires Sales Navigator license for each team member whose network you want to include. Can be expensive for larger teams</td>
+        </tr>
+        <tr>
+          <td><strong>The Swarm</strong></td>
+          <td>Custom pricing (contact for quote)</td>
+          <td>Automated mutual connection mapping at scale</td>
+          <td>Aggregates team LinkedIn networks without requiring Sales Nav for everyone. Automatically cross-references against target account lists. Generates scored introduction paths</td>
+          <td>Newer tool, less mature feature set. Requires buy-in from entire team to connect LinkedIn accounts. Some privacy concerns from team members</td>
+        </tr>
+        <tr>
+          <td><strong>Apollo.io</strong></td>
+          <td>$59/mo (Team plan)</td>
+          <td>Network mapping combined with contact data and sequences</td>
+          <td>Chrome extension shows mutual connections while browsing LinkedIn. Integrates with email sequences so you can reference mutual connections in outreach. Built-in CRM and contact database</td>
+          <td>Network mapping feature less sophisticated than dedicated tools. Requires manual checking rather than automated cross-referencing</td>
+        </tr>
+        <tr>
+          <td><strong>TeamLink (standalone tool)</strong></td>
+          <td>Free tier available, paid plans start $20/mo</td>
+          <td>Lightweight team network aggregation</td>
+          <td>Simple interface for mapping who knows who. Free tier covers small teams. Fast setup. Privacy-focused (team members control what they share)</td>
+          <td>Limited automation. No advanced filtering or prioritisation features. Manual export and cross-referencing required</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> If your team already has <strong>LinkedIn Sales Navigator</strong>, use the built-in TeamLink feature (included, no extra cost). If not, start with <strong>TeamLink standalone tool</strong> (free/cheap) to prove the concept, then upgrade to <strong>The Swarm</strong> if you need automation at scale. <strong>Apollo.io</strong> works well if you want network mapping as part of a broader sales engagement platform.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Connection Strength Scoring sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Connection Strength Scoring (How Well Do They Actually Know Each Other)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Not all LinkedIn connections are equal</h3>
+            <p>Two people can be LinkedIn connections but have wildly different relationship strength. Someone you worked closely with for three years is a much stronger connection than someone you met once at a conference. Quality beats quantity.</p>
+
+            <h3>Connection strength scoring framework</h3>
+            <table>
+              <tr><th>Score</th><th>Relationship Type</th><th>Characteristics</th><th>Intro Success Rate</th></tr>
+              <tr>
+                <td><strong>10/10</strong></td>
+                <td>Strong personal relationship</td>
+                <td>Former colleague (worked together 1+ years), close friend, family, current co-investor, active mentor/mentee relationship</td>
+                <td>Very high - they'll make the intro enthusiastically</td>
+              </tr>
+              <tr>
+                <td><strong>7-9/10</strong></td>
+                <td>Professional relationship</td>
+                <td>Former colleague (worked together under 1 year), current customer, active partner, regular industry contact (met multiple times)</td>
+                <td>High - they'll likely make the intro if you provide good context</td>
+              </tr>
+              <tr>
+                <td><strong>4-6/10</strong></td>
+                <td>Acquaintance</td>
+                <td>Met at conference/event, occasional LinkedIn interaction, mutual connection introduced you once, same alumni network but don't know each other well</td>
+                <td>Medium - they might make the intro if you make it very easy, but don't expect enthusiasm</td>
+              </tr>
+              <tr>
+                <td><strong>1-3/10</strong></td>
+                <td>Weak connection</td>
+                <td>LinkedIn connection but never interacted, accepted connection request from stranger, connection from years ago with no recent contact</td>
+                <td>Low - often not worth asking unless no other path exists</td>
+              </tr>
+            </table>
+
+            <h3>How to assess connection strength</h3>
+            <ul>
+              <li><strong>Ask your team member directly</strong> - "How well do you know James? Would you feel comfortable introducing me?" This is the most reliable signal</li>
+              <li><strong>Check LinkedIn activity</strong> - Do they comment on each other's posts? Tag each other? This indicates an active relationship</li>
+              <li><strong>Look for shared history</strong> - Same company at overlapping times? Same university in same years? Geographic proximity?</li>
+              <li><strong>Recency matters</strong> - A strong connection from 10 years ago with no recent contact is weaker than a moderate connection from 6 months ago</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Rule of thumb:</strong> Only ask for intros on connections scored 7/10 or higher. Lower scores waste time and risk damaging the relationship by asking for favours that feel uncomfortable.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forwardable Blurb Template sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Forwardable Blurb Template (Make It Easy for the Introducer)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why forwardable blurbs matter</h3>
+            <p>Most people want to help with introductions but procrastinate because crafting the intro email feels like work. If you give them a complete, forwardable blurb, they can make the introduction in 30 seconds with minimal editing. Remove friction and you increase intro completion rate dramatically.</p>
+
+            <h3>Forwardable blurb structure</h3>
+            <div class="email-block"><span class="label">Template</span>Hi [Mutual Connection Name],
+
+Hope you're well. I'm looking to connect with [Target Person Name] at [Target Company] and noticed you two know each other.
+
+Would you be comfortable making an introduction? Here's a blurb you can forward if so:
+
+---
+
+[Target Person Name], meet [Your Name].
+
+[Your Name] is [Your Role] at [Your Company]. They help [ICP Description] with [Specific Problem You Solve].
+
+I thought you two should connect because [Specific Reason - e.g., "you mentioned struggling with X last time we spoke" or "given [Target Company]'s focus on Y, this could be relevant"].
+
+[Your Name], [Target Person Name] is [Their Role] at [Target Company] and [One Relevant Detail About Them - shows you've done research].
+
+I'll let you two take it from here.
+
+---
+
+Let me know if you're comfortable making this intro. No pressure if the timing isn't right.
+
+Thanks,
+[Your Name]</div>
+
+            <h3>Key elements of effective blurbs</h3>
+            <ul>
+              <li><strong>Pre-written and ready to forward</strong> - The introducer should be able to copy-paste with zero or minimal editing</li>
+              <li><strong>Context for the mutual connection</strong> - Explain why you want the intro and what's in it for the target person</li>
+              <li><strong>Specific and relevant</strong> - Generic intros ("I think you two should meet") get ignored. Specific relevance ("You mentioned struggling with X") gets responses</li>
+              <li><strong>Shows you've done research</strong> - Include one detail about the target person that proves you're not mass-requesting intros</li>
+              <li><strong>No pressure opt-out</strong> - "No pressure if timing isn't right" gives them permission to decline without awkwardness</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Personalise the reason for each intro. "I thought you two should connect" is lazy. "I noticed [Target Company] just launched X, and we help companies in similar situations with Y" shows genuine relevance and increases intro likelihood.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timing and Frequency sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Timing and Frequency (Don't Burn Out Your Network)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The danger of over-asking</h3>
+            <p>Your network is a finite resource. If you constantly ask the same people for introductions without providing value in return, you'll quickly burn out your relationships. People will start avoiding your requests or declining intros because you've become "that person" who only reaches out when you need something.</p>
+
+            <h3>Healthy intro request frequency</h3>
+            <table>
+              <tr><th>Relationship Strength</th><th>Max Intro Requests</th><th>Minimum Gap Between Requests</th></tr>
+              <tr>
+                <td><strong>Strong (10/10)</strong></td>
+                <td>3-4 per year</td>
+                <td>3 months minimum between requests</td>
+              </tr>
+              <tr>
+                <td><strong>Professional (7-9/10)</strong></td>
+                <td>2-3 per year</td>
+                <td>4-6 months minimum between requests</td>
+              </tr>
+              <tr>
+                <td><strong>Acquaintance (4-6/10)</strong></td>
+                <td>1 per year maximum</td>
+                <td>12 months minimum between requests</td>
+              </tr>
+            </table>
+
+            <h3>How to maintain relationship equity</h3>
+            <ul>
+              <li><strong>Provide value between asks</strong> - Share relevant articles, make introductions for them, comment on their LinkedIn posts, offer help with their challenges. Build deposits in the relationship bank</li>
+              <li><strong>Report back on outcomes</strong> - After every intro, tell the introducer what happened. "Thanks for the intro to James. We had a great call and he's now a customer." This creates positive reinforcement</li>
+              <li><strong>Reciprocate introductions</strong> - When someone in your network needs an intro, make it enthusiastically. What goes around comes around</li>
+              <li><strong>Thank them publicly</strong> - When an intro leads to something good, thank the introducer publicly (LinkedIn post, team meeting mention, etc.). Recognition builds goodwill</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Warning sign:</strong> If you're asking the same 2-3 people for most of your intros, you're probably over-relying on them. Spread intro requests across your team's network to avoid burning out individual relationships.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracking and Attribution sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Tracking and Attribution (Measure Which Intros Convert)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why tracking matters</h3>
+            <p>Without tracking, you don't know which types of introductions work best. Are customer intros better than investor intros? Do intros from former colleagues convert better than conference connections? Tracking reveals patterns that improve your future prioritisation.</p>
+
+            <h3>Minimum viable tracking spreadsheet</h3>
+            <table>
+              <tr><th>Column</th><th>Purpose</th><th>Example Value</th></tr>
+              <tr>
+                <td>Date Requested</td>
+                <td>When you asked for the intro</td>
+                <td>2026-03-01</td>
+              </tr>
+              <tr>
+                <td>Introducer Name</td>
+                <td>Team member who made the intro</td>
+                <td>Sarah from Marketing</td>
+              </tr>
+              <tr>
+                <td>Target Contact</td>
+                <td>Person you wanted to meet</td>
+                <td>James Chen, VP Sales at Acme Corp</td>
+              </tr>
+              <tr>
+                <td>Connection Type</td>
+                <td>How introducer knows target</td>
+                <td>Former colleague, Customer, Investor, Alumni, Conference contact</td>
+              </tr>
+              <tr>
+                <td>Connection Strength</td>
+                <td>Scored relationship quality</td>
+                <td>8/10 (Professional relationship)</td>
+              </tr>
+              <tr>
+                <td>Date Intro Made</td>
+                <td>When introducer actually sent the intro</td>
+                <td>2026-03-03 (2 days later)</td>
+              </tr>
+              <tr>
+                <td>Response Received</td>
+                <td>Did target respond?</td>
+                <td>Yes / No</td>
+              </tr>
+              <tr>
+                <td>Meeting Booked</td>
+                <td>Did it lead to a meeting?</td>
+                <td>Yes / No</td>
+              </tr>
+              <tr>
+                <td>Outcome</td>
+                <td>Final result</td>
+                <td>Became customer, Pipeline, Passed, No response</td>
+              </tr>
+            </table>
+
+            <h3>Key metrics to monitor</h3>
+            <ul>
+              <li><strong>Intro completion rate</strong> - What percentage of requested intros actually get made? Low rate suggests you're asking wrong people or making it too difficult</li>
+              <li><strong>Response rate</strong> - What percentage of intros get a response? Should be much higher than cold outreach</li>
+              <li><strong>Meeting conversion rate</strong> - What percentage lead to actual meetings?</li>
+              <li><strong>Opportunity creation rate</strong> - What percentage create pipeline?</li>
+              <li><strong>Best connection types</strong> - Which types of mutual connections convert best? Double down on those</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Benchmark targets:</strong> Intro completion rate above 70%, response rate above 60%, meeting conversion above 40%. If you're below these, revisit your connection strength scoring and forwardable blurb quality.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Asking for intros to people you barely know</h4>
+          <div class="why">You ask a team member to introduce you to someone they're loosely connected with. The introducer feels awkward making an intro when they don't know the person well. The intro either doesn't happen or feels forced.</div>
+          <div class="fix">Only ask for intros on connections scored 7/10 or higher. Weak connections waste everyone's time and damage credibility.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Not providing a forwardable blurb</h4>
+          <div class="why">You ask for an intro but leave it to the introducer to figure out what to say. They procrastinate because writing the intro email feels like work. The intro never happens.</div>
+          <div class="fix">Always provide a complete, forwardable blurb. Make it so easy they can copy-paste with zero editing. Remove all friction.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Shotgun approach (too many asks at once)</h4>
+          <div class="why">You discover 20 mutual connections and immediately ask for all 20 intros. The introducer feels overwhelmed and either ignores your request or makes low-quality intros.</div>
+          <div class="fix">Prioritise top 3-5 highest-value intros. Ask in small batches. Space out requests over time. Quality over quantity.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Not following up after the intro is made</h4>
+          <div class="why">Someone makes an intro for you, but you respond slowly or not at all. This makes the introducer look bad and ensures they won't make future intros for you.</div>
+          <div class="fix">Respond within 24 hours of any intro. Thank the introducer publicly (cc them). Move the conversation forward immediately. Report back on the outcome.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Not reciprocating introductions</h4>
+          <div class="why">You constantly ask for intros but never offer to make intros for others. Your relationship equity depletes. People start avoiding your requests.</div>
+          <div class="fix">Actively look for opportunities to make intros for others. When someone in your network needs help, connect them enthusiastically. Build deposits in the relationship bank.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Generic intro requests lacking context</h4>
+          <div class="why">You ask for an intro with no explanation of why it's relevant. "Do you know anyone at Acme Corp?" The introducer doesn't understand the value and doesn't make the intro.</div>
+          <div class="fix">Provide specific context for every intro request. Explain why you want to meet this person, what problem you solve, and what value you can provide. Specificity increases intro likelihood.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>
