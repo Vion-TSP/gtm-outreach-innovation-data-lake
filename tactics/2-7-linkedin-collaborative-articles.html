@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 2.7 — LinkedIn Collaborative Articles | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 2.7 - LinkedIn-Native</div>
+  <h1>LinkedIn Collaborative Articles</h1>
+  <p class="desc">Contribute to AI-generated LinkedIn articles on topics in your skill area. Earn Top Voice badges. Build authority and search ranking. Free, low-effort, high-visibility thought leadership.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#0a66c2;background:#0a66c222">
+      <div class="hero-ch-icon" style="background:#0a66c2">Li</div>
+      <div class="hero-ch-name">LinkedIn (Primary)</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low</span>
+    <span class="tag tag-cost">Cost: Free</span>
+    <span class="tag tag-icp">ICP: Technical Buyers, Founders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> LinkedIn Collaborative Articles are AI-generated content hubs that invite expert contributions. They rank highly in Google search. Contributing earns you a Top Voice badge, which displays prominently on your profile. Low effort, high visibility, and LinkedIn actively promotes these articles.
+      </div>
+      <h3>Why LinkedIn pushes Collaborative Articles</h3>
+      <ul>
+        <li><strong>Content generation at scale</strong> - LinkedIn uses AI to generate thousands of articles on professional topics. They need human contributors to add credibility and depth. This creates a win-win: you get visibility, LinkedIn gets expert content</li>
+        <li><strong>SEO advantage</strong> - Collaborative Articles rank on the first page of Google for many professional queries. Your contribution appears in search results, driving profile visits from people who've never heard of you</li>
+        <li><strong>Top Voice badge system</strong> - LinkedIn rewards consistent contributors with Top Voice badges. These badges appear on your profile under your headline, signaling authority. Prospects see the badge before they read your bio</li>
+        <li><strong>Algorithm boost for contributors</strong> - LinkedIn's algorithm gives slight visibility boosts to Top Voice badge holders. Your regular posts get marginally more reach</li>
+      </ul>
+      <h3>The psychology of social proof</h3>
+      <p>Badges and credentials act as shortcuts for trust. When a prospect sees "Top Voice in Sales" under your name, they subconsciously categorise you as an authority before engaging with your content. It's the same psychology as verified checkmarks, certifications, or university logos on a resume. You're not just saying you're an expert - LinkedIn is endorsing you as one.</p>
+      <p><strong>Low barrier to entry:</strong> Unlike publishing a book, speaking at a conference, or building a large following, earning a Top Voice badge requires only consistent thoughtful contributions over 3-4 weeks. It's the most accessible credibility signal in B2B marketing.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">F</div><div class="wf-label">Find Articles</div><div class="wf-action">Your skill area</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-linkedin">R</div><div class="wf-label">Read Question</div><div class="wf-action">AI-generated</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-linkedin">W</div><div class="wf-label">Write</div><div class="wf-action">150-300 words</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">E</div><div class="wf-label">Experience</div><div class="wf-action">Personal story</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-linkedin">E</div><div class="wf-label">Engage</div><div class="wf-action">Other contributors</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-linkedin">B</div><div class="wf-label">Badge</div><div class="wf-action">Earn Top Voice</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 7</div><div class="wf-node ch-linkedin">L</div><div class="wf-label">Leverage</div><div class="wf-action">For credibility</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Find relevant articles</td>
+          <td>LinkedIn suggests Collaborative Articles based on your profile skills. You'll see them in your feed with "Add your perspective" prompts. Alternatively, search "collaborative articles" + your topic (e.g., "collaborative articles sales strategy")</td>
+          <td>5 min</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Read the AI-generated question</td>
+          <td>Each article poses a question or topic. Example: "How do you handle objections in cold calls?" or "What are the best practices for onboarding sales reps?" The AI provides a generic overview. Your job is to add specificity</td>
+          <td>2 min</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Write a thoughtful contribution</td>
+          <td>Aim for 150-300 words. Longer than a comment, shorter than a blog post. Provide actionable insights, not vague advice. Be specific. Use examples. Answer the question thoroughly but concisely</td>
+          <td>10-15 min</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Include personal experience</td>
+          <td>Generic advice gets ignored. Personal stories and specific examples stand out. Example: "At Acme, we reduced objections by 30% by doing X." or "I learned this the hard way when..." Personal experience signals real expertise</td>
+          <td>Included in writing time</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Engage with other contributors</td>
+          <td>Read other contributions on the same article. React to thoughtful ones (like or comment). This increases your visibility within the article. LinkedIn notifies contributors when someone engages with their contribution</td>
+          <td>5 min</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Earn Top Voice badge</td>
+          <td>Contribute consistently (3-5 articles per week) for 3-4 weeks. LinkedIn's algorithm evaluates contribution quality and consistency. You'll receive a notification when you earn the badge. It displays on your profile under your headline</td>
+          <td>Automatic (after consistent contributions)</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Leverage the badge for credibility</td>
+          <td>Once you have the badge, reference it in outreach: "Top Voice in Sales on LinkedIn" or "LinkedIn-recognised expert in RevOps." Use it as a credibility signal in cold emails, LinkedIn messages, and profile summaries</td>
+          <td>Ongoing</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Don't just contribute once and forget. Engage with other contributors' responses. Thoughtful replies to other perspectives increase your visibility and signal to LinkedIn that you're an active, valuable contributor.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn (Native Feature)</strong></td>
+          <td>Free</td>
+          <td>Finding and contributing to Collaborative Articles</td>
+          <td>Built directly into LinkedIn. No additional tools needed. AI suggests articles based on your profile skills. Top Voice badge auto-awarded for consistent contributions</td>
+          <td>No external tools needed. This is a native LinkedIn feature. No integrations, no apps, no setup</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> This is a native LinkedIn feature. You don't need any additional tools. Just log into LinkedIn, find Collaborative Articles in your skill areas, and start contributing. Zero setup, zero cost.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Finding Articles sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Finding Articles (Where to Contribute)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>LinkedIn suggests articles based on your profile skills</h3>
+            <p>LinkedIn's algorithm surfaces Collaborative Articles in your feed based on the skills listed on your profile. If you have "Sales Strategy" and "Cold Calling" as skills, you'll see articles on those topics. Make sure your profile skills are up to date and aligned with your ICP's pain points.</p>
+
+            <h3>Search for articles manually</h3>
+            <p>If LinkedIn isn't suggesting relevant articles, search manually. Use the search bar: "collaborative articles" + your topic. Example: "collaborative articles revenue operations" or "collaborative articles B2B sales." This surfaces active articles where you can contribute.</p>
+
+            <h3>Focus on articles with moderate activity</h3>
+            <p>Avoid articles with zero contributions (no one will see yours). Avoid articles with 500+ contributions (yours will get buried). Target articles with 20-100 contributions. This is the sweet spot for visibility and engagement.</p>
+
+            <div class="highlight">
+              <strong>Skill selection strategy:</strong> Choose 2-3 skill areas aligned with your ICP's pain points. Don't scatter contributions across 10 different topics. Depth beats breadth. Earn Top Voice in 2-3 areas that matter to your prospects.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contribution Quality sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Contribution Quality (What Makes a Good Contribution)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Personal experience over generic advice</h3>
+            <p>Generic advice is forgettable. "Handling objections requires active listening and empathy." True, but boring. Personal experience sticks. "At Acme, we faced constant pricing objections. We started leading with ROI calculators before even mentioning price. Objections dropped by 40%." Specific examples signal real expertise.</p>
+
+            <h3>Specific examples over vague insights</h3>
+            <p>Vague: "Sales onboarding should include training and mentorship." Specific: "Our onboarding includes 2 weeks of shadowing top reps, followed by 10 recorded cold calls with feedback from managers. New hires hit quota 30% faster." Specificity demonstrates depth of knowledge.</p>
+
+            <h3>Contrarian takes get more reactions</h3>
+            <p>If everyone is saying the same thing, your contribution blends in. Contrarian takes spark debate. Example: "Most people say cold calling is dead. I disagree. We generate 60% of our pipeline from cold calls because we target the right buyers at the right time." Controversy drives engagement.</p>
+
+            <div class="highlight">
+              <strong>Quality test:</strong> Before submitting, ask: "Could this contribution apply to any company in any industry?" If yes, it's too generic. Add specificity. Your contribution should be impossible to write without your actual experience.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Frequency sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Frequency (How Often to Contribute)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>3-5 contributions per week to earn the badge</h3>
+            <p>LinkedIn's Top Voice algorithm rewards consistency over volume. Contributing once doesn't earn the badge. Contributing 50 times in one day doesn't either. Aim for 3-5 thoughtful contributions per week for 3-4 weeks. This signals consistent expertise.</p>
+
+            <h3>Batch your contributions</h3>
+            <p>Set aside 30-45 minutes once or twice per week. Find 3-5 relevant articles. Write all contributions in one session. This is more efficient than writing one at a time throughout the week.</p>
+
+            <h3>Don't stop after earning the badge</h3>
+            <p>The badge requires ongoing contributions to maintain. If you stop contributing for months, LinkedIn may remove the badge. Aim for 2-3 contributions per week after earning the badge to keep it active.</p>
+
+            <div class="highlight">
+              <strong>Scheduling tip:</strong> Block 30 min every Monday and Thursday for Collaborative Article contributions. Consistent calendar blocking makes this a habit, not a sporadic activity.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leveraging the Badge sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Leveraging the Badge (How to Use It)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Badge shows on your profile automatically</h3>
+            <p>Once earned, the Top Voice badge displays under your headline on your LinkedIn profile. Example: "Sarah Johnson - Revenue Operations Leader | Top Voice in Sales Strategy." Prospects see this before reading your summary or experience. It's instant credibility.</p>
+
+            <h3>Mention it in outreach</h3>
+            <p>Cold email subject line: "Quick question from a LinkedIn Top Voice in RevOps." LinkedIn message intro: "Hey James, I write about sales automation as a LinkedIn Top Voice. Noticed you're hiring SDRs..." The badge gives you permission to position yourself as an expert.</p>
+
+            <h3>Reference it in content</h3>
+            <p>Use it in your email signature, LinkedIn posts, or bio on other platforms. "LinkedIn Top Voice in Sales | Helping B2B teams scale outbound." It's a lightweight credibility marker that requires no explanation.</p>
+
+            <div class="highlight">
+              <strong>Positioning tip:</strong> Don't overuse it. Mention it once in outreach or profile, not repeatedly. Overuse feels insecure. One mention is enough to signal authority.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Which Topics sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Which Topics to Target (Strategic Skill Selection)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Pick 2-3 skill areas aligned with your ICP's pain points</h3>
+            <p>Don't chase badges in random topics. Focus on skills that matter to your target buyers. If you sell to sales leaders, target "Sales Strategy," "Revenue Operations," or "Pipeline Management." If you sell to founders, target "Go-to-Market Strategy" or "Sales Playbooks."</p>
+
+            <h3>Avoid overly broad or irrelevant topics</h3>
+            <p>Earning Top Voice in "Leadership" or "Communication" is fine, but it's not differentiated. Everyone claims to be a good leader. Earn badges in niche, specific topics that align with your expertise and your ICP's challenges.</p>
+
+            <h3>Check if LinkedIn offers articles in your target topics</h3>
+            <p>Not all skills have active Collaborative Articles. Search "collaborative articles" + your topic before committing. If there are no articles or very few, pick a related topic with more activity.</p>
+
+            <div class="highlight">
+              <strong>Alignment test:</strong> Ask: "If a prospect saw this Top Voice badge, would it make them more likely to engage with me?" If the answer is yes, target that skill. If no, skip it.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Generic contributions that could apply to anything</h4>
+          <div class="why">Generic advice is forgettable. "You should listen to your customers" or "Build strong relationships" adds no value. It blends into the noise.</div>
+          <div class="fix">Include specific examples from your experience. Name the company, tactic, or result. "At Acme, we did X and saw Y result." Specificity signals real expertise.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Writing too short (under 50 words)</h4>
+          <div class="why">LinkedIn's algorithm prioritises thoughtful, substantive contributions. A 2-sentence reply doesn't signal expertise. It looks like a quick comment, not a real insight.</div>
+          <div class="fix">Aim for 150-300 words. This is long enough to provide depth but short enough to hold attention. Structure: intro, insight, example, takeaway.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Not engaging with other contributors' responses</h4>
+          <div class="why">Contributing once and disappearing limits visibility. LinkedIn's algorithm tracks engagement within the article. If you don't react to others, fewer people see your contribution.</div>
+          <div class="fix">After contributing, read 3-5 other responses. Like or comment on thoughtful ones. This increases your visibility and signals active participation.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Targeting irrelevant skill areas</h4>
+          <div class="why">Earning Top Voice in "Public Speaking" doesn't help if you sell sales automation software. Your badge needs to align with your ICP's pain points.</div>
+          <div class="fix">Focus on 2-3 skills directly relevant to your ICP. If you sell to sales leaders, target "Sales Strategy" or "Revenue Operations." Align your badge with your buyer.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Contributing once and stopping</h4>
+          <div class="why">Earning a badge requires consistency. One contribution doesn't signal expertise. LinkedIn's algorithm needs to see repeated thoughtful contributions over weeks.</div>
+          <div class="fix">Commit to 3-5 contributions per week for 4 weeks. Block time on your calendar. Treat it like a recurring task, not a one-off activity.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Treating it as a checkbox instead of genuine thought leadership</h4>
+          <div class="why">If your contributions feel like you're gaming the system, LinkedIn's algorithm and human readers will notice. Low-quality contributions don't earn badges or respect.</div>
+          <div class="fix">Write contributions you'd genuinely be proud to share with a prospect. If you wouldn't send your contribution to a client, don't post it. Quality over quantity.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

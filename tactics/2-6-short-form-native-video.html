@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 2.6 — Short-Form Native Video | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 2.6 - LinkedIn-Native</div>
+  <h1>Short-Form Native Video (Under 30s)</h1>
+  <p class="desc">Sub-30 second vertical videos posted natively on LinkedIn. High completion and interaction rates. No external hosting or professional editing required. Phone-shot authenticity wins.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#0a66c2;background:#0a66c222">
+      <div class="hero-ch-icon" style="background:#0a66c2">Li</div>
+      <div class="hero-ch-name">LinkedIn (Primary)</div>
+    </div>
+    <span class="hero-ch-plus">+</span>
+    <div class="hero-ch" style="border-color:#bc8cff;background:#bc8cff22">
+      <div class="hero-ch-icon" style="background:#bc8cff">V</div>
+      <div class="hero-ch-name">Video</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Low-Medium</span>
+    <span class="tag tag-cost">Cost: Free</span>
+    <span class="tag tag-icp">ICP: All ICPs</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> LinkedIn's algorithm heavily favours native video over external links. Short-form vertical video optimised for mobile gets massive organic reach. Under 30 seconds drives high completion rates, which feeds the algorithm. Authenticity trumps production value.
+      </div>
+      <h3>Why LinkedIn prioritises short native video</h3>
+      <ul>
+        <li><strong>Platform retention</strong> - Native video keeps users on LinkedIn. External links take them away. Algorithm rewards native content with 3-5x more reach</li>
+        <li><strong>Mobile-first consumption</strong> - 70% of LinkedIn usage is mobile. Vertical video fills the screen, creating an immersive experience. Horizontal video wastes screen real estate</li>
+        <li><strong>Completion rate signals quality</strong> - LinkedIn's algorithm tracks video completion. Videos under 30s get 60-80% completion. Videos over 60s drop to 20-30%. High completion = algorithm boost</li>
+        <li><strong>Interaction velocity</strong> - Short videos get watched faster, driving quick engagement (likes, comments, shares). Fast interaction within the first hour signals virality to the algorithm</li>
+      </ul>
+      <h3>The psychology of short-form video</h3>
+      <p>Attention spans on professional platforms are shrinking. Decision-makers won't commit to a 5-minute video from someone they don't know. But 20 seconds? Low risk. If it's good, they watch twice. If it's great, they share it. Short-form video is the new cold call - quick, direct, human.</p>
+      <p><strong>Authenticity advantage:</strong> Phone-shot videos with imperfect lighting and casual delivery outperform studio-quality content. Why? They feel real. Professional production screams advertising. Raw phone videos signal genuine expertise and approachability.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-video">I</div><div class="wf-label">Pick Insight</div><div class="wf-action">One idea</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-video">S</div><div class="wf-label">Script</div><div class="wf-action">3 sentences</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-video">R</div><div class="wf-label">Record</div><div class="wf-action">Phone vertical</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-video">C</div><div class="wf-label">Captions</div><div class="wf-action">Auto-generate</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-linkedin">P</div><div class="wf-label">Post Natively</div><div class="wf-action">LinkedIn upload</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-linkedin">E</div><div class="wf-label">Engage</div><div class="wf-action">Reply to comments</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 7</div><div class="wf-node ch-video">R</div><div class="wf-label">Repurpose</div><div class="wf-action">Top performers</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Pick one insight</td>
+          <td>Choose a single actionable insight, hot take, or quick tip. Not a full tutorial. One clear point that can be explained in 20 seconds</td>
+          <td>5 min (pull from client work, internal discussions, common questions)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Script in 3 sentences</td>
+          <td>Write exactly 3 sentences: Hook (problem or question), Insight (your take or solution), CTA (what to do next or follow for more). Read it aloud. Should take 20-25 seconds max</td>
+          <td>5 min</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Record on phone (vertical)</td>
+          <td>Hold phone vertically. Face the camera. Natural lighting. Casual background. Record in one take if possible. Imperfect is better than polished. Save to camera roll</td>
+          <td>5-10 min (includes 2-3 takes)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Add captions</td>
+          <td>Use CapCut (free) or Descript to auto-generate captions. 80% of LinkedIn users watch on mute. Captions are mandatory. Use big bold text, high contrast, easy to read on mobile</td>
+          <td>3-5 min</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Post natively on LinkedIn</td>
+          <td>Upload directly to LinkedIn (not YouTube or Vimeo link). Write a 2-3 line caption with a hook. Tag relevant people or companies if appropriate. Post during peak hours (8-10 AM or 12-2 PM)</td>
+          <td>3 min</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Engage with comments</td>
+          <td>Reply to every comment in the first 2 hours. This signals engagement to the algorithm and boosts reach. Ask follow-up questions to keep the thread alive</td>
+          <td>10-20 min (spread over first 2 hours)</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Repurpose top performers</td>
+          <td>Identify videos with high engagement (500+ views, 20+ comments). Repurpose the format or topic into a longer LinkedIn article, email newsletter, or client case study</td>
+          <td>20 min per repurpose</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Batch record 5-7 videos in one session (30 min). Edit them all at once (20 min). Schedule posts across the week. This gives you consistent content without daily production overhead.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn (Native)</strong></td>
+          <td>Free</td>
+          <td>Direct upload and posting</td>
+          <td>Native upload prioritised by algorithm. Built-in analytics (views, engagement). No external hosting needed</td>
+          <td>No built-in captioning. Must add captions before upload</td>
+        </tr>
+        <tr>
+          <td><strong>CapCut</strong></td>
+          <td>Free</td>
+          <td>Mobile video editing with auto-captions</td>
+          <td>Free auto-generated captions. Template library for text overlays. Easy trim and crop. Exports vertical video optimised for mobile</td>
+          <td>Mobile-only app. Desktop version lacks some features. Limited font customisation</td>
+        </tr>
+        <tr>
+          <td><strong>Descript</strong></td>
+          <td>$24/mo</td>
+          <td>Desktop editing with transcript-based workflow</td>
+          <td>Edit video by editing text transcript. Auto-generates captions with high accuracy. Screen recording built in. Filler word removal</td>
+          <td>Overkill for simple 30s videos. Best for longer content that you're trimming down</td>
+        </tr>
+        <tr>
+          <td><strong>Opus Clip</strong></td>
+          <td>$19/mo</td>
+          <td>Repurposing long-form video into short clips</td>
+          <td>AI identifies viral moments in long videos. Auto-generates multiple short clips with captions. Great for turning webinars or podcasts into LinkedIn content</td>
+          <td>Not useful if you're recording short-form from scratch. Only valuable if you have long-form source content</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>LinkedIn Native + CapCut</strong> (both free). This covers recording, captioning, and posting. Add <strong>Descript</strong> ($24/mo) only if you're also creating longer content and want to repurpose it into short clips. Add <strong>Opus Clip</strong> ($19/mo) if you have webinars, podcasts, or internal recordings to clip into LinkedIn content.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Format sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Format (Technical Requirements)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Vertical 9:16 aspect ratio</h3>
+            <p>Hold your phone vertically when recording. This is non-negotiable. Horizontal video on mobile wastes 60% of the screen space with black bars. Vertical video fills the entire mobile screen, creating an immersive viewing experience.</p>
+
+            <h3>Duration: Under 30 seconds</h3>
+            <p>Aim for 20-25 seconds. Maximum 30 seconds. Beyond 30s, completion rates drop sharply. Under 30s videos are also more likely to be watched multiple times, which boosts engagement signals.</p>
+
+            <h3>Captions mandatory</h3>
+            <p>80% of LinkedIn users watch videos on mute (during commutes, in open offices, in bed). If your video doesn't have captions, 80% of viewers won't understand it. Use auto-captioning tools (CapCut, Descript) - accuracy is 95%+ and takes 30 seconds to generate.</p>
+
+            <h3>File format and quality</h3>
+            <p>LinkedIn accepts MP4, MOV, and AVI. Modern smartphones shoot in 1080p, which is perfect. Don't overthink resolution. Clean audio matters more than 4K video. If recording indoors, use a quiet room to avoid echo or background noise.</p>
+
+            <div class="highlight">
+              <strong>Technical checklist:</strong> Vertical orientation, under 30s, captions visible, clear audio, 1080p minimum. Everything else is secondary.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Types sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Content Types (What to Talk About)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Hot takes</h3>
+            <p>Contrarian opinion on a common industry practice. Example: "Stop asking prospects for their budget. Here's why." Hot takes spark debate, which drives comments and shares. Controversy boosts reach.</p>
+
+            <h3>Quick tips</h3>
+            <p>One specific, actionable tactic that viewers can use immediately. Example: "Here's how to write a subject line that gets opened." Actionable content gets saved and reshared.</p>
+
+            <h3>Behind-the-scenes</h3>
+            <p>Show your actual work process. Example: "Here's how I research accounts before cold calling." Transparency builds trust and authority. People want to see how experts actually work.</p>
+
+            <h3>Myth-busting</h3>
+            <p>Call out a widespread misconception. Example: "Everyone says cold email is dead. Here's why they're wrong." Myth-busting positions you as an authority and corrects misinformation in your space.</p>
+
+            <div class="highlight">
+              <strong>Content source:</strong> Pull from client conversations, internal Slack debates, questions prospects ask repeatedly, or contrarian takes on industry best practices. If you've explained it twice this week, turn it into a video.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hook sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Hook (First 3 Seconds)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The make-or-break moment</h3>
+            <p>If you don't hook them in the first 3 seconds, they scroll. LinkedIn users are scanning their feed at high speed. Your opening line must stop the scroll. No fluff. No introductions. Lead with the insight.</p>
+
+            <h3>Hook formats that work</h3>
+            <ul>
+              <li><strong>Question:</strong> "Want to know why your outreach emails get ignored?" (Engages curiosity)</li>
+              <li><strong>Bold statement:</strong> "Cold calling is more effective than cold email in 2026." (Sparks debate)</li>
+              <li><strong>Pattern interrupt:</strong> "I used to think LinkedIn DMs were spam. I was wrong." (Challenges assumptions)</li>
+              <li><strong>Specific claim:</strong> "This one subject line change doubled our open rate." (Promises value)</li>
+            </ul>
+
+            <h3>What NOT to do</h3>
+            <ul>
+              <li class="con">Starting with "Hey everyone" or "In this video" - Wastes precious seconds</li>
+              <li class="con">Introducing yourself first - They don't care who you are yet. Lead with value</li>
+              <li class="con">Generic opening like "Here's a quick tip" - Not specific enough to grab attention</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Test your hook:</strong> Show the first 3 seconds to a colleague with no context. If they don't immediately understand what the video is about, rewrite the hook.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posting Time sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Posting Time (When to Publish)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Best days: Tuesday - Thursday</h3>
+            <p>LinkedIn engagement peaks mid-week. Monday is inbox catch-up. Friday is mentally checked out. Tuesday through Thursday get the highest engagement and video completion rates.</p>
+
+            <h3>Best times: 8-10 AM local time</h3>
+            <p>Post when your target audience is commuting or starting their workday. Morning posts get higher engagement than afternoon. People have more attention bandwidth early in the day. Lunch (12-1 PM) is secondary peak.</p>
+
+            <h3>Avoid posting after 5 PM</h3>
+            <p>Evening posts get lower engagement unless your audience is in a different timezone. Professional content performs best during work hours. Save evening slots for personal or community-building content.</p>
+
+            <div class="highlight">
+              <strong>Timezone tip:</strong> If your ICP is in a different timezone, schedule posts for their 8-10 AM. LinkedIn's scheduler lets you set this up in advance.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Authenticity sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Authenticity (Phone Recording &gt; Professional Studio)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why imperfect wins</h3>
+            <p>Professional studio videos with perfect lighting, backdrop, and editing feel like advertisements. Phone-shot videos with natural lighting and casual backgrounds feel like a colleague sharing an insight. On LinkedIn, authenticity beats polish.</p>
+
+            <h3>What authenticity looks like</h3>
+            <ul>
+              <li>Natural lighting from a window (not ring lights)</li>
+              <li>Casual background (your office, kitchen, outside) - not a branded backdrop</li>
+              <li>Conversational tone - like you're talking to a friend, not presenting to a boardroom</li>
+              <li>Minimal editing - one take is fine. Don't over-polish. Small stumbles are humanising</li>
+            </ul>
+
+            <h3>When to use professional production</h3>
+            <p>Save high-production video for product demos, case studies, or evergreen content that will live on your website. For LinkedIn short-form, authentic beats polished every time.</p>
+
+            <div class="highlight">
+              <strong>Authenticity test:</strong> If someone said "This looks like an ad", you've over-produced it. If they said "This feels like James just explained something to me", you nailed it.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Caption Style sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Caption Style (Text Overlays)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Big, bold, high-contrast text</h3>
+            <p>Captions must be readable on a small mobile screen in a bright room. Use large font sizes. Bold weight. High contrast (white text on dark background or vice versa). Avoid thin fonts or low-contrast colours.</p>
+
+            <h3>Positioning: Lower third</h3>
+            <p>Place captions in the lower third of the video. This keeps them visible without covering your face. If you're showing a screen share, position captions above or below the key content area.</p>
+
+            <h3>Timing: Word-by-word or short phrases</h3>
+            <p>Captions should appear word-by-word or in short 2-3 word phrases. This keeps viewers engaged and makes the text easy to follow. Avoid showing full sentences at once - it's harder to read.</p>
+
+            <h3>Style preference: Clean and simple</h3>
+            <p>Don't over-style captions with flashy animations or emoji overload. Clean, bold text is most readable. Save creativity for your content, not your caption styling.</p>
+
+            <div class="highlight">
+              <strong>Caption test:</strong> Watch your video on your phone with brightness at 50%. If you can't easily read the captions, increase font size or contrast.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Video too long (over 60 seconds)</h4>
+          <div class="why">Completion rate drops sharply after 30s. Videos over 60s rarely get watched to the end. Low completion hurts algorithm ranking.</div>
+          <div class="fix">Keep it under 30s. If your point needs 60s, split it into two separate videos. Shorter always wins on LinkedIn.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. No captions (or tiny unreadable captions)</h4>
+          <div class="why">80% of viewers watch on mute. No captions means 80% of viewers don't understand your content. Tiny captions are as bad as no captions.</div>
+          <div class="fix">Use auto-captioning tools. Large bold text, high contrast. Test on your phone before posting. If you can't read it easily, increase size.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Horizontal format instead of vertical</h4>
+          <div class="why">Horizontal video on mobile shows black bars above and below. Wastes 60% of screen space. Feels like old-school desktop video.</div>
+          <div class="fix">Always record vertically on your phone. 9:16 aspect ratio. Fill the mobile screen. Vertical video gets higher completion rates.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Over-produced (feels like an ad)</h4>
+          <div class="why">Perfect lighting, branded backdrops, and polished editing make it feel like a commercial. People skip ads. They watch authentic content.</div>
+          <div class="fix">Use natural lighting. Casual background. Conversational tone. One take is fine. Embrace minor imperfections. Authenticity beats perfection.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No hook in first 3 seconds</h4>
+          <div class="why">If you don't grab attention immediately, they scroll. Starting with "Hey everyone" or "In this video" wastes critical seconds.</div>
+          <div class="fix">Lead with the insight, question, or bold statement. No preamble. First 3 seconds should make them want to keep watching.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Posting inconsistently</h4>
+          <div class="why">One viral video doesn't build authority. Consistent presence does. Posting once a month means people forget you exist.</div>
+          <div class="fix">Aim for 2-3 short videos per week. Batch record on Monday, schedule through the week. Consistency beats perfection.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

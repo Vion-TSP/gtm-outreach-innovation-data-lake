@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 2.3 — Employee Advocacy Programme | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 2.3 - LinkedIn-Native</div>
+  <h1>Employee Advocacy Programme</h1>
+  <p class="desc">Equip your team with content and training to post from their personal LinkedIn profiles. Massive reach amplification when 10-50 employees share consistently. Converts their networks into your pipeline.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#0a66c2;background:#0a66c222">
+      <div class="hero-ch-icon" style="background:#0a66c2">Li</div>
+      <div class="hero-ch-name">LinkedIn (Primary)</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium-High</span>
+    <span class="tag tag-cost">Cost: Medium-High</span>
+    <span class="tag tag-icp">ICP: All ICPs</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Your company page has 5,000 followers. Your 20 employees have 40,000 combined connections. When they post, you access 8x the reach of your company page. Employee advocacy turns every team member into a distribution channel. Their personal brands amplify your company message.
+      </div>
+      <h3>The psychology behind employee advocacy</h3>
+      <ul>
+        <li><strong>Trust transfer</strong> - People trust humans more than brands. A post from Sarah the Account Executive feels more authentic than the same post from Acme Corp</li>
+        <li><strong>Network diversity</strong> - Each employee has a unique network (past colleagues, classmates, industry connections). This diversifies reach beyond your typical audience</li>
+        <li><strong>Algorithmic advantage</strong> - LinkedIn's algorithm favours personal profiles over company pages. Employee posts get 5-10x more organic reach than company posts</li>
+        <li><strong>Social proof at scale</strong> - When 15 employees all share similar insights, it signals "this company knows their stuff." Creates impression of thought leadership across the industry</li>
+      </ul>
+      <h3>Why systematic programmes beat ad-hoc sharing</h3>
+      <p>Without a programme, 2-3 employees post occasionally. With a programme, 10-50 employees post consistently. Consistency compounds. One employee posting weekly reaches 500-1,000 people/month. Ten employees posting weekly reach 5,000-10,000 people/month. That's enterprise marketing budget reach at zero media cost.</p>
+      <p><strong>The career benefit:</strong> Employees who build personal brands on LinkedIn advance faster in their careers. Frame advocacy as professional development, not company obligation. This shifts participation from mandated to voluntary.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-linkedin">P</div><div class="wf-label">Pillars</div><div class="wf-action">Define 3-4 themes</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-linkedin">C</div><div class="wf-label">Create</div><div class="wf-action">Content library</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-linkedin">T</div><div class="wf-label">Train</div><div class="wf-action">Personal branding</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-linkedin">L</div><div class="wf-label">Launch</div><div class="wf-action">Posting cadence</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-linkedin">T</div><div class="wf-label">Track</div><div class="wf-action">Engagement metrics</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-linkedin">I</div><div class="wf-label">Iterate</div><div class="wf-action">Improve content</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 7</div><div class="wf-node ch-linkedin">S</div><div class="wf-label">Scale</div><div class="wf-action">Add more advocates</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Define content pillars</td>
+          <td>Pick 3-4 themes employees will post about. Mix: company content (product updates, wins), personal content (career reflections, day-in-life), industry content (trends, insights). Balance prevents feeling like corporate mouthpieces</td>
+          <td>2-3 hours (strategy session with leadership)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Create shareable content library</td>
+          <td>Build repository of pre-written posts employees can customise. Include: post templates, key talking points, suggested images, relevant hashtags. Make sharing effortless</td>
+          <td>4-6 hours initial setup, 1-2 hours/week ongoing</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Train team on personal branding</td>
+          <td>Run workshop on LinkedIn best practices: profile optimisation, post structure, engagement tactics, what to share vs not share. Don't assume everyone knows how to post effectively</td>
+          <td>1-2 hour workshop, optional 1:1 coaching for key advocates</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Launch posting cadence</td>
+          <td>Start with 3-5 posts/week per person (not daily, to avoid burnout). Mix of company content, personal content, and engagement (commenting on others' posts). Consistency over volume</td>
+          <td>15-30 min/day per employee</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Track engagement</td>
+          <td>Use advocacy platform (GaggleAMP, Haiilo) or manual spreadsheet to track: posts per employee, total reach, engagement rate, leads generated. Visibility drives participation</td>
+          <td>1-2 hours/week (programme manager)</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Iterate and improve</td>
+          <td>Analyse what content performs best. Double down on high-performers. Cut low-performers. Share top-performing posts as examples in content library. Continuous improvement</td>
+          <td>30 min/week (review metrics, update library)</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Scale programme</td>
+          <td>Start with 5-10 enthusiastic employees. Once proven, expand to 20-50. Recruit advocates from each department (sales, CS, product, marketing). Broader participation = broader reach</td>
+          <td>Ongoing (1-2 new advocates per month)</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Start with executives and high-performers. When leadership posts consistently, it signals "this matters" and encourages broader participation. If only junior employees post, it won't gain traction.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>LinkedIn (native, manual)</strong></td>
+          <td>Free</td>
+          <td>Teams under 10 people, testing the concept</td>
+          <td>No tool needed. Share content library via Slack or Google Doc. Employees manually post. Track via spreadsheet</td>
+          <td>No automation. Hard to track participation and metrics at scale. Relies on employee discipline</td>
+        </tr>
+        <tr>
+          <td><strong>GaggleAMP</strong></td>
+          <td>$300+/mo</td>
+          <td>Mid-size teams (20-100 employees) needing automation and gamification</td>
+          <td>Content library, push notifications to advocates when new content available, leaderboards, analytics dashboard. Gamification drives participation</td>
+          <td>Expensive for small teams. Learning curve for setup. Requires dedicated programme manager</td>
+        </tr>
+        <tr>
+          <td><strong>Haiilo</strong></td>
+          <td>Custom pricing</td>
+          <td>Enterprise teams (100+ employees) needing compliance and approval workflows</td>
+          <td>Advanced analytics, compliance controls, multi-channel (LinkedIn + Twitter + Facebook), integrates with internal comms platforms</td>
+          <td>Enterprise pricing (starts $10k+/year). Overkill for small companies. Long setup time</td>
+        </tr>
+        <tr>
+          <td><strong>PostBeyond</strong></td>
+          <td>Custom pricing</td>
+          <td>Sales-focused teams needing CRM integration</td>
+          <td>Salesforce/HubSpot integration. Tracks which employee posts drive pipeline. Sales-specific content suggestions</td>
+          <td>Custom pricing (typically $500+/mo). Sales-only focus (less useful for broader advocacy)</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start <strong>manual</strong> (free) for first 3 months with 5-10 advocates. Validate participation and ROI. Once proven, upgrade to <strong>GaggleAMP</strong> ($300/mo) for 20+ advocates. Enterprise teams (100+) should evaluate <strong>Haiilo</strong> for compliance and scale.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Content Pillars sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Content Pillars (3-4 Themes Per Employee, Mix Company + Personal + Industry)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why content pillars matter</h3>
+            <p>Without pillars, employees post randomly or not at all. With pillars, they have clear direction. Pillars also prevent the programme from feeling like corporate propaganda. Balance company content with personal and industry content.</p>
+
+            <h3>Recommended pillar structure</h3>
+            <table>
+              <tr><th>Pillar</th><th>Description</th><th>Posting Frequency</th><th>Example Topics</th></tr>
+              <tr>
+                <td><strong>Company Content</strong></td>
+                <td>Company news, product updates, customer wins, team milestones</td>
+                <td>1-2x/week</td>
+                <td>"Excited to share we just closed our Series B" or "Proud of the team for shipping X feature this week"</td>
+              </tr>
+              <tr>
+                <td><strong>Personal Content</strong></td>
+                <td>Career reflections, lessons learned, day-in-the-life, work-life moments</td>
+                <td>2-3x/week</td>
+                <td>"What I learned in my first 90 days as an AE" or "Balancing parenthood and a sales quota"</td>
+              </tr>
+              <tr>
+                <td><strong>Industry Content</strong></td>
+                <td>Industry trends, hot takes, news commentary, thought leadership</td>
+                <td>1-2x/week</td>
+                <td>"Why most GTM teams get hiring wrong" or "The future of B2B sales is multi-threaded"</td>
+              </tr>
+              <tr>
+                <td><strong>Engagement</strong></td>
+                <td>Commenting on others' posts, sharing relevant content, starting conversations</td>
+                <td>Daily</td>
+                <td>Thoughtful comments on industry posts, reshares with added commentary</td>
+              </tr>
+            </table>
+
+            <h3>Pillar balance by role</h3>
+            <ul>
+              <li><strong>Sales/CS roles</strong> - More personal + industry content (60%), less company content (40%). Their networks are prospects; too much company content feels salesy</li>
+              <li><strong>Product/Engineering roles</strong> - More company + industry content (70%), less personal (30%). Their networks care about product updates and technical insights</li>
+              <li><strong>Marketing roles</strong> - Balanced mix (50/50). Their job is brand building, so company content fits naturally</li>
+              <li><strong>Executives</strong> - More industry + thought leadership (60%), company updates (40%). They set tone and vision</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Customisation is key:</strong> Don't force everyone to post the same content. Provide templates, but encourage employees to add personal voice and examples. Cookie-cutter posts feel fake and hurt engagement.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Making It Easy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Making It Easy (Pre-Written Posts They Can Customise, Not Mandate)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why ease of use drives participation</h3>
+            <p>Most employees want to participate but don't know what to say or fear saying the wrong thing. Providing templates removes the blank-page problem. The key: templates they can customise, not copy-paste mandates.</p>
+
+            <h3>Content library structure</h3>
+            <ul>
+              <li><strong>Post templates</strong> - Pre-written posts with placeholders for personalisation. Example: "Proud moment today: [describe a customer win or team achievement]. Grateful to work with [colleague names]."</li>
+              <li><strong>Key talking points</strong> - Bullet points on recent company news, product updates, or industry trends. Employees can turn these into posts in their own words</li>
+              <li><strong>Suggested images</strong> - Branded visuals, customer logos (with permission), team photos. Visual content gets 2x engagement</li>
+              <li><strong>Relevant hashtags</strong> - 3-5 hashtags per pillar. Helps posts reach beyond immediate network</li>
+              <li><strong>Example posts</strong> - Screenshots of high-performing posts from other employees. "This post got 50 comments. Notice the structure: hook, insight, question to audience."</li>
+            </ul>
+
+            <h3>Template example (Company Content pillar)</h3>
+            <p><strong>Template:</strong></p>
+            <p>"Big milestone for [Company Name] today: [describe achievement in 1-2 sentences].</p>
+            <p>What I'm most excited about: [personal take on why this matters].</p>
+            <p>Huge credit to [tag 2-3 colleagues]. [Short acknowledgment of their contribution].</p>
+            <p>Onward!"</p>
+            <p><strong>Filled example (by Sarah, Account Executive):</strong></p>
+            <p>"Big milestone for Acme today: we just crossed 500 customers.</p>
+            <p>What I'm most excited about: every one of those 500 companies trusted us to solve their biggest GTM challenge. That trust doesn't happen by accident.</p>
+            <p>Huge credit to James (CS lead) and the support team. They've built relationships that turn customers into champions.</p>
+            <p>Onward!"</p>
+
+            <div class="highlight">
+              <strong>Distribution tip:</strong> Share content library via Slack channel (e.g., employee-advocacy) or shared Google Doc. Post new templates 2-3x/week. Ping the channel: "New post template available on [topic]. Customize and share!"
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Authenticity sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Authenticity (Personal Voice Is Better Than Corporate Copy-Paste)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why authenticity matters</h3>
+            <p>When 10 employees post identical copy-pasted content, it's obvious and hurts credibility. LinkedIn users spot inauthentic advocacy instantly. The goal: amplify company message through authentic personal voices, not turn employees into corporate bots.</p>
+
+            <h3>How to maintain authenticity</h3>
+            <ul>
+              <li><strong>Encourage customisation</strong> - Templates should be starting points, not final drafts. Employees should add personal examples, change wording, adjust tone to match their voice</li>
+              <li><strong>Share, don't mandate</strong> - Frame templates as suggestions, not requirements. "Here's a post idea if you're looking for something to share this week." Voluntary participation beats mandated</li>
+              <li><strong>Celebrate personal posts</strong> - When employees post original content (not from the library), highlight it in team meetings or Slack. Reinforces that personal voice is valued</li>
+              <li><strong>Avoid simultaneous posting</strong> - Don't have 20 employees post the same content at the same time. Stagger posts over 2-3 days. Feels organic, not coordinated</li>
+              <li><strong>Different roles, different angles</strong> - Sales posts from a customer impact angle, CS posts from a support angle, Product posts from a technical angle. Same news, different perspectives</li>
+            </ul>
+
+            <h3>Good vs bad advocacy</h3>
+            <table>
+              <tr><th>Bad (Corporate Copy-Paste)</th><th>Good (Authentic Personal Voice)</th></tr>
+              <tr>
+                <td>"Acme is proud to announce our Series B funding. This investment will accelerate our mission to transform GTM operations."</td>
+                <td>"Personal milestone: 18 months ago I joined Acme as employee 12. Today we announced our Series B. Grateful to be part of this journey and excited for what's next."</td>
+              </tr>
+              <tr>
+                <td>"Check out Acme's new feature. It solves X problem for Y customers."</td>
+                <td>"Spent last week onboarding 3 customers onto our new feature. The reaction: 'Why didn't this exist sooner?' Love when product ships something customers actually asked for."</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Red flag test:</strong> If you see 5+ employees with nearly identical posts, you've over-templated. Pull back. Provide talking points instead of full posts. Trust employees to find their own words.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cadence sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Cadence (3-5 Posts Per Week Per Person)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why 3-5 posts/week is optimal</h3>
+            <p>Posting daily (7x/week) burns people out and feels spammy to their network. Posting 1x/week is too infrequent for algorithmic visibility. 3-5 posts/week (including engagement/commenting) is the sweet spot: consistent enough for reach, sustainable long-term.</p>
+
+            <h3>Recommended weekly cadence</h3>
+            <table>
+              <tr><th>Day</th><th>Activity</th><th>Time Investment</th></tr>
+              <tr>
+                <td>Monday</td>
+                <td>Post (company or industry content)</td>
+                <td>10 min</td>
+              </tr>
+              <tr>
+                <td>Tuesday</td>
+                <td>Engage (comment on 5-10 posts in your feed)</td>
+                <td>10 min</td>
+              </tr>
+              <tr>
+                <td>Wednesday</td>
+                <td>Post (personal content)</td>
+                <td>10 min</td>
+              </tr>
+              <tr>
+                <td>Thursday</td>
+                <td>Engage (comment on 5-10 posts in your feed)</td>
+                <td>10 min</td>
+              </tr>
+              <tr>
+                <td>Friday</td>
+                <td>Post (industry content or reshare with commentary)</td>
+                <td>10 min</td>
+              </tr>
+            </table>
+            <p><strong>Total time:</strong> 50 min/week. Less than 10 min/day. Sustainable long-term.</p>
+
+            <h3>Engagement is as important as posting</h3>
+            <p>Commenting on others' posts (especially industry leaders, prospects, customers) builds relationships and triggers LinkedIn's algorithm to show your posts to more people. Encourage employees to spend 50% of their time commenting, 50% posting original content.</p>
+
+            <div class="highlight">
+              <strong>Scheduling tip:</strong> Set a recurring 15-min calendar block daily (e.g., 9:15-9:30 AM) for LinkedIn activity. Treat it like a meeting. Makes participation habitual, not an afterthought.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Incentives sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Incentives (Gamification, Leaderboards, Recognition)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why incentives matter</h3>
+            <p>Voluntary participation plateaus without incentives. Gamification and recognition tap into intrinsic motivation (status, recognition, competition). Done well, incentives make advocacy fun and rewarding beyond just "it's good for the company."</p>
+
+            <h3>Effective incentive structures</h3>
+            <ul>
+              <li><strong>Leaderboards</strong> - Weekly or monthly leaderboard tracking: posts published, total reach, engagement rate, leads generated. Share in company Slack or all-hands meetings. Public recognition motivates</li>
+              <li><strong>Monthly spotlight</strong> - Feature "Advocate of the Month" in company newsletter or all-hands. Interview them about their LinkedIn strategy. Makes participation aspirational</li>
+              <li><strong>Prizes or rewards</strong> - Top advocates each month get: gift cards, extra PTO day, company swag, lunch with CEO. Small rewards drive big participation</li>
+              <li><strong>Team competitions</strong> - Sales vs Marketing vs CS vs Product. Which team generates most engagement? Winning team gets team lunch or happy hour. Taps into team pride</li>
+              <li><strong>Milestone celebrations</strong> - When an employee hits 10k profile views, 5k followers, or 100k post impressions, celebrate publicly in Slack. Normalize personal branding as career growth</li>
+            </ul>
+
+            <h3>Non-monetary incentives that work</h3>
+            <table>
+              <tr><th>Incentive</th><th>Why It Works</th></tr>
+              <tr>
+                <td>Public recognition in all-hands</td>
+                <td>Status and peer recognition. Signals leadership values participation</td>
+              </tr>
+              <tr>
+                <td>1:1 coaching from marketing or execs</td>
+                <td>Professional development. Employees see tangible skill-building, not just busywork</td>
+              </tr>
+              <tr>
+                <td>Access to exclusive content or insights</td>
+                <td>Top advocates get early access to product roadmap, customer insights, exec strategy. Makes them feel like insiders</td>
+              </tr>
+              <tr>
+                <td>Featured in company case studies or blogs</td>
+                <td>Elevates their personal brand. Shows their expertise publicly</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Avoid negative incentives:</strong> Don't penalise non-participation (e.g., performance reviews tied to posting). This creates resentment and forces inauthentic posts. Positive incentives (recognition, rewards) work better long-term.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Executive Buy-In sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Executive Buy-In (Leaders Posting First Sets the Tone)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why executive participation is non-negotiable</h3>
+            <p>If the CEO and exec team don't post, employees won't either. Leadership sets cultural norms. When execs post consistently, it signals "this is important" and "personal branding matters here." Without exec buy-in, advocacy programmes fail within 3 months.</p>
+
+            <h3>How to secure executive participation</h3>
+            <ul>
+              <li><strong>Start with the why</strong> - Show execs data: "Our 20 employees have 40k combined connections. If they post 3x/week, we reach 150k impressions/month at zero media cost." Frame as growth lever, not busywork</li>
+              <li><strong>Make it effortless for execs</strong> - Assign a ghostwriter or content coordinator to draft posts for exec review. Execs edit and approve, but don't start from scratch. Reduces time burden from 30 min to 5 min per post</li>
+              <li><strong>Tie to OKRs</strong> - Include "post 2x/week on LinkedIn" in exec OKRs or quarterly goals. What gets measured gets done</li>
+              <li><strong>Lead by example</strong> - CEO or CMO goes first. Posts consistently for 4 weeks, shares results ("My last post reached 10k people, generated 5 inbound leads"). Proof of concept motivates others</li>
+            </ul>
+
+            <h3>What execs should post</h3>
+            <table>
+              <tr><th>Content Type</th><th>Frequency</th><th>Example</th></tr>
+              <tr>
+                <td>Vision and strategy</td>
+                <td>1-2x/month</td>
+                <td>"Where we're headed in 2026: three strategic bets we're making and why"</td>
+              </tr>
+              <tr>
+                <td>Company milestones</td>
+                <td>As they happen</td>
+                <td>"Proud moment: we just hit 500 customers. Here's what I've learned scaling to this point"</td>
+              </tr>
+              <tr>
+                <td>Industry thought leadership</td>
+                <td>1x/week</td>
+                <td>"Why most GTM teams fail at X (and what we're doing differently)"</td>
+              </tr>
+              <tr>
+                <td>Team recognition</td>
+                <td>2x/month</td>
+                <td>"Shoutout to Sarah and the sales team for an incredible quarter. Here's what they did right"</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Exec accountability:</strong> Create a private Slack channel for exec team + advocacy programme manager. Share weekly participation report: who posted, who didn't. Peer pressure (in a healthy way) drives consistency.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Forcing corporate copy-paste (feels inauthentic)</h4>
+          <div class="why">All employees post identical text at the same time. Their networks spot the coordination. Kills credibility and trust.</div>
+          <div class="fix">Provide templates as starting points, not final drafts. Encourage customisation. Stagger posts over 2-3 days. Different voices, same message.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. No training on personal branding</h4>
+          <div class="why">You launch the programme assuming everyone knows how to post effectively. Most don't. They post once, get no engagement, and quit.</div>
+          <div class="fix">Run a 1-2 hour workshop on LinkedIn best practices: profile optimisation, post structure, engagement tactics. Set people up for success.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Only sharing company content (boring)</h4>
+          <div class="why">Every post is about product updates or company news. Employees' networks tune out. Feels like a corporate PR machine, not authentic personal sharing.</div>
+          <div class="fix">Balance: 40% company content, 30% personal content, 30% industry content. Mix keeps feeds interesting and relatable.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. No tracking or measurement</h4>
+          <div class="why">You can't prove ROI. Leadership asks "is this working?" and you have no data. Programme gets deprioritised or cut.</div>
+          <div class="fix">Track weekly: posts per employee, total reach, engagement rate, leads generated. Share metrics in leadership meetings. Visibility = budget and buy-in.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Mandating participation (creates resentment)</h4>
+          <div class="why">Advocacy becomes a checkbox on performance reviews. Employees post to avoid punishment, not because they want to. Quality drops, authenticity disappears.</div>
+          <div class="fix">Make it voluntary. Use positive incentives (recognition, rewards, leaderboards). Frame as professional development, not company obligation.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Inconsistent programme management</h4>
+          <div class="why">You launch with excitement, provide content for 2 weeks, then stop. No new templates, no tracking, no follow-up. Participation drops to zero within a month.</div>
+          <div class="fix">Assign a dedicated programme manager (even part-time). Weekly content updates, monthly metrics reviews, ongoing coaching. Consistency compounds.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>
