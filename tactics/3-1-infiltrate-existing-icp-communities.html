@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 3.1 - Infiltrate Existing ICP Communities | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 3.1 - Community-Led Growth</div>
+  <h1>Infiltrate Existing ICP Communities</h1>
+  <p class="desc">Join Slack, Discord, Reddit, and industry forums where your ICP already gathers. Provide genuine value for 4-8 weeks before ever mentioning your product. Build relationships and establish authority, leading to warm inbound leads.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#3fb950;background:#3fb95022">
+      <div class="hero-ch-icon" style="background:#3fb950">C</div>
+      <div class="hero-ch-name">Community (Primary)</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Free</span>
+    <span class="tag tag-icp">ICP: Technical Buyers, Founders, Ops Leaders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Your ICP is already gathered in niche communities discussing their exact pain points. Instead of interrupting them with cold outreach, meet them where they already are and become a trusted voice in their community before ever pitching.
+      </div>
+      <h3>The psychology behind community infiltration</h3>
+      <ul>
+        <li><strong>Pre-existing trust infrastructure</strong> - Communities have their own trust dynamics. When you're seen as a helpful member, recommendations from you carry weight that cold outreach never achieves</li>
+        <li><strong>Low-pressure relationship building</strong> - You're not asking for anything. You're helping. This creates reciprocity without the defensiveness that sales triggers</li>
+        <li><strong>Visibility through contribution</strong> - Every helpful comment, every insightful answer, every shared resource puts you in front of potential buyers without paid ads or aggressive outreach</li>
+        <li><strong>Authority through demonstration</strong> - Rather than claiming expertise, you demonstrate it daily through useful contributions. This builds credibility faster than any marketing claim</li>
+      </ul>
+      <h3>Why communities specifically</h3>
+      <p>Communities are high-intent environments. People join to solve problems, learn, and find solutions. Unlike social media where people scroll passively, community members are actively seeking help. When you provide that help consistently, you become the obvious person to turn to when they need your type of solution.</p>
+      <p><strong>The long game advantage:</strong> Cold outreach is transactional and forgotten instantly. Community presence compounds. Every helpful answer you write becomes a permanent asset that surfaces when someone searches that topic months later. You're building an evergreen presence, not just sending disposable messages.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node" style="background:#3fb950">I</div><div class="wf-label">Identify Communities</div><div class="wf-action">Where ICP gathers</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node" style="background:#3fb950">L</div><div class="wf-label">Lurk First</div><div class="wf-action">1 week observation</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node" style="background:#3fb950">C</div><div class="wf-label">Contribute Value</div><div class="wf-action">4-8 weeks</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node" style="background:#3fb950">R</div><div class="wf-label">Build Relationships</div><div class="wf-action">Consistent presence</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node" style="background:#3fb950">S</div><div class="wf-label">Soft Introduce</div><div class="wf-action">When relevant</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node" style="background:#3fb950">T</div><div class="wf-label">Track Leads</div><div class="wf-action">Monitor DMs</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify target communities</td>
+          <td>Use SparkToro to find where your ICP gathers. Search for ICP job titles + "Slack community" or "Discord server" or relevant subreddit. Look for active communities with regular posts and engaged members</td>
+          <td>2-3 hours research</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Join and lurk (1 week)</td>
+          <td>Observe community culture, rules, and norms. Notice what content gets upvoted, what gets ignored, who the respected voices are. Understand the unwritten rules before participating</td>
+          <td>30 min/day reading</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Start contributing value (4-8 weeks)</td>
+          <td>Answer questions in your expertise area. Share helpful resources. Provide thoughtful insights on discussions. Never mention your product. Focus on being genuinely helpful</td>
+          <td>20-30 min/day</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Build genuine relationships</td>
+          <td>Connect with active members via DM for deeper conversations. Engage consistently on their posts. Remember context about their situations. Be a person, not a vendor</td>
+          <td>15 min/day relationship building</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Soft introduce your solution</td>
+          <td>Only when directly relevant to a question. Frame it as "one approach that's worked for Sarah" rather than a pitch. Let others discover your solution through your profile or natural conversation</td>
+          <td>Opportunistic, not scheduled</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Track leads generated</td>
+          <td>Monitor DMs from community members asking about your solution. Track which communities drive the most qualified conversations. Double down on what works</td>
+          <td>Ongoing monitoring</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Focus on 2-3 communities maximum. Deep presence in a few communities beats shallow presence in many. You want to become a recognisable name, not just another occasional commenter.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Slack</strong></td>
+          <td>Free</td>
+          <td>Professional communities, niche industry groups</td>
+          <td>Searchable history, threaded conversations, easy file sharing. Most B2B communities use Slack</td>
+          <td>Invite-only communities can be hard to discover. Notification overload if in many communities</td>
+        </tr>
+        <tr>
+          <td><strong>Discord</strong></td>
+          <td>Free</td>
+          <td>Tech communities, developer-focused groups, gaming-adjacent industries</td>
+          <td>Voice channels, better for real-time discussion, strong moderation tools</td>
+          <td>Less professional than Slack. Harder to resurface old valuable conversations</td>
+        </tr>
+        <tr>
+          <td><strong>Reddit</strong></td>
+          <td>Free</td>
+          <td>Broad reach, diverse topics, AI search visibility</td>
+          <td>Public, searchable, surfaces in Google and AI search results. Karma system rewards helpful contributions</td>
+          <td>Strong anti-self-promotion culture. New accounts often restricted from posting. Requires karma building</td>
+        </tr>
+        <tr>
+          <td><strong>Gummy Search</strong></td>
+          <td>$49/mo</td>
+          <td>Finding relevant Reddit conversations and pain points</td>
+          <td>Monitors subreddits for specific keywords, identifies pain points your ICP discusses, surfaces opportunities to contribute</td>
+          <td>Reddit-specific. Doesn't cover Slack or Discord communities</td>
+        </tr>
+        <tr>
+          <td><strong>Circle</strong></td>
+          <td>Varies by community</td>
+          <td>Branded community platforms, membership communities</td>
+          <td>Cleaner interface than Slack, courses + community combined, mobile app</td>
+          <td>Less common than Slack. Each community has separate login</td>
+        </tr>
+        <tr>
+          <td><strong>SparkToro</strong></td>
+          <td>$50/mo</td>
+          <td>Discovering where your ICP gathers online</td>
+          <td>Shows which websites, communities, podcasts, and social accounts your ICP follows. Takes guesswork out of community discovery</td>
+          <td>Data is directional, not exhaustive. Still requires manual validation</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>free communities</strong> (Slack, Discord, Reddit) to test the tactic. Add <strong>Gummy Search</strong> ($49/mo) if Reddit is a key channel for your ICP. Use <strong>SparkToro</strong> ($50/mo) to systematically find new communities to join.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Finding the Right Communities sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Finding the Right Communities (Where Your ICP Actually Hangs Out)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>How to identify high-value communities</h3>
+            <p>Not all communities are equal. You want communities where your ICP is actively discussing their pain points, not just lurking or socialising. Look for communities where people ask questions, share challenges, and seek advice frequently.</p>
+
+            <h3>Community discovery process</h3>
+            <ul>
+              <li><strong>Ask your best customers</strong> - "What Slack communities, Discord servers, or forums are you part of?" This gives you direct insight into where your ICP actually spends time</li>
+              <li><strong>LinkedIn search</strong> - Search for posts mentioning "Slack community" or "Discord server" in your industry. People often share invites publicly</li>
+              <li><strong>SparkToro research</strong> - Enter your ICP job title and see which websites and communities they frequent. Filter for community-type properties</li>
+              <li><strong>Subreddit discovery</strong> - Search Google for "your-industry + reddit" or browse related subreddits' sidebars for linked communities</li>
+              <li><strong>Conference attendee lists</strong> - Industry conferences often have associated Slack communities. Join the conference community even if you don't attend the event</li>
+            </ul>
+
+            <h3>Evaluating community quality</h3>
+            <table>
+              <tr><th>Good Signal</th><th>Bad Signal</th></tr>
+              <tr>
+                <td>Daily activity with multiple members contributing</td>
+                <td>Ghost town with sporadic posts weeks apart</td>
+              </tr>
+              <tr>
+                <td>Questions get helpful answers within hours</td>
+                <td>Questions go unanswered or get low-effort replies</td>
+              </tr>
+              <tr>
+                <td>Mix of experienced members and newbies seeking help</td>
+                <td>Only newbies asking questions, no experienced voices</td>
+              </tr>
+              <tr>
+                <td>Members share specific challenges and context</td>
+                <td>Only generic "how do I get started" questions</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Quality over quantity:</strong> One highly engaged community with your exact ICP beats five loosely relevant communities. Focus on where your ICP discusses the specific pain points your product solves.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lurking First sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Lurking First (Understand Culture and Rules Before Participating)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why lurking matters</h3>
+            <p>Every community has its own culture, unwritten rules, and inside jokes. Jump in too quickly with generic advice and you'll be marked as an outsider or vendor. Lurk first to understand the community's communication style and norms.</p>
+
+            <h3>What to observe during lurk week</h3>
+            <ul>
+              <li><strong>Tone and style</strong> - Is the community formal or casual? Do people use emojis? Are conversations technical or accessible?</li>
+              <li><strong>What gets upvoted/reactions</strong> - What types of contributions get appreciation? Detailed explanations? Quick tips? Personal stories?</li>
+              <li><strong>Who are the respected voices</strong> - Notice who consistently provides valuable answers. Study their communication style. Model that approach</li>
+              <li><strong>What gets ignored or downvoted</strong> - What types of posts or comments get no engagement? This shows you what to avoid</li>
+              <li><strong>Self-promotion rules</strong> - Some communities explicitly ban self-promotion. Others allow it in dedicated channels or with context. Learn the rules before breaking them</li>
+              <li><strong>Common questions and pain points</strong> - What topics come up repeatedly? These are your opportunities to provide value</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Lurk benchmark:</strong> Spend at least one week observing before making your first contribution. Read through 50-100 conversations minimum. You should be able to describe the community's culture in a few sentences before participating.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Value-First Approach sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Value-First Approach (Answer Questions, Share Insights, Never Pitch Early)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What "value-first" actually means</h3>
+            <p>Value-first means every contribution you make helps others with zero expectation of return. You're not building goodwill to cash in later. You're genuinely helping because you understand the pain points and have knowledge worth sharing.</p>
+
+            <h3>Types of valuable contributions</h3>
+            <ul>
+              <li><strong>Detailed answers to questions</strong> - When someone asks a question in your area of expertise, write a thoughtful, comprehensive answer. Include specific steps, examples, or resources</li>
+              <li><strong>Share relevant resources</strong> - Link to helpful articles, tools, templates, or guides when relevant. Curate the best resources you've found</li>
+              <li><strong>Personal experience and stories</strong> - Share what's worked for you or Sarah at Acme Corp. Real stories are more valuable than generic advice</li>
+              <li><strong>Follow-up clarification</strong> - If someone asks a follow-up question to your answer, respond promptly. Show you're engaged in real conversations, not just dropping advice and leaving</li>
+              <li><strong>Thoughtful reactions to others' posts</strong> - Engage with other people's contributions. Ask clarifying questions. Add nuance to their points. Build relationships through genuine interaction</li>
+            </ul>
+
+            <h3>What NOT to do</h3>
+            <table>
+              <tr><th>Bad Contribution</th><th>Why It Fails</th></tr>
+              <tr>
+                <td>"Check out our tool for this"</td>
+                <td>Pure pitch. No value. Gets ignored or banned</td>
+              </tr>
+              <tr>
+                <td>Generic advice anyone could Google</td>
+                <td>Doesn't demonstrate expertise. Adds no value</td>
+              </tr>
+              <tr>
+                <td>One-line answers with no context</td>
+                <td>Looks low-effort. Doesn't build credibility</td>
+              </tr>
+              <tr>
+                <td>Only commenting on posts where you can pitch</td>
+                <td>Transparent vendor behavior. Destroys trust</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>The no-pitch rule:</strong> For the first 4-8 weeks, never mention your product name. If asked directly "what tool do you use for X?", you can answer, but never proactively pitch. Let your expertise speak for itself.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- The 80/20 Rule sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>The 80/20 Rule (80% Pure Value, 20% Subtle Promotion)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>After the value-building phase</h3>
+            <p>Once you've established yourself as a helpful community member (4-8 weeks of consistent value), you can start very subtly mentioning your solution when directly relevant. But it should still be 80% pure help, 20% mentions of your product.</p>
+
+            <h3>How to mention your product without being salesy</h3>
+            <ul>
+              <li><strong>Frame as one option among many</strong> - "A few approaches that work: [list 3-4 solutions including yours]. I've seen James at Acme succeed with each of these depending on their specific situation"</li>
+              <li><strong>Share your expertise first, product second</strong> - Answer the question thoroughly with actionable advice. Then add: "This is actually the problem we built our product to solve, happy to share more if useful"</li>
+              <li><strong>Use your profile, not constant pitches</strong> - Make sure your community profile clearly states what you do. People will check your profile if they find your contributions valuable</li>
+              <li><strong>Respond when asked</strong> - If someone asks "what tool do you recommend for X?" and your product fits, you can mention it. But frame it as "I'm biased because I work on [product], but here's why it might fit your situation..."</li>
+            </ul>
+
+            <h3>The 80/20 in practice</h3>
+            <p>If you make 10 contributions in a week, 8 should be pure value with no mention of your product. 2 can include subtle mentions when directly relevant. This keeps you helpful-first while still generating awareness.</p>
+
+            <div class="highlight">
+              <strong>Trust signal:</strong> The best community members often recommend competitors when it's the right fit. If someone asks about a use case your product doesn't serve well, recommend a competitor. This builds immense trust and people remember you for it.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Building Genuine Relationships sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Building Genuine Relationships (Not Just Transactional Interactions)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why relationships matter more than visibility</h3>
+            <p>You can be highly visible in a community but never generate leads if no one actually knows you. Real relationships - where people remember your name, your context, your expertise - are what convert community presence into pipeline.</p>
+
+            <h3>How to build relationships in communities</h3>
+            <ul>
+              <li><strong>Remember people's context</strong> - When Sarah mentions she's dealing with a specific challenge, remember it. Reference it in future conversations: "Sarah, did you ever solve that X problem you mentioned last month?"</li>
+              <li><strong>Take conversations to DM when appropriate</strong> - If a public thread gets into specific details, suggest moving to DM to go deeper. This creates one-on-one relationships</li>
+              <li><strong>Connect people to each other</strong> - Notice when two community members could help each other. Make introductions. Become a connector, not just a contributor</li>
+              <li><strong>Celebrate others' wins</strong> - When someone shares a success, engage genuinely. This builds goodwill and shows you're paying attention to people, not just opportunities to pitch</li>
+              <li><strong>Consistent presence over time</strong> - Show up regularly. People remember names they see consistently. Sporadic participation doesn't build relationships</li>
+            </ul>
+
+            <h3>Moving from community to sales conversation</h3>
+            <p>When you've built a genuine relationship, the transition to sales is natural. After helping someone over weeks or months, a simple "We actually built something that solves exactly this - want to see how James at Acme uses it?" feels helpful, not pushy.</p>
+
+            <div class="highlight">
+              <strong>Relationship indicator:</strong> You know you've built real relationships when people start tagging you in threads ("Sarah would know this") or DMing you with questions before posting publicly. That's when community presence turns into pipeline.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- When to Mention Your Product sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>When to Mention Your Product (And How to Do It Without Being Salesy)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The right moments to mention your product</h3>
+            <ul>
+              <li><strong>When directly asked</strong> - "What tool do you use for X?" is an open invitation. Answer honestly, including that you work on it, but frame it as one option</li>
+              <li><strong>When it perfectly solves a stated problem</strong> - If someone describes a specific pain point your product addresses, you can mention it as a potential solution alongside other approaches</li>
+              <li><strong>In your introduction when joining</strong> - Most communities have introduction threads. Mention what you do, but focus more on your expertise and why you joined the community</li>
+              <li><strong>When sharing your experience</strong> - "When we faced this at Acme, here's what worked..." is a natural way to reference your product through a customer story</li>
+            </ul>
+
+            <h3>How to frame product mentions</h3>
+            <table>
+              <tr><th>Salesy (Don't)</th><th>Helpful (Do)</th></tr>
+              <tr>
+                <td>"Our product solves this perfectly. Book a demo here."</td>
+                <td>"This is actually the problem we built our product around. A few customers like James tackled it this way: [explain approach]. Happy to share more if it's relevant to your situation."</td>
+              </tr>
+              <tr>
+                <td>"You should definitely use our tool for this."</td>
+                <td>"I'm biased because I work on this, but here's how I'd approach it: [give advice]. Our product is one option, but [competitor] also works well depending on your setup."</td>
+              </tr>
+              <tr>
+                <td>"Check out our product."</td>
+                <td>"When Sarah at Acme faced this, she tried [approach 1], [approach 2], and eventually [your product approach]. Happy to explain what made the difference in her case."</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>The transparency principle:</strong> Always disclose that you work on the product. "Full disclosure, I work on [product], but here's an unbiased take..." builds trust. Pretending to be a neutral user who loves your product destroys trust permanently if discovered.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Pitching immediately after joining</h4>
+          <div class="why">You join a community and start dropping product links in your first week. Community members immediately identify you as a vendor, not a member. You get banned or ignored.</div>
+          <div class="fix">Lurk for 1 week minimum. Contribute pure value for 4-8 weeks before ever mentioning your product. Build trust before asking for it.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Spamming links to your content</h4>
+          <div class="why">You answer every question with "I wrote a blog about this" and drop a link. Community sees through this immediately. It's self-promotion disguised as help.</div>
+          <div class="fix">Answer the question directly in the community first. If your blog adds extra depth, mention it after providing value: "I went deeper on this here if useful: [link]". The answer should be complete without clicking.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Being obviously salesy in tone</h4>
+          <div class="why">Your comments sound like marketing copy. You use phrases like "best solution" or "revolutionary approach". Communities allergic to marketing speak.</div>
+          <div class="fix">Write like a human, not a marketer. Share what worked for Sarah at Acme, not "our enterprise-grade solution". Be specific and humble, not promotional.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Joining too many communities (spread thin)</h4>
+          <div class="why">You join 10 communities to maximize reach. You can't keep up with all of them. Your presence is shallow everywhere, memorable nowhere.</div>
+          <div class="fix">Focus on 2-3 communities maximum where your ICP is most active. Deep, consistent presence in a few places beats sporadic presence in many. Become a known name, not just another member.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Not adapting to community culture</h4>
+          <div class="why">You use the same communication style across all communities. But each community has its own culture. What works on Reddit doesn't work in a professional Slack group.</div>
+          <div class="fix">Spend time observing each community's culture during your lurk phase. Mirror the tone, style, and norms of respected community members. Adapt your communication to fit each community.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Giving up too early (takes 4-8 weeks to see results)</h4>
+          <div class="why">You contribute for 2 weeks, see no leads, and quit. But trust and visibility take time to compound. You gave up right before it would have started working.</div>
+          <div class="fix">Commit to 8 weeks minimum before evaluating results. Track engagement on your contributions, not just leads. Increased reactions and DMs are leading indicators before actual pipeline appears.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

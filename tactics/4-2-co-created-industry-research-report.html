@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 4.2 — Co-Created Industry Research Report | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 4.2 - Content-Led Outreach</div>
+  <h1>Co-Created Industry Research Report</h1>
+  <p class="desc">Partner with complementary companies to produce original research about your shared ICP. Survey-driven insights create credible content that attracts organic traffic, earns backlinks, and positions both partners as thought leaders. Strong lead magnet and PR opportunity.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#d29922;background:#d2992222">
+      <div class="hero-ch-icon" style="background:#d29922">Co</div>
+      <div class="hero-ch-name">Content (Primary)</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: High</span>
+    <span class="tag tag-cost">Cost: Medium-High</span>
+    <span class="tag tag-icp">ICP: C-suite, VP-level, Strategic Buyers</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Original research cuts through noise. Everyone publishes opinions. Few publish data. When you survey hundreds of practitioners and publish findings, you create a credible asset that journalists cite, peers share, and prospects download. Co-creation splits costs and doubles distribution by leveraging both partners' audiences.
+      </div>
+      <h3>The psychology of research-driven content</h3>
+      <ul>
+        <li><strong>Authority by data</strong> - Original research positions you as the source, not just a commentator. Media outlets prefer citing primary research over opinion pieces</li>
+        <li><strong>Credibility through numbers</strong> - Survey data from real practitioners carries more weight than case studies or anecdotes. Buyers trust peer insights over vendor claims</li>
+        <li><strong>Shareability of insights</strong> - Surprising or controversial findings get shared organically. People tag colleagues and post screenshots of compelling stats</li>
+        <li><strong>Long-tail SEO value</strong> - Research reports rank for industry terms and attract backlinks. One report can drive organic traffic for years</li>
+      </ul>
+      <h3>Why co-creation amplifies impact</h3>
+      <p>Partnering with a complementary company (non-competing but same ICP) splits the effort and cost while doubling reach. Each partner promotes to their audience, drives survey responses from their network, and shares the report with their channels. The combined credibility of two brands makes the research more trustworthy than a solo effort.</p>
+      <p><strong>The compound effect:</strong> Research reports often get picked up by industry publications, referenced in other content, and cited in sales conversations. This creates a flywheel where the report continues generating leads and building authority long after publication.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node ch-phone">T</div><div class="wf-label">Choose Topic</div><div class="wf-action">Novel insights</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node ch-phone">P</div><div class="wf-label">Find Partner</div><div class="wf-action">Shared ICP</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node ch-email">D</div><div class="wf-label">Design Survey</div><div class="wf-action">10-15 questions</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node ch-email">Di</div><div class="wf-label">Distribute</div><div class="wf-action">Email + social</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node ch-phone">A</div><div class="wf-label">Analyse Data</div><div class="wf-action">Key findings</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node ch-video">De</div><div class="wf-label">Design Report</div><div class="wf-action">Visual + readable</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 7</div><div class="wf-node ch-linkedin">L</div><div class="wf-label">Launch</div><div class="wf-action">PR + social</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 8</div><div class="wf-node ch-email">G</div><div class="wf-label">Gate Report</div><div class="wf-action">Lead capture</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 9</div><div class="wf-node ch-linkedin">R</div><div class="wf-label">Repurpose</div><div class="wf-action">Clips + posts</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Choose research topic</td>
+          <td>Pick a topic that will generate novel or controversial findings. Best topics: emerging trends, common misconceptions, underreported challenges. Avoid topics with obvious answers. Example: "How sales teams actually use AI tools vs how vendors think they do"</td>
+          <td>1-2 hours brainstorming with partner</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Find research partner</td>
+          <td>Look for companies that serve the same ICP but offer complementary products. Not competitors. Both partners should benefit from shared distribution. Example: sales engagement platform partners with conversation intelligence tool</td>
+          <td>1-2 weeks outreach and alignment calls</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Design survey</td>
+          <td>Create 10-15 questions max. Mix multiple choice (for easy data visualisation) with open-ended (for qualitative insights). Test survey on 5-10 people before full launch to catch confusing questions. Use Typeform or SurveyMonkey for professional look</td>
+          <td>4-6 hours drafting and testing</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Distribute to ICP</td>
+          <td>Both partners email their lists, post on LinkedIn, share in communities, and DM key contacts. Offer incentive for completion (gift card raffle, early access to findings, donation to charity). Aim for 200+ responses for credibility</td>
+          <td>2-3 weeks distribution period, 30 min/day promotion</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Analyse results</td>
+          <td>Export survey data. Look for surprising patterns, outliers, and contradictions to common beliefs. Segment by company size, role, industry if sample allows. Pull standout quotes from open-ended responses</td>
+          <td>4-8 hours analysis</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Design report</td>
+          <td>Hire designer or use Canva for professional layout. Include: executive summary (1 page), key findings with charts, detailed analysis, quotes from respondents, methodology section. Aim for 15-25 pages. Make it visually engaging</td>
+          <td>1-2 weeks design (depending on designer availability)</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Launch with PR strategy</td>
+          <td>Pitch to industry publications 1 week before public launch (exclusive early access). Publish LinkedIn posts from both partners highlighting key stats. Host webinar to present findings. Email both partner lists announcing report</td>
+          <td>1 week PR prep, ongoing promotion</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>Gate for lead generation</td>
+          <td>Host full report on landing page requiring name, email, company for download. Create ungated 2-page summary for social sharing. This balances reach (ungated summary) with lead capture (gated full report)</td>
+          <td>2-4 hours landing page setup</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Repurpose into content</td>
+          <td>Extract key stats into LinkedIn posts, carousel posts, blog series, infographics, video explainers, podcast episodes. One report fuels 20-30 pieces of content over next quarter</td>
+          <td>Ongoing, 1-2 hours per week</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Launch with a webinar where both partners present findings live. Attendees get deeper insights beyond what's in the report. Webinar becomes another lead capture mechanism and creates additional content (recording, clips, Q&A).
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Typeform</strong></td>
+          <td>$25/mo</td>
+          <td>Beautiful survey design and high completion rates</td>
+          <td>One question per screen design increases completion rates vs traditional forms. Logic jumps allow conditional questions based on previous answers. Professional branding and custom design. Integrates with HubSpot, Slack, Google Sheets for response tracking</td>
+          <td>Limited free plan (10 questions, 100 responses/month). Advanced logic and customisation require paid tier</td>
+        </tr>
+        <tr>
+          <td><strong>SurveyMonkey</strong></td>
+          <td>$25/mo</td>
+          <td>Advanced analytics and data segmentation</td>
+          <td>Built-in statistical analysis tools. Export to Excel, SPSS, or PDF. Compare responses across segments (company size, role, etc.). Question bank with pre-tested questions from researchers</td>
+          <td>Interface feels dated compared to Typeform. Less visually appealing to respondents. Free plan very limited (10 questions, 40 responses)</td>
+        </tr>
+        <tr>
+          <td><strong>Canva</strong></td>
+          <td>$13/mo</td>
+          <td>DIY report design without hiring designer</td>
+          <td>Thousands of report templates. Drag-and-drop editor. Chart creation tools. Brand kit for consistent colors and fonts. Team collaboration for partner feedback. Export to PDF or web-ready formats</td>
+          <td>Not as polished as professional designer output. Limited compared to Adobe InDesign for complex layouts. Charts less sophisticated than dedicated data viz tools</td>
+        </tr>
+        <tr>
+          <td><strong>Figma</strong></td>
+          <td>Free (Pro: $15/mo)</td>
+          <td>Collaborative report design with partner</td>
+          <td>Real-time collaboration. Both partners can edit simultaneously. Comment and feedback threads. Version history. Plugin ecosystem for charts and data viz. Export to PDF or hand off to developer for web version</td>
+          <td>Steeper learning curve than Canva. Requires design skills for best results. Free plan limits to 3 active projects and 1 team</td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot</strong></td>
+          <td>Free (for landing pages and forms)</td>
+          <td>Gated landing page and lead capture</td>
+          <td>Free landing page builder with form. Captures leads directly into CRM. Email automation for follow-up sequence. Track who downloads report. Integrate with partner's CRM for lead distribution</td>
+          <td>Free tier has HubSpot branding. Limited design flexibility compared to custom landing page. Advanced features require paid plan</td>
+        </tr>
+        <tr>
+          <td><strong>Notion</strong></td>
+          <td>Free (Plus: $10/mo)</td>
+          <td>Collaboration workspace with partner</td>
+          <td>Shared workspace for survey questions, analysis notes, content calendar, launch plan. Real-time editing. Task assignments. Centralises all project documentation. Free for small teams</td>
+          <td>Not purpose-built for research. Lacks survey or analytics features. Just a collaboration layer. Need other tools for actual research execution</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Use <strong>Typeform ($25/mo)</strong> for survey (better completion rates justify cost), <strong>Canva ($13/mo)</strong> for report design (fast and affordable), <strong>HubSpot (free)</strong> for landing page and lead capture, and <strong>Notion (free)</strong> for partner collaboration. Total: $38/mo plus one-time design effort.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Topic Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Topic Selection (Controversial or Novel Findings Get Coverage)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What makes a research topic compelling</h3>
+            <p>The best research topics challenge assumptions or reveal something unexpected. If your findings just confirm what everyone already believes, no one will share them. Pick topics where you expect to uncover surprises, contradictions, or data that challenges conventional wisdom.</p>
+
+            <h3>Topic categories that work</h3>
+            <ul>
+              <li><strong>Emerging trends</strong> - New behaviours or shifts that haven't been quantified yet. Example: "How AI adoption is actually changing sales workflows in 2026"</li>
+              <li><strong>Common misconceptions</strong> - Topics where industry assumptions don't match reality. Example: "Why most outbound teams fail (it's not what you think)"</li>
+              <li><strong>Underreported challenges</strong> - Problems everyone faces but no one talks about publicly. Example: "The hidden costs of GTM tool sprawl"</li>
+              <li><strong>Peer benchmarking</strong> - Data showing what top performers do differently. Example: "What separates high-growth sales teams from the rest"</li>
+            </ul>
+
+            <h3>Vetting your topic</h3>
+            <table>
+              <tr><th>Question</th><th>Good Sign</th><th>Warning Sign</th></tr>
+              <tr>
+                <td>Has this been researched before?</td>
+                <td>Either never researched, or last study was 2+ years ago</td>
+                <td>Multiple recent reports on same topic. Hard to differentiate</td>
+              </tr>
+              <tr>
+                <td>Will findings surprise people?</td>
+                <td>You expect counterintuitive or controversial results</td>
+                <td>Findings will likely confirm what everyone already thinks</td>
+              </tr>
+              <tr>
+                <td>Does your ICP care?</td>
+                <td>Topic addresses a top-3 pain point for your target buyers</td>
+                <td>Topic is interesting but not directly tied to buyer priorities</td>
+              </tr>
+              <tr>
+                <td>Can you get responses?</td>
+                <td>Both partners have access to hundreds of potential respondents</td>
+                <td>Topic is too niche. Struggle to find enough respondents</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Run a LinkedIn poll testing 2-3 potential topics before committing. The topic with most engagement signals what your ICP cares about. Use poll comments to refine specific angles or questions to include.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Finding Partner sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Finding the Right Partner (Complementary Audience, Shared ICP)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why partner selection matters</h3>
+            <p>The wrong partner creates misaligned incentives, uneven effort distribution, and diluted messaging. The right partner doubles your reach, splits costs, and makes the research more credible. Look for companies where collaboration benefits both sides equally.</p>
+
+            <h3>Ideal partner criteria</h3>
+            <ul>
+              <li><strong>Same ICP, different product</strong> - You both sell to the same buyers but solve different problems. Example: email deliverability tool partners with copywriting AI tool</li>
+              <li><strong>Similar company stage</strong> - Roughly equal brand presence and audience size. Avoids power imbalance where one partner does most promotion</li>
+              <li><strong>Aligned values and quality bar</strong> - Partner cares about producing high-quality research, not just quick lead gen. Check their existing content quality</li>
+              <li><strong>Complementary networks</strong> - Partner has audience in channels you don't (different communities, geographies, or buyer personas within your broader ICP)</li>
+            </ul>
+
+            <h3>How to pitch potential partners</h3>
+            <p>Reach out to companies you already have relationships with (customers, integration partners, community members). Explain the mutual benefit: split costs, doubled reach, shared credibility. Propose specific topic and rough timeline. Emphasise equal partnership (co-branded, equal promotion effort).</p>
+
+            <div class="email-block">
+              <span class="label">Partner pitch example</span>
+Subject: Research partnership idea - GTM tool adoption study
+
+Hi Sarah,
+
+We're planning a research report on how GTM teams actually adopt and use new tools. Thought you'd be a great co-creation partner given we share similar audiences (Series A/B sales leaders) but complementary products.
+
+The idea: Survey 200+ sales leaders on tool evaluation, implementation challenges, and what drives adoption vs abandonment. Publish co-branded report with both our logos and distribution.
+
+Why partner:
+- Split survey design and analysis effort
+- Both promote to our networks (doubles reach)
+- More credible with two brands vs solo effort
+- Lead gen for both of us via gated landing page
+
+We handle survey platform and landing page. You handle report design. Equal promotion commitment from both sides.
+
+Interested in exploring? Happy to jump on a call.
+
+Best,
+James
+            </div>
+
+            <div class="highlight">
+              <strong>Red flag partners:</strong> Avoid companies that want you to do all the work while they just slap their logo on it, partners in adjacent but slightly competitive spaces (creates tension over messaging), or partners with much larger audiences (they may not promote as hard because they get less value).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Survey Design sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Survey Design (Keep Under 15 Questions)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why brevity matters</h3>
+            <p>Survey completion rates drop dramatically after 10 minutes. Every additional question reduces your final response count. Better to get 300 responses to 12 focused questions than 100 responses to 30 questions. Quality over quantity.</p>
+
+            <h3>Question design principles</h3>
+            <ul>
+              <li><strong>Start with easy questions</strong> - Demographics and basic info first. Build momentum before harder questions. Don't start with open-ended essay questions</li>
+              <li><strong>Mix question types</strong> - Multiple choice for quantitative data, rating scales for measuring intensity, open-ended for quotes and qualitative insights. Avoid too many open-ended (respondent fatigue)</li>
+              <li><strong>Avoid leading questions</strong> - "Don't you think X is a problem?" biases responses. Neutral framing: "How significant is X in your workflow?" with scale</li>
+              <li><strong>Include "Other" options</strong> - Multiple choice should always have "Other (please specify)" to catch unexpected responses and avoid forcing bad fits</li>
+              <li><strong>Test for clarity</strong> - Send draft survey to 5-10 people. If they're confused by a question, rewrite it. Ambiguity kills data quality</li>
+            </ul>
+
+            <h3>Sample survey structure</h3>
+            <table>
+              <tr><th>Section</th><th>Questions</th><th>Purpose</th></tr>
+              <tr>
+                <td>Demographics (3-4 questions)</td>
+                <td>Company size, role, industry, revenue/stage</td>
+                <td>Segmentation for analysis. Easy warm-up questions</td>
+              </tr>
+              <tr>
+                <td>Behaviour and practices (5-7 questions)</td>
+                <td>What they currently do, tools they use, frequency, processes</td>
+                <td>Core data. Multiple choice and scales. Easy to visualise</td>
+              </tr>
+              <tr>
+                <td>Challenges and pain points (2-3 questions)</td>
+                <td>Biggest obstacles, what's not working, frustrations</td>
+                <td>Reveals gaps and opportunities. Mix scales with open-ended</td>
+              </tr>
+              <tr>
+                <td>Future outlook (1-2 questions)</td>
+                <td>Plans for next 6-12 months, interest in new approaches</td>
+                <td>Forward-looking data. Shows where market is heading</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Include one optional open-ended question at the end: "Any additional thoughts on this topic?" This captures passionate responses and often provides the best quotes for the report without forcing everyone to answer.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sample Size sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Sample Size (200+ for Credibility)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why sample size matters</h3>
+            <p>Small sample sizes (under 100) look anecdotal. Media won't cover research based on 50 responses. Buyers question credibility. Aim for 200+ responses minimum for B2B research. 500+ is ideal but not always achievable without incentives or large audiences.</p>
+
+            <h3>Strategies to hit 200+ responses</h3>
+            <ul>
+              <li><strong>Email both partner lists</strong> - This is your primary distribution channel. Send to full list, not just engaged segments. Multiple reminders (3-4 emails over 2 weeks)</li>
+              <li><strong>Offer incentive</strong> - Gift card raffle (10 winners of $50 cards), donation to charity per response, or early access to findings. Incentives can double response rates</li>
+              <li><strong>Post in communities</strong> - LinkedIn groups, Slack communities, Reddit, industry forums where your ICP hangs out. Personalise asks rather than spamming links</li>
+              <li><strong>Direct outreach to key contacts</strong> - Both partners DM 50-100 key connections personally asking them to complete and share. Personal asks convert at much higher rates</li>
+              <li><strong>Partner with industry associations</strong> - Some associations will share surveys with their members if the research benefits the industry. Worth exploring</li>
+            </ul>
+
+            <h3>Response rate expectations</h3>
+            <table>
+              <tr><th>Distribution Channel</th><th>Typical Response Rate</th><th>Notes</th></tr>
+              <tr>
+                <td>Email to engaged list</td>
+                <td>5-10%</td>
+                <td>Higher with strong subject line and multiple follow-ups</td>
+              </tr>
+              <tr>
+                <td>Email to cold list</td>
+                <td>1-3%</td>
+                <td>Lower engagement. Need large list to get meaningful responses</td>
+              </tr>
+              <tr>
+                <td>LinkedIn post</td>
+                <td>0.5-2%</td>
+                <td>Depends on follower count and engagement rate. Boost with DMs</td>
+              </tr>
+              <tr>
+                <td>Community post</td>
+                <td>3-8%</td>
+                <td>Varies by community size and engagement level. Active communities perform better</td>
+              </tr>
+              <tr>
+                <td>Personal DM</td>
+                <td>30-50%</td>
+                <td>Highest conversion but doesn't scale. Use for key contacts</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Display live response count on survey landing page: "Join 247 sales leaders who've already shared their insights." Social proof increases completion rates. Update the number weekly during distribution period.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report Design sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Report Design (Executive Summary, Key Stats, Visual Charts)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why design quality matters</h3>
+            <p>Data without good design doesn't get shared or read. Visual hierarchy, charts, and layout determine whether busy executives skim your report or ignore it. Invest in design. A beautifully designed 15-page report outperforms an ugly 50-page report every time.</p>
+
+            <h3>Report structure</h3>
+            <ul>
+              <li><strong>Cover page</strong> - Title, both partner logos, publication date, eye-catching visual</li>
+              <li><strong>Executive summary (1 page)</strong> - 5-7 bullet points covering top findings. Busy people read only this page</li>
+              <li><strong>Methodology (0.5 page)</strong> - Sample size, demographics breakdown, survey period. Builds credibility</li>
+              <li><strong>Key findings (8-12 pages)</strong> - One finding per page or spread. Large stat callouts, supporting charts, brief analysis. Mix charts with pull quotes from open-ended responses</li>
+              <li><strong>Conclusion and implications (1-2 pages)</strong> - What this means for the industry, recommendations, future outlook</li>
+              <li><strong>About the partners (1 page)</strong> - Brief bios of both companies, no sales pitch</li>
+            </ul>
+
+            <h3>Visual design principles</h3>
+            <ul>
+              <li><strong>Hierarchy matters</strong> - Large callout stats, medium charts, small body text. Guide reader's eye to most important data first</li>
+              <li><strong>Limit colours</strong> - Use 2-3 brand colours plus neutrals. Too many colours look chaotic and unprofessional</li>
+              <li><strong>Whitespace is your friend</strong> - Don't cram every inch with content. Breathing room makes reports easier to read and more premium feeling</li>
+              <li><strong>Consistent chart styles</strong> - Pick bar charts, pie charts, or line graphs and stick with consistent styling throughout. Inconsistency looks amateurish</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Create a 2-page ungated summary PDF with headline stats and methodology. Share this freely on social media. Full report requires email for download. This balances reach (shareable summary) with lead capture (gated full version).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Launch Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Launch Strategy (PR, LinkedIn, Email, Webinar)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Multi-channel launch approach</h3>
+            <p>Launch week determines whether your report gets traction or dies quietly. Coordinate across PR, social, email, and events simultaneously. Both partners must commit to active promotion. One partner going silent kills momentum.</p>
+
+            <h3>Launch timeline</h3>
+            <table>
+              <tr><th>Timing</th><th>Channel</th><th>Action</th></tr>
+              <tr>
+                <td>1 week before</td>
+                <td>PR</td>
+                <td>Pitch industry publications with exclusive early access to findings. Offer to provide quotes or do interviews. Aim for 3-5 media hits on launch day</td>
+              </tr>
+              <tr>
+                <td>Launch day</td>
+                <td>LinkedIn (both partners)</td>
+                <td>Post highlighting 2-3 most surprising stats. Link to landing page in comments. Both partners post within 2 hours of each other for maximum visibility</td>
+              </tr>
+              <tr>
+                <td>Launch day</td>
+                <td>Email (both lists)</td>
+                <td>Email full lists announcing report. Include 1-2 teaser stats in email body. CTA to download full report. Thank survey respondents for participating</td>
+              </tr>
+              <tr>
+                <td>Launch day + 3</td>
+                <td>Webinar</td>
+                <td>Host live presentation of findings. Q&A session. Record for on-demand. Webinar registration becomes another lead capture mechanism</td>
+              </tr>
+              <tr>
+                <td>Week 2</td>
+                <td>Social (both partners)</td>
+                <td>Both partners share 3-5 more posts throughout the week highlighting different stats. Vary formats: text posts, carousels, quote graphics</td>
+              </tr>
+              <tr>
+                <td>Ongoing</td>
+                <td>Communities</td>
+                <td>Share in relevant Slack communities, LinkedIn groups, Reddit threads where your ICP gathers. Contextualise for each community</td>
+              </tr>
+            </table>
+
+            <h3>PR pitch template</h3>
+            <div class="email-block">
+              <span class="label">Media pitch example</span>
+Subject: New data - How sales teams are actually using AI in 2026
+
+Hi Sarah,
+
+Acme and Datadog just wrapped research surveying 300+ sales leaders on AI adoption in GTM. Found some surprising gaps between vendor promises and reality.
+
+Key findings:
+- Most teams use AI for research, not writing (opposite of what tools are built for)
+- 60% report AI tools created more work initially before delivering value
+- Top performers use AI differently than average teams (we quantified how)
+
+Happy to give you exclusive early access to the full report (drops publicly next Tuesday) or provide quotes for a story.
+
+Would this be interesting for your audience?
+
+Best,
+James
+            </div>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Create a launch toolkit shared doc with both partners: pre-written social posts, email templates, image assets, key stats. Makes it easy for both teams to promote consistently without recreating assets. Include suggested posting schedule to coordinate timing.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gating Strategy sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Gating Strategy (Ungated Summary + Gated Full Report)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The gating dilemma</h3>
+            <p>Fully ungated reports get maximum reach and shares but capture zero leads. Fully gated reports capture leads but get minimal organic distribution because no one can access and share them. The solution: hybrid approach with ungated summary and gated full report.</p>
+
+            <h3>Hybrid gating model</h3>
+            <ul>
+              <li><strong>Ungated 2-page summary</strong> - Key findings, top stats, methodology, partner logos. Freely shareable on social, in emails, in communities. Generates awareness and drives people to landing page</li>
+              <li><strong>Gated full report</strong> - Complete 15-25 page report with all data, charts, quotes, and analysis. Requires name, email, company to download. Hosted on landing page with form</li>
+              <li><strong>Progressive profiling</strong> - If using marketing automation, ask for basic info (name, email) on first download, then ask for more details (role, company size, challenges) on subsequent asset downloads</li>
+            </ul>
+
+            <h3>Landing page best practices</h3>
+            <ul>
+              <li><strong>Above fold</strong> - Report title, 2-3 headline stats as teasers, download form (keep fields minimal - name, email, company only), both partner logos</li>
+              <li><strong>Below fold</strong> - What's inside the report (table of contents), sample page previews, testimonials or quotes from early readers if available</li>
+              <li><strong>Thank you page</strong> - After form submission, redirect to thank you page with immediate PDF download link. Don't make people wait for email. Also send email with download link as backup</li>
+              <li><strong>Lead distribution</strong> - Agree upfront how leads are shared between partners. Common: both partners get all leads, or split by region/company size, or each partner gets leads that match their ICP criteria</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> On the landing page, include "As featured in..." logos for any media coverage you secured. Social proof increases download conversions. Update this section as you get media hits post-launch.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ongoing Repurposing sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Ongoing Repurposing (Blog Series, Social Posts, Webinar, Infographics)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why repurposing compounds value</h3>
+            <p>Launch week reaches maybe 10-20% of your potential audience. The other 80% missed it or need multiple exposures before they download. Repurposing spreads your research insights over months, reaching different audience segments through different formats and channels.</p>
+
+            <h3>Repurposing content formats</h3>
+            <ul>
+              <li><strong>Blog series (5-8 posts)</strong> - Each post deep-dives on one finding from the report. More detail than report provides. Good for SEO. Link to full report download in each post</li>
+              <li><strong>LinkedIn carousel posts</strong> - Turn key stats into visual slide decks (8-12 slides). Carousels get high engagement on LinkedIn. Create 4-6 different carousels covering different findings</li>
+              <li><strong>Infographics</strong> - One-page visual summary of top 5-7 stats. Highly shareable. Post on LinkedIn, Twitter, and embed in blog posts</li>
+              <li><strong>Video explainer</strong> - 3-5 minute video walking through key findings. Use screen recording with voiceover showing report pages, or talking head format. Post on LinkedIn and YouTube</li>
+              <li><strong>Podcast episode</strong> - If either partner has a podcast, dedicate an episode to discussing findings. Conversational format makes data more accessible</li>
+              <li><strong>Quote graphics</strong> - Pull standout quotes from open-ended responses. Design simple quote cards. Post individually on social over several weeks</li>
+            </ul>
+
+            <h3>Repurposing content calendar</h3>
+            <table>
+              <tr><th>Week</th><th>Content</th><th>Channel</th></tr>
+              <tr>
+                <td>Launch week</td>
+                <td>Report announcement, top stats post, email to lists</td>
+                <td>LinkedIn, email, PR</td>
+              </tr>
+              <tr>
+                <td>Week 2</td>
+                <td>First carousel post, blog post 1, webinar</td>
+                <td>LinkedIn, blog, webinar platform</td>
+              </tr>
+              <tr>
+                <td>Week 3</td>
+                <td>Infographic, blog post 2, quote graphic</td>
+                <td>LinkedIn, blog, Twitter</td>
+              </tr>
+              <tr>
+                <td>Week 4</td>
+                <td>Second carousel post, blog post 3, video explainer</td>
+                <td>LinkedIn, blog, YouTube</td>
+              </tr>
+              <tr>
+                <td>Week 5-8</td>
+                <td>Remaining blog posts, quote graphics, podcast episode</td>
+                <td>Ongoing across all channels</td>
+              </tr>
+              <tr>
+                <td>Month 3-6</td>
+                <td>Resurface top-performing posts, share in new communities</td>
+                <td>Evergreen promotion</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Pro tip:</strong> Track which stats and findings get the most social engagement. Double down on those in your repurposing. If one stat gets 10x more likes than others, create multiple pieces of content around that finding. Let engagement data guide your content calendar.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Topic too broad or too niche</h4>
+          <div class="why">Too broad means findings are generic and unsurprising. Too niche means you can't get enough responses or no one cares about the results.</div>
+          <div class="fix">Pick topics specific enough to generate novel insights but broad enough to attract 200+ responses. Test topic appeal via LinkedIn poll before committing.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. Too few survey responses</h4>
+          <div class="why">Publishing research based on 50-75 responses looks anecdotal and unscientific. Media won't cover it. Buyers question credibility.</div>
+          <div class="fix">Don't launch until you hit 200+ responses. Extend survey period, add incentives, or both partners do more promotion to hit threshold before publishing.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Boring or expected findings</h4>
+          <div class="why">If the data just confirms what everyone already thinks, there's no reason to share or discuss it. Report gets ignored.</div>
+          <div class="fix">Design survey to uncover surprises. Ask questions that might challenge conventional wisdom. If initial data looks boring, dig deeper into segments or outliers.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Bad report design</h4>
+          <div class="why">Ugly or dense layout means no one reads past page one. Data dumps without visual hierarchy lose readers immediately.</div>
+          <div class="fix">Invest in professional design or use Canva templates. Prioritise visual hierarchy, whitespace, and charts over dense text. Make it skimmable.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. No launch plan</h4>
+          <div class="why">You finish the report and just email it to your list with no PR, no webinar, no social strategy. Report dies quietly without traction.</div>
+          <div class="fix">Plan launch at least 2 weeks before publishing. Coordinate PR pitches, both partners' social posts, email announcements, webinar, all timed together for maximum impact.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Gating everything (kills organic reach)</h4>
+          <div class="why">If the full report is gated from day one with no shareable summary, no one can read and share it organically. Reach stays minimal.</div>
+          <div class="fix">Create ungated 2-page summary for sharing. Gate full report for lead capture. Hybrid model balances reach and lead generation.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>7. No repurposing (one-and-done)</h4>
+          <div class="why">You launch the report, promote for one week, then move on. Miss the opportunity to extract months of content value from the research.</div>
+          <div class="fix">Create content calendar for 8-12 weeks post-launch. Blog series, carousels, infographics, videos. Repurpose findings into multiple formats across channels.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>

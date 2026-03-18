@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactic 3.3 - Reddit Thought Leadership | GTM Data Lake</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;min-height:100vh;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:.9rem;color:#58a6ff}
+.hero{background:linear-gradient(135deg,#161b22 0%,#1a2332 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.hero-id{font-size:.8rem;color:#58a6ff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero h1{color:#e6edf3;font-size:1.8rem;margin-bottom:8px}
+.hero .desc{color:#8b949e;font-size:1rem;margin-bottom:16px}
+.hero-stat{display:inline-block;background:#1f6feb22;border:1px solid #1f6feb44;border-radius:8px;padding:10px 18px;margin-bottom:16px}
+.hero-stat .num{font-size:1.5rem;font-weight:700;color:#58a6ff}.hero-stat .lbl{font-size:.8rem;color:#8b949e}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.75rem;padding:4px 12px;border-radius:12px;font-weight:500}
+.tag-effort{background:#9e6a0322;color:#d29922}
+.tag-cost{background:#23863622;color:#3fb950}
+.tag-icp{background:#8957e522;color:#bc8cff}
+
+/* Accordion */
+.accordion{margin-bottom:8px}
+.acc-header{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s;user-select:none}
+.acc-header:hover{border-color:#58a6ff}
+.acc-header h2{font-size:1.05rem;color:#e6edf3;font-weight:600}
+.acc-header .num{color:#58a6ff;font-size:.8rem;font-weight:700;margin-right:10px}
+.acc-arrow{color:#8b949e;font-size:.9rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.accordion.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .acc-body{max-height:none}
+.acc-content{padding:20px;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+th{background:#161b22;color:#e6edf3;text-align:left;padding:10px 12px;border:1px solid #30363d;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border:1px solid #21262d;vertical-align:top}
+tr:nth-child(even){background:#161b2288}
+tr:hover{background:#1c2433}
+
+/* Cards grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card h4{color:#e6edf3;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{font-size:.85rem;color:#8b949e;line-height:1.5}
+.card .stat{color:#58a6ff;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.card ul{padding-left:16px;margin:4px 0}
+.card .pro{color:#3fb950}.card .con{color:#f85149}
+
+/* Sub-accordion */
+.sub-acc{margin:8px 0}
+.sub-header{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sub-header:hover{border-color:#58a6ff}
+.sub-header h4{font-size:.9rem;color:#e6edf3}
+.sub-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sub-acc.open .sub-body{max-height:none}
+.sub-content{padding:14px 16px;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px}
+
+/* Tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:8px 16px;cursor:pointer;color:#8b949e;font-size:.85rem;border-radius:6px 6px 0 0;transition:all .2s;border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab:hover{color:#e6edf3;background:#161b22}
+.tab.active{color:#e6edf3;background:#161b22;border-color:#30363d;border-bottom-color:#161b22}
+.tab-panel{display:none;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 8px 8px;padding:16px}
+.tab-panel.active{display:block}
+
+/* Misc */
+.highlight{background:#1f6feb22;border-left:3px solid #58a6ff;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.85rem}
+.highlight strong{color:#58a6ff}
+h3{color:#e6edf3;font-size:.95rem;margin:16px 0 8px}
+h3:first-child{margin-top:0}
+p{font-size:.85rem;margin:6px 0}
+ul,ol{font-size:.85rem;padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+code{background:#1c2433;padding:2px 6px;border-radius:4px;font-size:.8rem;color:#e6edf3}
+.email-block{background:#1c2433;border:1px solid #30363d;border-radius:6px;padding:14px 16px;margin:10px 0;font-size:.83rem;line-height:1.6;white-space:pre-wrap;color:#c9d1d9}
+.email-block .label{color:#58a6ff;font-weight:600;font-size:.75rem;text-transform:uppercase;margin-bottom:6px;display:block}
+.metric-card{text-align:center;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.metric-card .num{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.metric-card .lbl{font-size:.7rem;color:#8b949e;text-transform:uppercase;margin-top:4px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mistake-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;border-left:3px solid #f85149}
+.mistake-card h4{color:#f85149;font-size:.9rem;margin-bottom:4px}
+.mistake-card .why{color:#8b949e;font-size:.8rem;margin-bottom:6px}
+.mistake-card .fix{color:#3fb950;font-size:.8rem}
+.mistake-card .fix::before{content:"Fix: ";font-weight:600}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #21262d;text-align:center;color:#8b949e;font-size:.75rem}
+
+@media(max-width:600px){
+  body{padding:12px}
+  .hero{padding:18px}
+  .hero h1{font-size:1.3rem}
+  .card-grid{grid-template-columns:1fr}
+  table{font-size:.75rem}
+  th,td{padding:6px 8px}
+  .tabs{gap:2px}
+  .tab{padding:6px 10px;font-size:.75rem}
+}
+
+.hero-channels{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.hero-ch{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid;transition:transform .2s}
+.hero-ch:hover{transform:translateY(-2px)}
+.hero-ch-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+.hero-ch-name{font-size:.85rem;font-weight:600;color:#e6edf3}
+.hero-ch-plus{color:#8b949e;font-size:1.2rem;font-weight:300}
+.hero-sub{color:#8b949e;font-size:.85rem;font-style:italic;margin-bottom:8px}
+
+.wf{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:16px 8px 12px;margin:12px 0;background:#161b22;border:1px solid #30363d;border-radius:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:90px;position:relative}
+.wf-day{font-size:.7rem;color:#8b949e;margin-bottom:6px;font-weight:500}
+.wf-node{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;z-index:1;flex-shrink:0}
+.wf-label{font-size:.68rem;color:#c9d1d9;margin-top:6px;text-align:center;line-height:1.3;max-width:80px}
+.wf-action{font-size:.6rem;color:#8b949e;text-align:center;max-width:80px;line-height:1.2;margin-top:2px}
+.wf-line{display:flex;align-items:center;padding-top:22px}
+.wf-line-inner{width:24px;height:2px;background:#30363d}
+.ch-email{background:#58a6ff}
+.ch-linkedin{background:#0a66c2}
+.ch-phone{background:#d29922}
+.ch-video{background:#bc8cff}
+.ch-dm{background:#f85149}
+
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">&larr; Back to Data Lake</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-id">Tactic 3.3 - Community-Led Growth</div>
+  <h1>Reddit Thought Leadership</h1>
+  <p class="desc">Post consistently helpful content in ICP subreddits. Build authority by answering questions and sharing insights. Reddit content surfaces prominently in AI search engines like ChatGPT and Perplexity, creating long-term discoverability.</p>
+
+  <div class="hero-channels">
+    <div class="hero-ch" style="border-color:#3fb950;background:#3fb95022">
+      <div class="hero-ch-icon" style="background:#3fb950">C</div>
+      <div class="hero-ch-name">Community (Primary)</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag tag-effort">Effort: Medium</span>
+    <span class="tag tag-cost">Cost: Free</span>
+    <span class="tag tag-icp">ICP: Technical Buyers, Founders</span>
+  </div>
+</div>
+
+<!-- SECTION 1: Why It Works -->
+<div class="accordion open" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">01</span><h2 style="display:inline">Why It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="highlight">
+        <strong>The core insight:</strong> Reddit is the internet's advice layer. People search Reddit for unfiltered opinions before making decisions. More importantly, AI search engines cite Reddit heavily because it contains real human experiences. One helpful Reddit post can drive inbound for years.
+      </div>
+      <h3>The psychology behind Reddit thought leadership</h3>
+      <ul>
+        <li><strong>Anti-marketing culture creates trust</strong> - Redditors are allergic to obvious marketing. But thoughtful, honest contributions from people who know their stuff are highly valued. This makes authentic expertise stand out even more</li>
+        <li><strong>Permanence and searchability</strong> - Unlike Slack or Discord where conversations disappear, Reddit threads are indexed by Google and AI. Your helpful answer today gets discovered by hundreds of people over the next 2-3 years</li>
+        <li><strong>Karma system rewards value</strong> - Upvotes signal quality. High-karma users are seen as credible. Building karma through helpful contributions establishes you as a trusted voice, not a vendor</li>
+        <li><strong>Community-driven validation</strong> - When Redditors upvote your answer or reply positively, it validates your expertise to everyone reading. Peer validation beats any marketing claim</li>
+      </ul>
+      <h3>Why Reddit for B2B specifically</h3>
+      <p>B2B buyers research on Reddit before talking to sales. They search "best CRM for startups reddit" or "sales engagement platform reviews reddit" because they want honest opinions from actual users, not marketing sites. If you're the helpful expert in those threads, you get discovered before your competitors even know the buyer exists.</p>
+      <p><strong>The AI search multiplier:</strong> ChatGPT, Perplexity, and other AI search tools cite Reddit heavily in their answers. When someone asks an AI "how do I solve X problem?", your Reddit contributions can surface as the source. This is long-tail, compounding visibility that traditional marketing can't buy.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: How It Works -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">02</span><h2 style="display:inline">How It Works</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <h3>Visual workflow</h3>
+      <div class="wf"><div class="wf-step"><div class="wf-day">Step 1</div><div class="wf-node" style="background:#3fb950">I</div><div class="wf-label">Identify Subreddits</div><div class="wf-action">Where ICP asks</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 2</div><div class="wf-node" style="background:#3fb950">B</div><div class="wf-label">Build Karma</div><div class="wf-action">2-4 weeks commenting</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 3</div><div class="wf-node" style="background:#3fb950">P</div><div class="wf-label">Post Valuable Content</div><div class="wf-action">Detailed, honest</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 4</div><div class="wf-node" style="background:#3fb950">E</div><div class="wf-label">Engage Discussions</div><div class="wf-action">Reply to comments</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 5</div><div class="wf-node" style="background:#3fb950">B</div><div class="wf-label">Build Authority</div><div class="wf-action">Consistent presence</div></div><div class="wf-line"><div class="wf-line-inner"></div></div><div class="wf-step"><div class="wf-day">Step 6</div><div class="wf-node" style="background:#3fb950">D</div><div class="wf-label">Drive Traffic</div><div class="wf-action">Profile + organic</div></div></div>
+
+      <h3>Step-by-step process</h3>
+      <table>
+        <tr><th>Step</th><th>Action</th><th>Details</th><th>Time Investment</th></tr>
+        <tr>
+          <td>1</td>
+          <td>Identify target subreddits</td>
+          <td>Find 3-5 subreddits where your ICP actively asks questions. Look for subreddits with 10k-500k members - large enough for reach, small enough to stand out. Check recent activity and question volume</td>
+          <td>1-2 hours research</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Build karma (2-4 weeks)</td>
+          <td>Comment on existing posts before posting your own. Provide helpful answers, upvote good content, engage genuinely. Build 100-200 karma minimum before making posts. This establishes credibility and bypasses new-account restrictions</td>
+          <td>15-20 min/day commenting</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Post valuable content</td>
+          <td>Write detailed posts answering common ICP questions. Share frameworks, lessons learned, honest takes on what works and what doesn't. Use Reddit's conversational tone - detailed but not corporate</td>
+          <td>1-2 hours per post</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Engage in discussions</td>
+          <td>Respond to every comment on your posts. Answer follow-up questions. Engage with people who disagree respectfully. Reddit rewards engagement - comments keep your post visible longer</td>
+          <td>30-45 min per post follow-up</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Build authority over time</td>
+          <td>Post consistently (1-2 times per week). Become known for helpful, detailed answers in your area. People start recognising your username. Tag you in relevant threads. This is when influence compounds</td>
+          <td>Ongoing consistency</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Drive traffic organically</td>
+          <td>Put your website and what you do in your Reddit profile bio. When people find your helpful content, they check your profile. Don't force it in posts - let organic discovery happen</td>
+          <td>Profile setup 5 min, then passive</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>Pro tip:</strong> Use Gummy Search to monitor subreddits for specific keywords related to your product space. Get notified when someone asks a question you can answer, allowing you to be one of the first helpful responses.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Tools & Tech Stack -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">03</span><h2 style="display:inline">Tools &amp; Tech Stack</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <table>
+        <tr><th>Tool</th><th>Price</th><th>Best For</th><th>Key Feature</th><th>Limitation</th></tr>
+        <tr>
+          <td><strong>Reddit</strong></td>
+          <td>Free</td>
+          <td>Participating in discussions, posting content, building karma</td>
+          <td>Massive reach, highly searchable, trusted by users, surfaces in AI search results. Karma system rewards valuable contributions</td>
+          <td>Strict anti-self-promotion culture. New accounts restricted from posting. Takes time to build credibility. Can't edit heavily after posting</td>
+        </tr>
+        <tr>
+          <td><strong>Gummy Search</strong></td>
+          <td>$49/mo</td>
+          <td>Monitoring subreddits for specific keywords and pain points</td>
+          <td>Tracks specific keywords across subreddits. Alerts you when relevant questions appear. Identifies pain points your ICP discusses most. Saves hours of manual browsing</td>
+          <td>Reddit-only. Doesn't cover other platforms. Requires knowing which keywords to track upfront</td>
+        </tr>
+        <tr>
+          <td><strong>Google Alerts</strong></td>
+          <td>Free</td>
+          <td>Tracking when your industry topics appear on Reddit (or anywhere online)</td>
+          <td>Free email alerts when specific terms appear online. Set up alerts for "your-industry + reddit" to catch new relevant threads</td>
+          <td>Less Reddit-specific than Gummy Search. Often catches irrelevant results. Can't filter by subreddit easily</td>
+        </tr>
+        <tr>
+          <td><strong>Perplexity</strong></td>
+          <td>Free (basic)</td>
+          <td>Monitoring how AI search engines cite Reddit content, including yours</td>
+          <td>Search your product category and see which Reddit threads get cited by AI. Shows you what type of content gets surfaced. Free to use for research</td>
+          <td>Not a monitoring tool. Manual checking required. Can't track when your content gets cited</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>TSP Stack Recommendation:</strong> Start with <strong>Reddit free</strong> to test the channel. Once you're posting regularly and seeing traction, add <strong>Gummy Search</strong> ($49/mo) to systematically find opportunities rather than manually browsing subreddits daily.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Best Practices -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">04</span><h2 style="display:inline">Best Practices</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+
+      <!-- Subreddit Selection sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Subreddit Selection (Find Where Your ICP Actually Asks Questions)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>How to find the right subreddits</h3>
+            <p>Not all subreddits are equal for B2B. You want subreddits where your ICP asks genuine questions, not just lurks or posts memes. Look for active problem-solving discussions, not just news or announcements.</p>
+
+            <h3>Subreddit discovery process</h3>
+            <ul>
+              <li><strong>Search your ICP job title + Reddit</strong> - Examples: "sales ops reddit", "RevOps reddit", "startup founder reddit". This surfaces subreddits where people with those roles gather</li>
+              <li><strong>Check related subreddits in sidebars</strong> - Find one relevant subreddit, check its sidebar for related communities. Reddit communities often link to each other</li>
+              <li><strong>Use Gummy Search's subreddit discovery</strong> - Enter keywords related to your product space. Gummy suggests subreddits with active discussions on those topics</li>
+              <li><strong>Look at competitor mentions</strong> - Search Reddit for competitor names. Which subreddits mention them? Those are where your ICP discusses your category</li>
+              <li><strong>Ask your customers</strong> - "What subreddits do you browse for work advice?" Direct answers from your ICP</li>
+            </ul>
+
+            <h3>Evaluating subreddit quality</h3>
+            <table>
+              <tr><th>Good Signal</th><th>Bad Signal</th></tr>
+              <tr>
+                <td>Regular questions and problem-solving discussions</td>
+                <td>Mostly memes, news links, or promotional content</td>
+              </tr>
+              <tr>
+                <td>Detailed answers with high upvotes</td>
+                <td>Low-effort comments, minimal engagement</td>
+              </tr>
+              <tr>
+                <td>10k-500k members (sweet spot for visibility + engagement)</td>
+                <td>Under 5k (too small) or over 1M (too noisy)</td>
+              </tr>
+              <tr>
+                <td>Active moderation keeping quality high</td>
+                <td>Spam, self-promotion, or toxic behavior going unchecked</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>Focus strategy:</strong> Better to be highly active in 2-3 perfect-fit subreddits than sporadically active in 10. Become a recognised helpful voice in a few places rather than invisible everywhere.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Building Karma Before Posting sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Building Karma Before Posting (Establish Credibility First)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why karma matters</h3>
+            <p>Many subreddits have minimum karma requirements to post or comment. New accounts are automatically suspect. Low-karma accounts get flagged by spam filters. Building karma signals you're a real person who contributes value, not a spam bot or marketer.</p>
+
+            <h3>How to build karma authentically</h3>
+            <ul>
+              <li><strong>Comment on existing posts before posting your own</strong> - Find posts with 5-20 comments (early enough to get visibility, not buried). Add thoughtful comments. Even simple helpful additions earn upvotes</li>
+              <li><strong>Answer questions in your expertise area</strong> - Browse new posts in your target subreddits. Answer questions where you have genuine knowledge. Detailed, useful answers get upvoted quickly</li>
+              <li><strong>Engage in discussions, not debates</strong> - Add to conversations constructively. Avoid arguments or controversial takes early on. Positive contributions build karma faster</li>
+              <li><strong>Don't karma-farm</strong> - Resist the temptation to post generic comments on trending posts just for upvotes. Focus on your target subreddits where your ICP is, not maximising karma in random places</li>
+            </ul>
+
+            <h3>Karma building timeline</h3>
+            <table>
+              <tr><th>Timeline</th><th>Goal</th><th>Activity</th></tr>
+              <tr>
+                <td>Week 1</td>
+                <td>50-100 karma</td>
+                <td>Comment on 5-10 posts daily in target subreddits. Helpful, detailed comments. Build initial credibility</td>
+              </tr>
+              <tr>
+                <td>Week 2-3</td>
+                <td>200-300 karma</td>
+                <td>Continue commenting. Start answering more complex questions. Engage with replies to your comments. Build recognition</td>
+              </tr>
+              <tr>
+                <td>Week 4+</td>
+                <td>500+ karma</td>
+                <td>Make your first post. Continue commenting to maintain active presence. By now you're a recognised contributor</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>The patience principle:</strong> Spend 2-4 weeks building karma before making posts about your expertise. This feels slow but dramatically increases how your posts are received. High-karma accounts get benefit of the doubt; new accounts get scrutinised.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content That Works on Reddit sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Content That Works on Reddit (Detailed, Honest, No Marketing Speak)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>What Reddit values in content</h3>
+            <p>Redditors reward depth, honesty, and real experience. They punish obvious marketing, vague advice, and content that feels like it came from a content marketing team. Write like a helpful human sharing hard-won knowledge, not a brand.</p>
+
+            <h3>Content types that perform well</h3>
+            <ul>
+              <li><strong>Detailed how-to posts</strong> - "How I solved X problem at Acme: step-by-step breakdown". Walk through your specific approach with real details, not generic tips</li>
+              <li><strong>Lessons learned posts</strong> - "3 years running sales ops - here's what I wish I'd known". Honest reflections, including mistakes. Vulnerability builds trust</li>
+              <li><strong>Comparison posts</strong> - "I've used tools A, B, and C for X. Here's what actually matters when choosing". Honest pros/cons of different approaches, including your product's weaknesses</li>
+              <li><strong>Answer posts</strong> - "I've seen this question a lot: here's the answer no one tells you". Address a common pain point with a comprehensive answer that becomes the canonical resource</li>
+            </ul>
+
+            <h3>Writing style for Reddit</h3>
+            <table>
+              <tr><th>Don't (Marketing Speak)</th><th>Do (Reddit Voice)</th></tr>
+              <tr>
+                <td>"Revolutionise your workflow with these game-changing tips"</td>
+                <td>"Here's what actually worked for Sarah at Acme when we faced this problem"</td>
+              </tr>
+              <tr>
+                <td>"Industry-leading best practices for optimal performance"</td>
+                <td>"Tried this for 6 months. Here's what worked and what was a waste of time"</td>
+              </tr>
+              <tr>
+                <td>Short, vague advice with no specifics</td>
+                <td>Detailed walkthrough with real numbers, timelines, tools used, specific outcomes</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>The honesty test:</strong> Would you share this post with a friend asking for real advice? If it feels too polished or promotional for that context, rewrite it. Reddit rewards authentic helpfulness, not content marketing.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Engaging Authentically sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Engaging Authentically (Respond to Comments, Be Human)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Why engagement matters on Reddit</h3>
+            <p>Reddit's algorithm rewards engagement. Posts with active comment sections stay visible longer. More importantly, how you engage in comments shows whether you're genuinely helpful or just dropping content and leaving. Redditors check your comment history before trusting you.</p>
+
+            <h3>How to engage effectively</h3>
+            <ul>
+              <li><strong>Respond to every comment on your posts</strong> - Especially in the first few hours. Thank people for additions, answer follow-up questions, engage with disagreements respectfully. Shows you're there for conversation, not just visibility</li>
+              <li><strong>Handle criticism gracefully</strong> - Reddit will challenge you. Someone will disagree or point out flaws. Respond professionally: "That's a fair point. Here's how we've seen it work in Sarah's case, but I see your concern." Never get defensive</li>
+              <li><strong>Add value in your replies, don't just say thanks</strong> - Instead of "Thanks!", say "Thanks! Since you asked about X, here's one more thing that worked for James..." Every comment is an opportunity to provide more value</li>
+              <li><strong>Engage beyond your own posts</strong> - Comment on other people's posts in your subreddits. Build relationships. Reddit rewards consistent contributors, not drive-by posters</li>
+            </ul>
+
+            <h3>Building long-term presence through engagement</h3>
+            <p>Over months, consistent engagement builds recognition. People start tagging you in relevant threads: "Sarah would know this, she posted about it last month". This is when Reddit truly generates inbound - you become the go-to expert in your area.</p>
+
+            <div class="highlight">
+              <strong>Engagement timing:</strong> Be active on your post within the first 3-6 hours. Reddit's algorithm heavily weights early engagement. A post with 20 comments in the first hour ranks higher than one with 50 comments over 24 hours.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Self-Promotion Rules sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>The Self-Promotion Rules (Reddit's 10% Rule and How to Follow It)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>Reddit's self-promotion stance</h3>
+            <p>Reddit officially allows up to 10% of your activity to be self-promotional. In practice, many subreddits are stricter. The key is providing so much value that when you do mention your product, the community gives you the benefit of the doubt.</p>
+
+            <h3>The 10% rule in practice</h3>
+            <ul>
+              <li><strong>90% value, 10% self-reference</strong> - For every 9 helpful posts or comments, 1 can reference your product or company. Track your ratio roughly - don't push it</li>
+              <li><strong>Self-reference, not self-promotion</strong> - Mention your product as context ("When we built X, we faced this problem...") rather than as a pitch ("Check out our product for this")</li>
+              <li><strong>Always add value even when mentioning your product</strong> - If you mention your product, the post should still be valuable without it. Share the insight or approach first, product mention is secondary</li>
+              <li><strong>Transparency always</strong> - Always disclose you work on the product. "Full disclosure, I work on X, but here's the honest take..." Reddit forgives bias if you're upfront about it</li>
+            </ul>
+
+            <h3>How to reference your product without getting banned</h3>
+            <table>
+              <tr><th>Bad (Instant Ban Risk)</th><th>Good (Acceptable)</th></tr>
+              <tr>
+                <td>"Check out our product for this problem!"</td>
+                <td>"I work on a product in this space. Here's how we've seen customers like Sarah solve it, regardless of tool..."</td>
+              </tr>
+              <tr>
+                <td>Dropping product links in every comment</td>
+                <td>Putting product in profile bio. Letting curious people discover it</td>
+              </tr>
+              <tr>
+                <td>Creating posts that are thinly-veiled ads</td>
+                <td>Creating genuinely helpful posts where your product happens to be relevant context</td>
+              </tr>
+            </table>
+
+            <div class="highlight">
+              <strong>The ultimate test:</strong> Would you share this exact post if you didn't work on the product? If the answer is no, you've crossed into promotional content. Rewrite to be helpful first, product mention optional.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Why Reddit Matters for AI Search sub-accordion -->
+      <div class="sub-acc" data-sub>
+        <div class="sub-header" onclick="toggleSub(this)">
+          <h4>Why Reddit Matters for AI Search (ChatGPT and Perplexity Cite Reddit Heavily)</h4>
+          <span class="acc-arrow">&#9660;</span>
+        </div>
+        <div class="sub-body">
+          <div class="sub-content">
+            <h3>The AI search revolution</h3>
+            <p>Traditional SEO targets Google. But increasingly, people ask ChatGPT, Perplexity, or Claude for recommendations instead of searching Google. These AI tools cite Reddit extensively because it contains authentic human experiences and opinions - exactly what AI users want.</p>
+
+            <h3>How AI search uses Reddit</h3>
+            <ul>
+              <li><strong>ChatGPT cites Reddit threads directly</strong> - When asked "best sales engagement tool for startups", ChatGPT often references specific Reddit discussions. If you're the helpful expert in those threads, you get cited</li>
+              <li><strong>Perplexity surfaces Reddit as top sources</strong> - Perplexity's answers include source links. Reddit threads with detailed, upvoted answers frequently appear as top sources</li>
+              <li><strong>AI values Reddit's authenticity signal</strong> - AI models recognise Reddit as unfiltered user opinions. Marketing sites get discounted; Reddit carries weight because it's peer discussion, not vendor content</li>
+            </ul>
+
+            <h3>Optimising Reddit content for AI discoverability</h3>
+            <ul>
+              <li><strong>Use clear, specific problem framing</strong> - Title posts with the exact question people would ask an AI: "How to scale outbound without hiring more SDRs". AI matches queries to content semantically</li>
+              <li><strong>Provide comprehensive answers</strong> - AI favours detailed, thorough content. A 500-word answer explaining an approach gets cited more than a 50-word one</li>
+              <li><strong>Include specifics and examples</strong> - "Sarah at Acme did X and saw Y result" gives AI concrete information to cite. Vague advice gets ignored</li>
+              <li><strong>Update old posts when new info emerges</strong> - Edit your posts to stay current. AI prefers up-to-date information. Add "Edit: Updated March 2026 based on..." to keep posts fresh</li>
+            </ul>
+
+            <div class="highlight">
+              <strong>The compounding effect:</strong> One highly-cited Reddit post can generate inbound for years. Unlike ads or even blog posts, Reddit content that AI trusts becomes a permanent, discoverable asset. This is the long game that pays off massively over time.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Common Mistakes -->
+<div class="accordion" data-acc>
+  <div class="acc-header" onclick="toggleAcc(this)">
+    <div><span class="num">05</span><h2 style="display:inline">Common Mistakes</h2></div>
+    <span class="acc-arrow">&#9660;</span>
+  </div>
+  <div class="acc-body">
+    <div class="acc-content">
+      <div class="card-grid">
+        <div class="mistake-card">
+          <h4>1. Obvious self-promotion</h4>
+          <div class="why">You mention your product in every post or comment. Redditors immediately see through this and downvote or report as spam. You get banned from subreddits or shadowbanned site-wide.</div>
+          <div class="fix">Follow the 10% rule strictly. For every 9 valuable contributions with zero product mention, 1 can reference your product as context. Let your profile bio do the promotional work.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>2. New account posting immediately</h4>
+          <div class="why">You create an account and start posting promotional content within days. Reddit's spam filters flag you. Your posts get auto-removed. Subreddits ban you before you've even started.</div>
+          <div class="fix">Spend 2-4 weeks building karma through helpful comments before making posts. Target 100-200 karma minimum. This establishes you as a real contributor, not a spam account.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>3. Using marketing language</h4>
+          <div class="why">Your posts sound like blog content or marketing copy. Redditors hate corporate speak. Your posts get ignored or mocked. You fail to build any credibility or engagement.</div>
+          <div class="fix">Write like a human talking to another human. Share specific experiences: "Here's what worked for Sarah at Acme". Use conversational tone. Be honest about what didn't work, not just successes.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>4. Not reading subreddit rules</h4>
+          <div class="why">Every subreddit has its own rules. You post without reading them and violate a key rule like "no promotional content" or "use the weekly questions thread". Instant ban.</div>
+          <div class="fix">Read every subreddit's rules before posting. Check pinned posts. Observe what types of content get upvoted. When in doubt, message mods before posting to ask if your content fits.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>5. Ignoring comments on your posts</h4>
+          <div class="why">You post content and never respond to comments. Redditors ask follow-up questions or challenge your points. Silence makes you look like you're just dropping promotional content and leaving.</div>
+          <div class="fix">Commit to engaging with every comment on your posts, especially in the first 6 hours. Answer questions, thank people for additions, address disagreements respectfully. Show you're there for real conversation.</div>
+        </div>
+        <div class="mistake-card">
+          <h4>6. Using multiple accounts to upvote yourself</h4>
+          <div class="why">You create alt accounts to upvote your own posts or comments. Reddit has sophisticated detection for vote manipulation. You get permanently banned site-wide. All accounts gone.</div>
+          <div class="fix">Never manipulate votes. Let your content stand on its merit. High-quality, helpful content gets upvoted naturally. Attempting to game the system destroys everything you've built.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">Part of the GTM Outreach Innovation Data Lake - The Sales People, March 2026</div>
+
+<script>
+// Accordion toggle
+function toggleAcc(header){
+  const acc=header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// Sub-accordion toggle
+function toggleSub(header){
+  const sub=header.parentElement;
+  sub.classList.toggle('open');
+}
+
+// Tab switching
+function switchTab(e,panelId){
+  const tabContainer=e.target.closest('.acc-content');
+  tabContainer.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tabContainer.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Initialise: first accordion open by default (already set via class)
+</script>
+
+</body>
+</html>
